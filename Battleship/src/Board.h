@@ -1,5 +1,4 @@
 #pragma once
-#include "Player.cpp"
 
 #define BOARD_SIZE 10
 

@@ -33,3 +33,5 @@
 *.vcxproj
 *.opendb
 *.filters
+/Battleship/Debug
+/Battleship/TestFiles

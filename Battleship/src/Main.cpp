@@ -1,4 +1,5 @@
 #include "Main.h"
+#include "Attack.h"
 
 Main::Main() {
 }

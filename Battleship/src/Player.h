@@ -1,6 +1,4 @@
 #pragma once
-#include "IBattleshipGameAlgo.h"
-#include "Ship.cpp"
 
 #define SHIPS_PER_PLAYER 5
 

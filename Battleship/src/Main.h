@@ -1,5 +1,4 @@
 #pragma once
-#include "Attack.cpp"
 
 class Main {
 
