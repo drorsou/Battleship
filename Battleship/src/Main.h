@@ -1,8 +1,14 @@
 #pragma once
+#include <string>
+#include "Attack.h"
+#include "Board.h"
+
+using namespace std;
 
 class Main {
 
 public:
 	Main();
-	void main();
+	int parseAttack(string path);
+	int parseBoard(string path);
 };

@@ -1,10 +1,10 @@
 #pragma once
-#include <list>
+#include <utility>
+
+using namespace std;
 
 class Attack {
-
-private:
-	std::list<int, int> list;
+	pair<int, int> *list;
 	int index;
 
 public:

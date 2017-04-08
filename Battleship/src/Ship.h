@@ -1,11 +1,12 @@
 #pragma once
-#include <list>
+#include <utility>
+
+using namespace std;
 
 enum Type { Boat, Cruiser, Submarine, Destroyer };
 
 class Ship {
-private:
-	std::list<int, int> coords;
+	pair<int, int> *coords;
 	Type type;
 
 public:

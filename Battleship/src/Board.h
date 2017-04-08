@@ -1,4 +1,5 @@
 #pragma once
+#include "Player.h"
 
 #define BOARD_SIZE 10
 
