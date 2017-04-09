@@ -3,8 +3,6 @@
 #include "Ship.h"
 #include "Attack.h"
 
-using namespace std;
-
 #define SHIPS_PER_PLAYER 5
 
 class Player: IBattleshipGameAlgo {

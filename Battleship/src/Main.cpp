@@ -7,26 +7,13 @@
 
 
 string fileInDirFileName = "dirFiles.txt";//the name of the file which will consust the name of the files in dir
+string sboard_filename;
+string attack_a_filename;
+string attack_b_filename;
 
 
 
 Main::Main() {
-}
-
-
-
-//check if the given path string is a valid and existing string
-bool checkIsValidDir(string pathName){
-	
-	if (pathName == "")//relative path->no need to check
-		return true;
-	std::experimental::filesystem::path path(pathName);
-	
-	if (!is_directory(path)) {
-		return false;
-	}
-	return true;
-	
 }
 
 
@@ -37,31 +24,56 @@ int main(int argc, char* argv[]) {
 		path = argv[1];
 	else
 		path = "";
-	bool errorsExist=checkFilesAndPrintErrorsInOrder(path);
-	if(errorsExist)
+	bool filesExist = checkFilesAndPrintErrorsInOrder(path);
+	if (!filesExist)
 	{
-		return -1;//TODO-exit with errors
+		getchar();
+		return -1; //TODO-exit with errors
 	}
 	
 
 
-	//Attack attack1 = parseAttack(path.attack-a);
+	//Attack attack1 = Main::parseAttack(path.attack-a);
 	//Attack attack2 = parseAttack(path.attack-b);
-	//Board board = parseBoard(path.sboard);
+
+	string* parsed_board = new string[10];
+	if (parseBoard(path + "\\" + sboard_filename, parsed_board))
+		return -1; // Error in parsing
+
+	getchar();
+	return 0;
+};
+
+
+int parseAttack(string path) {
+	return 0;
+};
+
+
+int parseBoard(string path, string* b) {
+	ifstream fin(path);
+	for (int i = 0; i < 10; ++i) {
+		std::getline(fin, b[i]);
+	}
 
 	return 0;
 };
 
-int Main::parseAttack(string path) {
-	return 0;
-};
-int Main::parseBoard(string path) {
-	return 0;
-};
 
 
+//check if the given path string is a valid and existing string
+bool checkIsValidDir(string pathName) {
 
+	if (pathName == "")//relative path->no need to check
+		return true;
+	std::experimental::filesystem::path path(pathName);
 
+	if (!is_directory(path)) {
+		return false;
+	}
+	return true;
+
+}
 
 std::pair<bool, string> findPathOfFile(char* requiredExtention)
 {
@@ -139,7 +151,7 @@ bool checkFilesAndPrintErrorsInOrder(string path)
 	else
 	{
 		writeToFileTheFilesInDir(path);
-		std::pair<bool, string> boardFileDetails=findPathOfFile("sboard");
+		std::pair<bool, string> boardFileDetails = findPathOfFile("sboard");
 		std::pair<bool, string> attackAFileDetails = findPathOfFile("attack-a");
 		std::pair<bool, string> attackBFileDetails = findPathOfFile("attack-b");
 		if(!boardFileDetails.first)
@@ -148,16 +160,11 @@ bool checkFilesAndPrintErrorsInOrder(string path)
 			printErrorOfFiles("attack-a", path);
 		if (!attackBFileDetails.first)
 			printErrorOfFiles("attack-b", path);
+		sboard_filename = boardFileDetails.second;
+		attack_a_filename = attackAFileDetails.second;
+		attack_b_filename = attackBFileDetails.second;
 		return boardFileDetails.first && attackAFileDetails.first && attackBFileDetails.first;
 	}
 
-	
-
 
 }
-
-	
-
-
-
- 

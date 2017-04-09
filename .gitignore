@@ -35,3 +35,8 @@
 *.filters
 /Battleship/Debug
 /Battleship/TestFiles
+/mine/mine
+/Battleship/dirFiles.txt
+/Battleship/src/clean_movesA.attack-a
+/Battleship/src/good_board_0.sboard
+/Battleship/src/clean_movesB.attack-b

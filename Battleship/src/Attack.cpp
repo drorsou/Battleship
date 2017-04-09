@@ -4,7 +4,7 @@ Attack::Attack() {
 
 }
 
-pair<int, int> Attack::getNextAttack()
+std::pair<int, int> Attack::getNextAttack()
 {
 	// Check if index < list.size
 	index++;
