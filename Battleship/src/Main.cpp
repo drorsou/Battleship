@@ -1,7 +1,34 @@
 #include "Main.h"
+#include <experimental/filesystem>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <iostream>
+#include <fstream>
+
+
+string fileInDirFileName = "dirFiles.txt";//the name of the file which will consust the name of the files in dir
+
+
 
 Main::Main() {
 }
+
+
+
+//check if the given path string is a valid and existing string
+bool checkIsValidDir(string pathName){
+	
+	if (pathName == "")//relative path->no need to check
+		return true;
+	std::experimental::filesystem::path path(pathName);
+	
+	if (!is_directory(path)) {
+		return false;
+	}
+	return true;
+	
+}
+
 
 int main(int argc, char* argv[]) {
 	
@@ -10,6 +37,13 @@ int main(int argc, char* argv[]) {
 		path = argv[1];
 	else
 		path = "";
+	bool errorsExist=checkFilesAndPrintErrorsInOrder(path);
+	if(errorsExist)
+	{
+		return -1;//TODO-exit with errors
+	}
+	
+
 
 	//Attack attack1 = parseAttack(path.attack-a);
 	//Attack attack2 = parseAttack(path.attack-b);
@@ -27,110 +61,104 @@ int Main::parseBoard(string path) {
 
 
 
-/*
 
-char* pathName;
-if (argc>0)
-{
-pathName = argv[1];
-}
-else
-{
-pathName = "";
-}
-
-readDirToFile(pathName);
-std::pair<bool, string> boardFile = findPathOfFile(boardFileExtention);
-printf("%s\n", get<1>(boardFile).c_str());
-std::pair<bool, string> attackAFile = findPathOfFile(attackAFileExtention);
-std::pair<bool, string> attackBFile = findPathOfFile(attackBFileExtention);
-bool isErrorInFiles = printErrorsOfFiles(boardFile, attackAFile, attackBFile, pathName);
-if (isErrorInFiles)//there ere errors in files
-{
-return -1;//TODO - exit with deallocation
-}
-
- */
-
-
-/*
 
 std::pair<bool, string> findPathOfFile(char* requiredExtention)
 {
-string line = "";
-bool foundFile = false;
-int indexOfExtention = string::npos;
-//read from file of files at the directory
-ifstream fin("fileNamesInDir.txt");
-while (!fin.eof())
+	string line = "";
+	bool fileExist = false;
+	int indexOfSuffix = string::npos;
+	std::ifstream fin(fileInDirFileName);
+
+	if (!fin.fail()) {
+
+		while (std::getline(fin, line))
+		{
+			indexOfSuffix = line.find_last_of(".") + 1;
+			//string::npos indicates no match is found(no dot at the string)
+			if (indexOfSuffix != string::npos)//there s a dot
+			{
+				string currSuffixOfFile = line.substr(indexOfSuffix);
+				if (currSuffixOfFile.compare(requiredExtention) == 0)
+				{
+					fileExist = true;
+					break;
+				}
+			}
+
+		}
+	}
+
+
+	return   std::pair<bool, string>(fileExist, line);
+
+
+}
+
+
+//use system command to write all the files at the given dir to another file
+void writeToFileTheFilesInDir(string path)
 {
-getline(fin, line);
-indexOfExtention = line.find_last_of(".");
-//string::npos indicates no match is found(no dot at the string)
-if (indexOfExtention != string::npos)//there s a dot
+	string cmd = "dir ";
+	cmd.append(path);
+	cmd.append(" /b /a-d  > ");
+	cmd.append(fileInDirFileName);//name of the file to erite to
+	system(cmd.c_str());
+
+}
+
+void printErrorOfFiles(string fileType,string path)
 {
-string extentionOfLine = line.substr(indexOfExtention + 1);
-int result = extentionOfLine.compare(requiredExtention);
-if (result == 0)
+	if (path == "") {
+		//as wrriten in the forum in moodle
+		path = "Working Directory";
+	}
+	string error;
+
+	if (fileType == "wrong path")
+		error = "Wrong path: ";
+	if(fileType=="board")
+		error = "Missing board file(*.sboard) looking in path : ";
+	if (fileType == "attack-a")
+		error = "Missing attack file for player A (*.attack-a) looking in path: ";
+	if(fileType == "attack-b")
+		error = "Missing attack file for player B (*.attack-b) looking in path: ";
+
+	error.append(path);
+
+	std::cout << error << endl;
+}
+
+//checks if there are errors and prints it at the right order.
+bool checkFilesAndPrintErrorsInOrder(string path)
 {
-foundFile = true;
-break;
-}
-}
+	if(!checkIsValidDir(path))
+	{
+		printErrorOfFiles("wrong path", path);
+		return false; //TODO -throw exception
+	}
+	else
+	{
+		writeToFileTheFilesInDir(path);
+		std::pair<bool, string> boardFileDetails=findPathOfFile("sboard");
+		std::pair<bool, string> attackAFileDetails = findPathOfFile("attack-a");
+		std::pair<bool, string> attackBFileDetails = findPathOfFile("attack-b");
+		if(!boardFileDetails.first)
+			printErrorOfFiles("board", path);
+		if (!attackAFileDetails.first)
+			printErrorOfFiles("attack-a", path);
+		if (!attackBFileDetails.first)
+			printErrorOfFiles("attack-b", path);
+		return boardFileDetails.first && attackAFileDetails.first && attackBFileDetails.first;
+	}
+
+	
+
 
 }
 
-return   std::pair<bool, string>(foundFile, line);
+	
 
 
-}
 
-void printErrorOfExistenceOfFiles(string pathName, string err)
-{
-//err.append(pathName);
-cout << err << endl;
-}
-
-void readDirToFile(char* pathName)
-{
-//TODO check if directory exist
-string command = "dir /b /s  ";
-//command.append(pathName);
-command.append("> fileNamesInDir.txt");
-//casting from string to char* and write to cmd
-system(command.c_str());
-
-}
-//prints error in file by the required order. returns true if there were errors
-bool printErrorsOfFiles(std::pair<bool, string> boardFile, std::pair<bool, string> attackAFile, std::pair<bool, string> attackBFile, char* pathName)
-{
-if (!get<0>(boardFile) || !get<0>(attackAFile) || !get<0>(attackBFile))
-{
-if (!get<0>(boardFile))
-{
-string err = "Missing board file(*.sboard) looking in path : ";
-//	printErrorOfExistenceOfFiles(pathName, err);
-cout << err << endl;
-}
-if (!get<0>(attackAFile))
-{
-string err = "Missing attack file for player A(*.attack - a) looking in path : ";
-//printErrorOfExistenceOfFiles(pathName, err);
-cout << err << endl;
-}
-if (!get<0>(attackBFile))
-{
-string err = "Missing attack file for player B (*.attack-b) looking in path: ";
-//printErrorOfExistenceOfFiles(pathName, err);
-cout << err << endl;
-}
-
-return true;//TODO- check valid exit
-
-}
-
-return false;//no error
-
-}
-
- */
+ 
