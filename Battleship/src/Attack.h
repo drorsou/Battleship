@@ -9,5 +9,5 @@ class Attack {
 
 public:
 	Attack();
-
+	pair<int, int> getNextAttack();
 };

@@ -1,14 +1,17 @@
 #pragma once
 #include "IBattleshipGameAlgo.h"
 #include "Ship.h"
+#include "Attack.h"
 
 using namespace std;
 
 #define SHIPS_PER_PLAYER 5
 
 class Player: IBattleshipGameAlgo {
+	char player_board[10][10];
 	Ship ships[SHIPS_PER_PLAYER];
 	int score;
+	Attack attack_from_file;
 
 public:
 	Player(Ship ships[SHIPS_PER_PLAYER]);

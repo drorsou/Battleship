@@ -1,10 +1,8 @@
 #pragma once
 #include "Player.h"
 
-#define BOARD_SIZE 10
-
 class Board {
-	char board[BOARD_SIZE][BOARD_SIZE];
+	char board[10][10];
 	Player player1;
 	Player player2;
 	int current_player_turn;
