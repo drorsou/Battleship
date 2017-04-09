@@ -75,8 +75,7 @@ std::pair<bool, string> findPathOfFile(char* requiredExtention)
 		while (std::getline(fin, line))
 		{
 			indexOfSuffix = line.find_last_of(".") + 1;
-			//string::npos indicates no match is found(no dot at the string)
-			if (indexOfSuffix != string::npos)//there s a dot
+			if (indexOfSuffix != string::npos)
 			{
 				string currSuffixOfFile = line.substr(indexOfSuffix);
 				if (currSuffixOfFile.compare(requiredExtention) == 0)
