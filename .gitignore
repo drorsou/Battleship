@@ -35,3 +35,5 @@
 *.filters
 /Battleship/Debug
 /Battleship/TestFiles
+/LocalBattleShip/LocalBattleShip.opensdf
+/LocalBattleShip/LocalBattleShip.v12.suo

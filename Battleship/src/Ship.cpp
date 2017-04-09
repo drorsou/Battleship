@@ -1,5 +1,5 @@
 #include "Ship.h"
 
-Ship::Ship() {
+Ship::Ship(int vertlow, int verthigh, int horzlow, int horzhigh, Type type) {
 
 }
