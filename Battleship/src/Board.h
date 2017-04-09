@@ -12,4 +12,5 @@ class Board {
 
 public:
 	Board(Player p1, Player p2);
+	void printBoard(const Board & br);
 };
