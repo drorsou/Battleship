@@ -21,6 +21,8 @@ public:
 				Also, the length of the ship is correct.
 		Post: Creates a new ship
 	*/
+	Ship(){
+	}
 	Ship(int vertlow, int verthigh, int horzlow, int horzhigh, Type t) {
 		vert = std::make_pair(vertlow, verthigh);
 		horz = std::make_pair(horzlow, horzhigh);
