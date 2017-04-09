@@ -8,12 +8,14 @@ using namespace std;
 class Main {
 
 public:
+	//static string fileInDirFileName ;//the name of the file which will consust the name of the files in dir
+	static bool checkFilesAndPrintErrorsInOrder(string path);
 	Main();
-	int parseAttack(string path);
-	int parseBoard(string path);
+	static int parseAttack(string path);
+	static int parseBoard(string path);
+	static std::pair<bool, string> findPathOfFile(char* requiredExtention);
+	static void writeToFileTheFilesInDir(string path);
+	static void printErrorOfFiles(string fileType, string path);
+	
 };
 
-std::pair<bool, string> findPathOfFile(char* requiredExtention);
-void writeToFileTheFilesInDir(string path);
-void printErrorOfFiles(string fileType, string path);
-bool checkFilesAndPrintErrorsInOrder(string path);

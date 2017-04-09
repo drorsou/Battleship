@@ -10,6 +10,7 @@ string fileInDirFileName = "dirFiles.txt";//the name of the file which will cons
 
 
 
+
 Main::Main() {
 }
 
@@ -30,6 +31,34 @@ bool checkIsValidDir(string pathName){
 }
 
 
+//checks if there are errors and prints it at the right order.
+bool Main::checkFilesAndPrintErrorsInOrder(string path)
+{
+	if (!checkIsValidDir(path))
+	{
+		printErrorOfFiles("wrong path", path);
+		return false; //TODO -throw exception
+	}
+	else
+	{
+		writeToFileTheFilesInDir(path);
+		std::pair<bool, string> boardFileDetails = findPathOfFile("sboard");
+		std::pair<bool, string> attackAFileDetails = findPathOfFile("attack-a");
+		std::pair<bool, string> attackBFileDetails = findPathOfFile("attack-b");
+		if (!boardFileDetails.first)
+			printErrorOfFiles("board", path);
+		if (!attackAFileDetails.first)
+			printErrorOfFiles("attack-a", path);
+		if (!attackBFileDetails.first)
+			printErrorOfFiles("attack-b", path);
+		return boardFileDetails.first && attackAFileDetails.first && attackBFileDetails.first;
+	}
+
+
+
+
+}
+
 int main(int argc, char* argv[]) {
 	
 	string path;
@@ -37,7 +66,7 @@ int main(int argc, char* argv[]) {
 		path = argv[1];
 	else
 		path = "";
-	bool errorsExist=checkFilesAndPrintErrorsInOrder(path);
+	bool errorsExist = Main::checkFilesAndPrintErrorsInOrder(path);
 	if(errorsExist)
 	{
 		return -1;//TODO-exit with errors
@@ -63,14 +92,15 @@ int Main::parseBoard(string path) {
 
 
 
-std::pair<bool, string> findPathOfFile(char* requiredExtention)
+std::pair<bool, string> Main::findPathOfFile(char* requiredExtention)
 {
 	string line = "";
 	bool fileExist = false;
 	int indexOfSuffix = string::npos;
 	std::ifstream fin(fileInDirFileName);
 
-	if (!fin.fail()) {
+	//if (!fin.fail()) {
+	if (!fin) {
 
 		while (std::getline(fin, line))
 		{
@@ -96,17 +126,19 @@ std::pair<bool, string> findPathOfFile(char* requiredExtention)
 
 
 //use system command to write all the files at the given dir to another file
-void writeToFileTheFilesInDir(string path)
+void Main::writeToFileTheFilesInDir(string path)
 {
 	string cmd = "dir ";
 	cmd.append(path);
 	cmd.append(" /b /a-d  > ");
 	cmd.append(fileInDirFileName);//name of the file to erite to
+	cmd.append(" 2> nul");
 	system(cmd.c_str());
+	
 
 }
 
-void printErrorOfFiles(string fileType,string path)
+void Main::printErrorOfFiles(string fileType,string path)
 {
 	if (path == "") {
 		//as wrriten in the forum in moodle
@@ -128,33 +160,7 @@ void printErrorOfFiles(string fileType,string path)
 	std::cout << error << endl;
 }
 
-//checks if there are errors and prints it at the right order.
-bool checkFilesAndPrintErrorsInOrder(string path)
-{
-	if(!checkIsValidDir(path))
-	{
-		printErrorOfFiles("wrong path", path);
-		return false; //TODO -throw exception
-	}
-	else
-	{
-		writeToFileTheFilesInDir(path);
-		std::pair<bool, string> boardFileDetails=findPathOfFile("sboard");
-		std::pair<bool, string> attackAFileDetails = findPathOfFile("attack-a");
-		std::pair<bool, string> attackBFileDetails = findPathOfFile("attack-b");
-		if(!boardFileDetails.first)
-			printErrorOfFiles("board", path);
-		if (!attackAFileDetails.first)
-			printErrorOfFiles("attack-a", path);
-		if (!attackBFileDetails.first)
-			printErrorOfFiles("attack-b", path);
-		return boardFileDetails.first && attackAFileDetails.first && attackBFileDetails.first;
-	}
 
-	
-
-
-}
 
 	
 

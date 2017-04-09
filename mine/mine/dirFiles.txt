@@ -1,2 +1,0 @@
-d.attack-a
-f.txt
