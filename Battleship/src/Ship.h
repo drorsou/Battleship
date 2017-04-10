@@ -8,8 +8,17 @@ enum Type { Boat, Cruiser, Submarine, Destroyer };
 #define CRUISER_LEN 2
 #define SUBMARINE_LEN 3
 #define DESTROYER_LEN 4
-
-
+#define ABOAT 'B'
+#define BBOAT 'b'
+#define ACRUISER 'P'
+#define BCRUISER 'p'
+#define ASUBMARINE 'M'
+#define BSUBMARINE 'm'
+#define ADESTROYER 'D'
+#define BDESTROYER 'd'
+#define BLANK ' '
+#define HIT_SYM '*'
+#define MISS_SYM '@'
 class Ship {
 	std::pair<int, int> vert;
 	std::pair<int, int> horz;
