@@ -35,6 +35,8 @@
 *.filters
 /Battleship/Debug
 /Battleship/TestFiles
+/LocalBattleShip/LocalBattleShip.opensdf
+/LocalBattleShip/LocalBattleShip.v12.suo
 /mine/mine
 /Battleship/dirFiles.txt
 /Battleship/src/clean_movesA.attack-a
