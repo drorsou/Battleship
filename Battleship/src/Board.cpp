@@ -75,12 +75,7 @@ void Board::printBoard(const Board & br) {
 		}
 		cout << "|\n";
 		Board::printLine();
-	}
-	printf("   ");
-	for (j = 0; j < BOARD_SIZE; j++){
-		printf(" %c  ", j);
-	}
-	printf("\n");
+	}	
 }
 void Board::printLine(){
 	int i;
