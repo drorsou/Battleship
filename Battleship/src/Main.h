@@ -22,6 +22,7 @@ public:
 	static vector<std::pair<int, int>> loadFromAttackFile(const string& attackPath, bool& errorOccur);
 	static std::pair<int, int> processLine(const string& line, bool& errorOcuured, bool& invalidAttack);
 	static void removeCharFromString(string &str, char charToRemove);
+	static bool is_number(const std::string &s);
 
 	static std::vector<std::string> split(const std::string &s, char delim);
 	static bool checkFilesAndPrintErrorsInOrder(string path);

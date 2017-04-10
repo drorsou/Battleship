@@ -229,18 +229,30 @@ vector<std::pair<int, int>> Main::loadFromAttackFile(const string& attackPath,bo
 //takes a string and splits it by the delimeter ','. creates a pair of ints of this row 
 std::pair<int, int> Main::processLine(const string& line,bool& errorOcuured, bool& invalidAttack) {
 	vector<string> tokens = split(line, ',');
+	//std::cout << tokens.size() << endl;
 	if (tokens.size() != 2)
 	{
 		//std::cout << "A row in the attack file is not valid" << endl;
 		invalidAttack = true;//error occurred
 		return  std::pair<int, int>(-1, -1);//error -doesnt matter
 	}
+	if (!Main::is_number(tokens[0]) || !Main::is_number(tokens[1]))
+	{
+		invalidAttack = true;
+		return  std::pair<int, int>(-1, -1);
+	}
 	if (stoi(tokens[0]) < 1 || stoi(tokens[0]) > 10)
 		invalidAttack = true;
 	if (stoi(tokens[1]) < 1 || stoi(tokens[1]) > 10)
 		invalidAttack = true;
 	//TODO- if its not a number-what to do?it's written there is an exception
+	
+		
 	return  std::pair<int, int> (stoi(tokens[0]), stoi(tokens[1]));
+}
+
+bool Main::is_number(const std::string &s) {
+	return !s.empty() && std::all_of(s.begin(), s.end(), ::isdigit);
 }
 	
 
