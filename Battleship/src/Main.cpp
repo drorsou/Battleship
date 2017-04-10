@@ -7,15 +7,64 @@
 
 
 string fileInDirFileName = "dirFiles.txt";//the name of the file which will consust the name of the files in dir
-string sboard_filename;
-string attack_a_filename;
-string attack_b_filename;
+string boardFile;
+string attackAFile;
+string attackBFile;
+vector<std::pair<int, int>> attackAVector;
+vector<std::pair<int, int>> attackBVector;
 
 
 
 Main::Main() {
 }
 
+
+
+//check if the given path string is a valid and existing string
+bool Main::checkIsValidDir(string pathName){
+	
+	if (pathName == "")//relative path->no need to check
+		return true;
+	std::experimental::filesystem::path path(pathName);
+	
+	if (!is_directory(path)) {
+		return false;
+	}
+	return true;
+	
+}
+
+
+//checks if there are errors and prints it at the right order.
+bool Main::checkFilesAndPrintErrorsInOrder(string path)
+{
+	if (!Main::checkIsValidDir(path))
+	{
+		Main::printErrorOfFiles("wrong path", path);
+		return true; //TODO -throw exception
+	}
+	else
+	{
+		Main::writeToFileTheFilesInDir(path);
+		std::pair<bool, string> boardFileDetails = Main::findPathOfFile("sboard");
+		boardFile = path +"\\"+boardFileDetails.second;
+		std::pair<bool, string> attackAFileDetails = Main::findPathOfFile("attack-a");
+		attackAFile = path+"\\"+ attackAFileDetails.second;
+		std::pair<bool, string> attackBFileDetails = Main::findPathOfFile("attack-b");
+		attackBFile = path +"\\"+attackBFileDetails.second;
+		if (!boardFileDetails.first)
+			Main::printErrorOfFiles("board", path);
+		if (!attackAFileDetails.first)
+			Main::printErrorOfFiles("attack-a", path);
+		if (!attackBFileDetails.first)
+			Main::printErrorOfFiles("attack-b", path);
+		return !boardFileDetails.first || !attackAFileDetails.first|| !attackBFileDetails.first;
+	}
+
+
+
+
+}
 
 int main(int argc, char* argv[]) {
 	
@@ -32,8 +81,10 @@ int main(int argc, char* argv[]) {
 	}
 	
 
-
-	//Attack attack1 = Main::parseAttack(path.attack-a);
+	bool errorOccur = false;
+	Main::parseAttack(errorOccur);
+	if (errorOccur)//error accuured
+		return -1;///TODO-exit on errors
 	//Attack attack2 = parseAttack(path.attack-b);
 
 	string* parsed_board = new string[10];
@@ -49,10 +100,12 @@ int main(int argc, char* argv[]) {
 
 	return 0;
 };
-
-
-int parseAttack(string path) {
-	return 0;
+//return bool- if true-error occured
+bool Main::parseAttack(bool& errorOccur) {
+	
+	attackAVector = Main::loadFromAttackFile(attackAFile, errorOccur);
+	attackBVector = Main::loadFromAttackFile(attackBFile, errorOccur);
+	return errorOccur;
 };
 
 
@@ -67,21 +120,9 @@ int parseBoard(string path, string* b) {
 
 
 
-//check if the given path string is a valid and existing string
-bool checkIsValidDir(string pathName) {
 
-	if (pathName == "")//relative path->no need to check
-		return true;
-	std::experimental::filesystem::path path(pathName);
 
-	if (!is_directory(path)) {
-		return false;
-	}
-	return true;
-
-}
-
-std::pair<bool, string> findPathOfFile(char* requiredExtention)
+std::pair<bool, string> Main::findPathOfFile(char* requiredExtention)
 {
 	string line = "";
 	bool fileExist = false;
@@ -114,17 +155,19 @@ std::pair<bool, string> findPathOfFile(char* requiredExtention)
 
 
 //use system command to write all the files at the given dir to another file
-void writeToFileTheFilesInDir(string path)
+void Main::writeToFileTheFilesInDir(string path)
 {
 	string cmd = "dir ";
 	cmd.append(path);
 	cmd.append(" /b /a-d  > ");
 	cmd.append(fileInDirFileName);//name of the file to erite to
+	cmd.append(" 2> nul");
 	system(cmd.c_str());
+	
 
 }
 
-void printErrorOfFiles(string fileType,string path)
+void Main::printErrorOfFiles(string fileType,string path)
 {
 	if (path == "") {
 		//as wrriten in the forum in moodle
@@ -146,16 +189,54 @@ void printErrorOfFiles(string fileType,string path)
 	std::cout << error << endl;
 }
 
-//checks if there are errors and prints it at the right order.
-bool checkFilesAndPrintErrorsInOrder(string path)
+
+
+
+//loads a file (this is public becouse we allow to initialize our object with no param)
+vector<std::pair<int, int>> Main::loadFromAttackFile(const string& attackPath,bool& errorOccur)
 {
-	if(!checkIsValidDir(path))
+	vector<std::pair<int, int>> vector;
+
+	string line;
+	std::pair<int, int> singleAttak;
+	ifstream fin(attackAFile); //creating an ifstream object and opening file in path attackPath 
+	if (fin.fail()) //error openning file
 	{
-		printErrorOfFiles("wrong path", path);
-		return false; //TODO -throw exception
+		std::cout << "Error Occured opening file of attack" << endl;
+		errorOccur = true;
+		return vector;
 	}
-	else
+	while (getline(fin, line)) //getline returns null if we get to end of file.
 	{
+		
+		if (line.size() && line[line.size() - 1] == '\r') //to handle \r\n(getline is only for \n)
+			line = line.substr(0, line.size() - 1);
+		
+		singleAttak=Main::processLine(line,errorOccur);
+		if (errorOccur)//error occured in prcessingLine
+			return vector;
+		vector.push_back(singleAttak);
+	}
+	return vector;
+
+}
+
+
+
+
+//takes a string and splits it by the delimeter ','. creates a pair of ints of this row 
+std::pair<int, int> Main::processLine(const string& line,bool& errorOcuured) {
+	vector<string> tokens = split(line, ',');
+	if (tokens.size() != 2)
+	{
+		std::cout << "A row in the attack file is not valid" << endl;
+		errorOcuured = true;//error occurred
+		return  std::pair<int, int>(-1, -1);//error -doesnt matter
+	}
+	
+	//TODO- if its not a number-what to do?it's written there is an exception
+	return  std::pair<int, int> (stoi(tokens[0]), stoi(tokens[1]));
+}
 		writeToFileTheFilesInDir(path);
 		std::pair<bool, string> boardFileDetails = findPathOfFile("sboard");
 		std::pair<bool, string> attackAFileDetails = findPathOfFile("attack-a");
@@ -172,5 +253,35 @@ bool checkFilesAndPrintErrorsInOrder(string path)
 		return boardFileDetails.first && attackAFileDetails.first && attackBFileDetails.first;
 	}
 
+	
 
+//splits string s to a vector by delimeter
+std::vector<std::string> Main::split(const std::string &s, char delim)
+{
+	std::vector<std::string> elems;
+	std::stringstream strSt(s);
+	std::string item;
+
+	while (std::getline(strSt, item, delim)) 
+	{
+		Main::removeCharFromString(item, ' ');//earse spaces around the comma
+		elems.push_back(item);
+	}
+
+	return elems;
 }
+
+//earse the all occurences of the given char from the given string
+void Main::removeCharFromString(string &str, char charToRemove) {
+
+		str.erase(remove(str.begin(), str.end(), charToRemove), str.end());
+}
+
+
+
+
+	
+
+
+
+ 
