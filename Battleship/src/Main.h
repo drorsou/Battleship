@@ -22,7 +22,7 @@ public:
 	static void writeToFileTheFilesInDir(string path);
 	static void printErrorOfFiles(string fileType, string path);
 	static vector<std::pair<int, int>> loadFromAttackFile(const string& attackPath, bool& errorOccur);
-	static std::pair<int, int> processLine(const string& line, bool& errorOcuured);
+	static std::pair<int, int> processLine(const string& line, bool& errorOcuured, bool& invalidAttack);
 	static void removeCharFromString(string &str, char charToRemove);
 
 	static std::vector<std::string> split(const std::string &s, char delim);
