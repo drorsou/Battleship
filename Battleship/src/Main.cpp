@@ -211,10 +211,14 @@ vector<std::pair<int, int>> Main::loadFromAttackFile(const string& attackPath,bo
 		
 		if (line.size() && line[line.size() - 1] == '\r') //to handle \r\n(getline is only for \n)
 			line = line.substr(0, line.size() - 1);
-		
-		singleAttak=Main::processLine(line,errorOccur);
+		bool isInvalidLine = false;//if invalid dont add to vector of attack
+		singleAttak=Main::processLine(line,errorOccur, isInvalidLine);
 		if (errorOccur)//error occured in prcessingLine
 			return vector;
+		if (isInvalidLine) {//if invalid dont add to vector of attack
+			isInvalidLine = false;//clear boolean for next line
+			continue;
+		}
 		vector.push_back(singleAttak);
 	}
 	return vector;
@@ -223,15 +227,18 @@ vector<std::pair<int, int>> Main::loadFromAttackFile(const string& attackPath,bo
 
 
 //takes a string and splits it by the delimeter ','. creates a pair of ints of this row 
-std::pair<int, int> Main::processLine(const string& line,bool& errorOcuured) {
+std::pair<int, int> Main::processLine(const string& line,bool& errorOcuured, bool& invalidAttack) {
 	vector<string> tokens = split(line, ',');
 	if (tokens.size() != 2)
 	{
-		std::cout << "A row in the attack file is not valid" << endl;
-		errorOcuured = true;//error occurred
+		//std::cout << "A row in the attack file is not valid" << endl;
+		invalidAttack = true;//error occurred
 		return  std::pair<int, int>(-1, -1);//error -doesnt matter
 	}
-	
+	if (stoi(tokens[0]) < 1 || stoi(tokens[0]) > 10)
+		invalidAttack = true;
+	if (stoi(tokens[1]) < 1 || stoi(tokens[1]) > 10)
+		invalidAttack = true;
 	//TODO- if its not a number-what to do?it's written there is an exception
 	return  std::pair<int, int> (stoi(tokens[0]), stoi(tokens[1]));
 }
