@@ -13,7 +13,7 @@ public:
 	
 
 	static bool parseAttack(bool& errorOccur);
-	static int parseBoard(string path);
+	static int parseBoard(string path, string* b);
 
 	static std::pair<bool, string> findPathOfFile(char* requiredExtention);
 	static bool checkIsValidDir(string pathName);
@@ -26,13 +26,13 @@ public:
 	static std::vector<std::string> split(const std::string &s, char delim);
 	static bool checkFilesAndPrintErrorsInOrder(string path);
 	Main();
-	int parseAttack(string path);
-	int parseBoard(string path);
+	//int parseAttack(string path);
+	//int parseBoard(string path);
 };
 
-int parseAttack(string path);
-int parseBoard(string path, string* b);
-std::pair<bool, string> findPathOfFile(char* requiredExtention);
-void writeToFileTheFilesInDir(string path);
-void printErrorOfFiles(string fileType, string path);
-bool checkFilesAndPrintErrorsInOrder(string path);
+//int parseAttack(string path);
+//int parseBoard(string path, string* b);
+//std::pair<bool, string> findPathOfFile(char* requiredExtention);
+//void writeToFileTheFilesInDir(string path);
+//void printErrorOfFiles(string fileType, string path);
+//bool checkFilesAndPrintErrorsInOrder(string path);
