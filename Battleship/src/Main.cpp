@@ -40,7 +40,13 @@ int main(int argc, char* argv[]) {
 	if (parseBoard(path + "\\" + sboard_filename, parsed_board))
 		return -1; // Error in parsing
 
+	cout << "Press ENTER to continue." << endl;
 	getchar();
+
+	// board.player1.setBoard(board.board, 10, 10);
+	// board.player2.setBoard(board.board, 10, 10);
+	// run attacks from both players and notify the results
+
 	return 0;
 };
 
