@@ -6,18 +6,24 @@
 #include <fstream>
 
 
-string fileInDirFileName = "dirFiles.txt";//the name of the file which will consust the name of the files in dir
 
+string fileInDirFileName = "dirFiles.txt";//the name of the file which will consust the name of the files in dir
+string boardFile;
+string attackAFile;
+string attackBFile;
+vector<std::pair<int, int>> attackAVector;
+vector<std::pair<int, int>> attackBVector;
 
 
 
 Main::Main() {
+
 }
 
 
 
 //check if the given path string is a valid and existing string
-bool checkIsValidDir(string pathName){
+bool Main::checkIsValidDir(string pathName){
 	
 	if (pathName == "")//relative path->no need to check
 		return true;
@@ -34,24 +40,27 @@ bool checkIsValidDir(string pathName){
 //checks if there are errors and prints it at the right order.
 bool Main::checkFilesAndPrintErrorsInOrder(string path)
 {
-	if (!checkIsValidDir(path))
+	if (!Main::checkIsValidDir(path))
 	{
-		printErrorOfFiles("wrong path", path);
-		return false; //TODO -throw exception
+		Main::printErrorOfFiles("wrong path", path);
+		return true; //TODO -throw exception
 	}
 	else
 	{
-		writeToFileTheFilesInDir(path);
-		std::pair<bool, string> boardFileDetails = findPathOfFile("sboard");
-		std::pair<bool, string> attackAFileDetails = findPathOfFile("attack-a");
-		std::pair<bool, string> attackBFileDetails = findPathOfFile("attack-b");
+		Main::writeToFileTheFilesInDir(path);
+		std::pair<bool, string> boardFileDetails = Main::findPathOfFile("sboard");
+		boardFile = path +"\\"+boardFileDetails.second;
+		std::pair<bool, string> attackAFileDetails = Main::findPathOfFile("attack-a");
+		attackAFile = path+"\\"+ attackAFileDetails.second;
+		std::pair<bool, string> attackBFileDetails = Main::findPathOfFile("attack-b");
+		attackBFile = path +"\\"+attackBFileDetails.second;
 		if (!boardFileDetails.first)
-			printErrorOfFiles("board", path);
+			Main::printErrorOfFiles("board", path);
 		if (!attackAFileDetails.first)
-			printErrorOfFiles("attack-a", path);
+			Main::printErrorOfFiles("attack-a", path);
 		if (!attackBFileDetails.first)
-			printErrorOfFiles("attack-b", path);
-		return boardFileDetails.first && attackAFileDetails.first && attackBFileDetails.first;
+			Main::printErrorOfFiles("attack-b", path);
+		return !boardFileDetails.first || !attackAFileDetails.first|| !attackBFileDetails.first;
 	}
 
 
@@ -73,16 +82,21 @@ int main(int argc, char* argv[]) {
 	}
 	
 
-
-	//Attack attack1 = parseAttack(path.attack-a);
+	bool errorOccur = false;
+	Main::parseAttack(errorOccur);
+	if (errorOccur)//error accuured
+		return -1;///TODO-exit on errors
 	//Attack attack2 = parseAttack(path.attack-b);
 	//Board board = parseBoard(path.sboard);
 
 	return 0;
 };
-
-int Main::parseAttack(string path) {
-	return 0;
+//return bool- if true-error occured
+bool Main::parseAttack(bool& errorOccur) {
+	
+	attackAVector = Main::loadFromAttackFile(attackAFile, errorOccur);
+	attackBVector = Main::loadFromAttackFile(attackBFile, errorOccur);
+	return errorOccur;
 };
 int Main::parseBoard(string path) {
 	return 0;
@@ -99,8 +113,8 @@ std::pair<bool, string> Main::findPathOfFile(char* requiredExtention)
 	int indexOfSuffix = string::npos;
 	std::ifstream fin(fileInDirFileName);
 
-	//if (!fin.fail()) {
-	if (!fin) {
+	if (!fin.fail()) {
+
 
 		while (std::getline(fin, line))
 		{
@@ -159,6 +173,80 @@ void Main::printErrorOfFiles(string fileType,string path)
 
 	std::cout << error << endl;
 }
+
+
+
+
+//loads a file (this is public becouse we allow to initialize our object with no param)
+vector<std::pair<int, int>> Main::loadFromAttackFile(const string& attackPath,bool& errorOccur)
+{
+	vector<std::pair<int, int>> vector;
+
+	string line;
+	std::pair<int, int> singleAttak;
+	ifstream fin(attackAFile); //creating an ifstream object and opening file in path attackPath 
+	if (fin.fail()) //error openning file
+	{
+		std::cout << "Error Occured opening file of attack" << endl;
+		errorOccur = true;
+		return vector;
+	}
+	while (getline(fin, line)) //getline returns null if we get to end of file.
+	{
+		
+		if (line.size() && line[line.size() - 1] == '\r') //to handle \r\n(getline is only for \n)
+			line = line.substr(0, line.size() - 1);
+		
+		singleAttak=Main::processLine(line,errorOccur);
+		if (errorOccur)//error occured in prcessingLine
+			return vector;
+		vector.push_back(singleAttak);
+	}
+	return vector;
+
+}
+
+
+
+
+//takes a string and splits it by the delimeter ','. creates a pair of ints of this row 
+std::pair<int, int> Main::processLine(const string& line,bool& errorOcuured) {
+	vector<string> tokens = split(line, ',');
+	if (tokens.size() != 2)
+	{
+		std::cout << "A row in the attack file is not valid" << endl;
+		errorOcuured = true;//error occurred
+		return  std::pair<int, int>(-1, -1);//error -doesnt matter
+	}
+	
+	//TODO- if its not a number-what to do?it's written there is an exception
+	return  std::pair<int, int> (stoi(tokens[0]), stoi(tokens[1]));
+}
+
+	
+
+//splits string s to a vector by delimeter
+std::vector<std::string> Main::split(const std::string &s, char delim)
+{
+	std::vector<std::string> elems;
+	std::stringstream strSt(s);
+	std::string item;
+
+	while (std::getline(strSt, item, delim)) 
+	{
+		Main::removeCharFromString(item, ' ');//earse spaces around the comma
+		elems.push_back(item);
+	}
+
+	return elems;
+}
+
+//earse the all occurences of the given char from the given string
+void Main::removeCharFromString(string &str, char charToRemove) {
+
+		str.erase(remove(str.begin(), str.end(), charToRemove), str.end());
+}
+
 
 
 
