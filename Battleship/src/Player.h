@@ -8,9 +8,10 @@
 class Player: IBattleshipGameAlgo {
 	char player_board[10][10];
 	Ship ships[SHIPS_PER_PLAYER];
-	int score;
 
 public:
+	int score;
+
 	Player();
 	Player(Ship ships[SHIPS_PER_PLAYER]);
 	void setBoard(const char** board, int numRows, int numCols) override; // called once to notify player on his board

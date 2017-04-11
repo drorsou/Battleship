@@ -24,10 +24,6 @@
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
 class Board {
-	char board[BOARD_SIZE][BOARD_SIZE];
-	Player player1;
-	Player player2;
-	int current_player_turn;
 	
 	/*
 		privte methods
@@ -36,6 +32,11 @@ class Board {
 	static void gotoxy(int, int);
 
 public:
+	char board[BOARD_SIZE][BOARD_SIZE];
+	Player player1;
+	Player player2;
+	int current_player_turn;
+
 	Board();
 	Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2);
 	static void printBoard(const Board &);
