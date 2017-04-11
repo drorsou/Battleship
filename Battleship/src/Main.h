@@ -33,7 +33,7 @@ public:
 
 	static bool parseAttack(bool& errorOccur);
 
-	static int parseBoard(string path, string* b);
+	static int parseBoard(string path, char b[BOARD_SIZE][BOARD_SIZE]);
 
 
 

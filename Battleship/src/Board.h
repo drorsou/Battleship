@@ -36,6 +36,6 @@ class Board {
 	static void gotoxy(int, int);
 
 public:
-	Board(Player p1, Player p2);
+	Board(char b[BOARD_SIZE][BOARD_SIZE]);
 	static void printBoard(const Board &);
 };

@@ -12,6 +12,7 @@ class Player: IBattleshipGameAlgo {
 	Attack attack_from_file;
 
 public:
+	Player();
 	Player(Ship ships[SHIPS_PER_PLAYER]);
 	void setBoard(const char** board, int numRows, int numCols) override; // called once to notify player on his board
 	pair<int, int> attack() override; // ask player for his move

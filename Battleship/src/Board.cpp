@@ -1,13 +1,19 @@
 #include "Board.h"
-Board::Board(Player p1, Player p2) : player1(p1), player2(p2) {
-	
+Board::Board(char b[BOARD_SIZE][BOARD_SIZE]) : current_player_turn(1) {
+	for (int i = 0; i < BOARD_SIZE; i++) {
+		for (int j = 0; j < BOARD_SIZE; j++) {
+			board[i][j] = b[i][j];
+		}
+	}
 }
+
 void Board::gotoxy(int x, int y) {
 	COORD coord;
 	coord.X = x;
 	coord.Y = y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
+
 void Board::printBoard(const Board & br) {
 	int i, j;
 	Board::printLine();

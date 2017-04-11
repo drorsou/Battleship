@@ -42,9 +42,13 @@ int main(int argc, char* argv[]) {
 		return -1;///TODO-exit on errors
 				  //Attack attack2 = parseAttack(path.attack-b);
 
-	string* parsed_board = new string[10];
+	char parsed_board[BOARD_SIZE][BOARD_SIZE];
 	if (Main::parseBoard(boardFile, parsed_board))
 		return -1; // Error in parsing
+
+
+	Board game_board = Board(parsed_board);
+	game_board.printBoard(game_board);
 
 	cout << "Press ENTER to continue." << endl;
 	getchar();
@@ -113,11 +117,18 @@ bool Main::parseAttack(bool& errorOccur) {
 
 
 
-int Main::parseBoard(string path, string* b) {
+int Main::parseBoard(string path, char b[BOARD_SIZE][BOARD_SIZE]) {
 	ifstream fin(path);
-	for (int i = 0; i < 10; ++i) {
-		std::getline(fin, b[i]);
+	string* temp_board = new string[10];;
+	for (int i = 0; i < 10; i++) {
+		std::getline(fin, temp_board[i]);
+
+		for (int j = 0; j < 10; j++) {
+			b[i][j] = temp_board[i][j];
+		}
 	}
+
+	// Check for error?
 
 	return 0;
 };

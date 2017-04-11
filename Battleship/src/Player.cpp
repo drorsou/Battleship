@@ -1,5 +1,9 @@
 #include "Player.h"
 
+Player::Player() {
+	
+}
+
 Player::Player(Ship ships[SHIPS_PER_PLAYER]){
 	for (int i = 0; i < SHIPS_PER_PLAYER; i++)
 		this->ships[i] = ships[i];
