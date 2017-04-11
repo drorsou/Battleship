@@ -1,10 +1,19 @@
 #include "Board.h"
-Board::Board(char b[BOARD_SIZE][BOARD_SIZE]) : current_player_turn(1) {
+
+
+Board::Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2) : current_player_turn(1) {
 	for (int i = 0; i < BOARD_SIZE; i++) {
 		for (int j = 0; j < BOARD_SIZE; j++) {
 			board[i][j] = b[i][j];
 		}
 	}
+
+	// Need to create here the ships lists for each player
+	
+	player1 = Player();
+	player1.setAttackFromFile(attack1);
+	player2 = Player();
+	player2.setAttackFromFile(attack2);
 }
 
 void Board::gotoxy(int x, int y) {

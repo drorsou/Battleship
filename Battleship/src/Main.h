@@ -1,41 +1,26 @@
-
 #pragma once
 
 #include <string>
-
 #include "Attack.h"
-
 #include "Board.h"
-
 #include <vector>
-
+#include <experimental/filesystem>
+#include <stdio.h>
 #include <sstream>
-
-
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 
-
-
 class Main {
-
-
 
 public:
 
 	//static string fileInDirFileName ;//the name of the file which will consust the name of the files in dir
 
-
-
-
-
-
-
 	static bool parseAttack(bool& errorOccur);
 
 	static int parseBoard(string path, char b[BOARD_SIZE][BOARD_SIZE]);
-
-
 
 	static std::pair<bool, string> findPathOfFile(char* requiredExtention);
 
@@ -58,11 +43,4 @@ public:
 	static bool checkFilesAndPrintErrorsInOrder(string path);
 
 	Main();
-
-
-
-
-
-
-
 };

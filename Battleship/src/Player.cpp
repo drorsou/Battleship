@@ -1,5 +1,7 @@
 #include "Player.h"
 
+Attack attack_from_file;
+
 Player::Player() {
 	
 }
@@ -28,3 +30,7 @@ void Player::notifyOnAttackResult(int player, int row, int col, AttackResult res
 	else if (result == AttackResult::Sink)
 		player_board[row][col] = HIT_SYM;
 };
+
+void setAttackFromFile(Attack attack) {
+	attack_from_file = attack;
+}

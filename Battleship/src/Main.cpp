@@ -1,11 +1,4 @@
 #include "Main.h"
-#include <experimental/filesystem>
-#include <stdio.h>
-#include <sys/stat.h>
-#include <iostream>
-#include <fstream>
-
-
 
 string fileInDirFileName = "dirFiles.txt";//the name of the file which will consust the name of the files in dir
 string boardFile;
@@ -49,6 +42,12 @@ int main(int argc, char* argv[]) {
 
 	Board game_board = Board(parsed_board);
 	game_board.printBoard(game_board);
+
+	Attack attack1 = Attack(attackAVector);
+	Attack attack2 = Attack(attackBVector);
+
+	//board.player1
+	//board.player2
 
 	cout << "Press ENTER to continue." << endl;
 	getchar();
@@ -116,7 +115,6 @@ bool Main::parseAttack(bool& errorOccur) {
 };
 
 
-
 int Main::parseBoard(string path, char b[BOARD_SIZE][BOARD_SIZE]) {
 	ifstream fin(path);
 	string* temp_board = new string[10];;
@@ -132,7 +130,6 @@ int Main::parseBoard(string path, char b[BOARD_SIZE][BOARD_SIZE]) {
 
 	return 0;
 };
-
 
 
 std::pair<bool, string> Main::findPathOfFile(char* requiredExtention)
@@ -181,6 +178,7 @@ void Main::writeToFileTheFilesInDir(string path)
 
 }
 
+
 void Main::printErrorOfFiles(string fileType, string path)
 {
 	if (path == "") {
@@ -202,8 +200,6 @@ void Main::printErrorOfFiles(string fileType, string path)
 
 	std::cout << error << endl;
 }
-
-
 
 
 //loads a file (this is public becouse we allow to initialize our object with no param)
@@ -241,8 +237,6 @@ vector<std::pair<int, int>> Main::loadFromAttackFile(const string& attackPath, b
 }
 
 
-
-
 //takes a string and splits it by the delimeter ','. creates a pair of ints of this row 
 std::pair<int, int> Main::processLine(const string& line, bool& errorOcuured, bool& invalidAttack) {
 	vector<string> tokens = split(line, ',');
@@ -265,9 +259,11 @@ std::pair<int, int> Main::processLine(const string& line, bool& errorOcuured, bo
 	return  std::pair<int, int>(stoi(tokens[0]), stoi(tokens[1]));
 }
 
+
 bool Main::is_number(const std::string &s) {
 	return !s.empty() && std::all_of(s.begin(), s.end(), ::isdigit);
 }
+
 
 //splits string s to a vector by delimeter
 std::vector<std::string> Main::split(const std::string &s, char delim)
@@ -285,7 +281,8 @@ std::vector<std::string> Main::split(const std::string &s, char delim)
 	return elems;
 }
 
-//earse the all occurences of the given char from the given string
+
+// Remove the all occurences of the given char from the given string
 void Main::removeCharFromString(string &str, char charToRemove) {
 
 	str.erase(remove(str.begin(), str.end(), charToRemove), str.end());

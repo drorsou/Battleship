@@ -1,6 +1,6 @@
 #include "Attack.h"
 
-Attack::Attack() {
+Attack::Attack(std::vector<std::pair<int, int>> list) : list(list), index(0) {
 
 }
 
