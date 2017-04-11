@@ -45,6 +45,7 @@ int main(int argc, char* argv[]) {
 
 
 	Board game_board = Board(parsed_board, attack1, attack2);
+	game_board.checkBoard();
 	game_board.printBoard(game_board);
 
 	//board.player1
