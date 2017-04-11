@@ -84,12 +84,8 @@ bool Main::checkFilesAndPrintErrorsInOrder(string path)
 	{
 		Main::writeToFileTheFilesInDir(path);
 		std::pair<bool, string> boardFileDetails = Main::findPathOfFile("sboard");
-		boardFile = path + "\\" + boardFileDetails.second;
 		std::pair<bool, string> attackAFileDetails = Main::findPathOfFile("attack-a");
-		attackAFile = path + "\\" + attackAFileDetails.second;
 		std::pair<bool, string> attackBFileDetails = Main::findPathOfFile("attack-b");
-		attackBFile = path + "\\" + attackBFileDetails.second;
-
 
 		if (!boardFileDetails.first)
 			Main::printErrorOfFiles("board", path);
@@ -97,12 +93,13 @@ bool Main::checkFilesAndPrintErrorsInOrder(string path)
 			Main::printErrorOfFiles("attack-a", path);
 		if (!attackBFileDetails.first)
 			Main::printErrorOfFiles("attack-b", path);
-		return !boardFileDetails.first || !attackAFileDetails.first || !attackBFileDetails.first;
+
+		boardFile = path + "\\" + boardFileDetails.second;
+		attackAFile = path + "\\" + attackAFileDetails.second;
+		attackBFile = path + "\\" + attackBFileDetails.second;
+
+		return boardFileDetails.first && attackAFileDetails.first && attackBFileDetails.first;
 	}
-
-
-
-
 }
 
 
