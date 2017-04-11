@@ -21,6 +21,41 @@ Main::Main() {
 }
 
 
+int main(int argc, char* argv[]) {
+
+	string path;
+	if (argc > 1)
+		path = argv[1];
+	else
+		path = "";
+	bool filesExist = Main::checkFilesAndPrintErrorsInOrder(path);
+	if (!filesExist)
+	{
+		getchar();
+		return -1; //TODO-exit with errors
+	}
+
+
+	bool errorOccur = false;
+	Main::parseAttack(errorOccur);
+	if (errorOccur)//error accuured
+		return -1;///TODO-exit on errors
+				  //Attack attack2 = parseAttack(path.attack-b);
+
+	string* parsed_board = new string[10];
+	if (Main::parseBoard(boardFile, parsed_board))
+		return -1; // Error in parsing
+
+	cout << "Press ENTER to continue." << endl;
+	getchar();
+
+	// board.player1.setBoard(board.board, 10, 10);
+	// board.player2.setBoard(board.board, 10, 10);
+	// run attacks from both players and notify the results
+
+	return 0;
+};
+
 
 //check if the given path string is a valid and existing string
 bool Main::checkIsValidDir(string pathName) {
@@ -70,29 +105,7 @@ bool Main::checkFilesAndPrintErrorsInOrder(string path)
 
 }
 
-int main(int argc, char* argv[]) {
 
-	string path;
-	if (argc > 1)
-		path = argv[1];
-	else
-		path = "";
-	bool errorsExist = Main::checkFilesAndPrintErrorsInOrder(path);
-	if (errorsExist)
-	{
-		return -1;//TODO-exit with errors
-	}
-
-
-	bool errorOccur = false;
-	Main::parseAttack(errorOccur);
-	if (errorOccur)//error accuured
-		return -1;///TODO-exit on errors
-				  //Attack attack2 = parseAttack(path.attack-b);
-				  //Board board = parseBoard(path.sboard);
-
-	return 0;
-};
 //return bool- if true-error occured
 bool Main::parseAttack(bool& errorOccur) {
 
@@ -100,11 +113,17 @@ bool Main::parseAttack(bool& errorOccur) {
 	attackBVector = Main::loadFromAttackFile(attackBFile, errorOccur);
 	return errorOccur;
 };
-int Main::parseBoard(string path) {
+
+
+
+int Main::parseBoard(string path, string* b) {
+	ifstream fin(path);
+	for (int i = 0; i < 10; ++i) {
+		std::getline(fin, b[i]);
+	}
+
 	return 0;
 };
-
-
 
 
 
