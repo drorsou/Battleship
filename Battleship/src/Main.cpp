@@ -75,13 +75,25 @@ int main(int argc, char* argv[]) {
 	while (game_in_progress)
 	{
 		// Get the next attack
-		if (game_board.current_player_turn == 0)
+		if (game_board.player1.attack_from_file.hasAttacks() || game_board.player2.attack_from_file.hasAttacks())
 		{
-			attack_coord = game_board.player1.attack();
+			if (!game_board.player1.attack_from_file.hasAttacks())
+				game_board.current_player_turn == 1;
+			if (!game_board.player2.attack_from_file.hasAttacks())
+				game_board.current_player_turn == 0;
+
+			if (game_board.current_player_turn == 0)
+			{
+				attack_coord = game_board.player1.attack();
+			}
+			else if (game_board.current_player_turn == 1)
+			{
+				attack_coord = game_board.player2.attack();
+			}
 		}
-		else if (game_board.current_player_turn == 1)
+		else
 		{
-			attack_coord = game_board.player2.attack();
+			break;
 		}
 
 		// Check validity of the attack coordinate
@@ -141,9 +153,9 @@ int main(int argc, char* argv[]) {
 	cout << "Points:" << endl;
 	cout << "Player A: " << game_board.player1.score << endl;
 	cout << "Player B: " << game_board.player2.score << endl;
-
+	
 	// Free memory?
-
+	getchar();
 	return 0;
 };
 
