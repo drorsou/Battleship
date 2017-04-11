@@ -7,6 +7,8 @@ string attackBFile;
 vector<std::pair<int, int>> attackAVector;
 vector<std::pair<int, int>> attackBVector;
 
+bool debug = true;
+
 
 
 Main::Main() {
@@ -55,18 +57,18 @@ int main(int argc, char* argv[]) {
 	// board.player1.setBoard(board.board, 10, 10);
 	// board.player2.setBoard(board.board, 10, 10);
 	
+	game_board.printBoard(game_board);
 	// End initialize
 	
 
 	// Some testing
-	game_board.printBoard(game_board);
-	getchar();
+	/*getchar();
 	Board::updateBoard(game_board, 5, 5);
 	getchar();
 	Board::updateBoard(game_board, 8, 4);
 	getchar();
 	Board::updateBoard(game_board, 7, 4);
-	getchar();
+	getchar();*/
 
 
 	/*
@@ -75,38 +77,56 @@ int main(int argc, char* argv[]) {
 	while (game_in_progress)
 	{
 		// Get the next attack
-		if (game_board.player1.attack_from_file.hasAttacks() || game_board.player2.attack_from_file.hasAttacks())
-		{
-			if (!game_board.player1.attack_from_file.hasAttacks())
-				game_board.current_player_turn == 1;
-			if (!game_board.player2.attack_from_file.hasAttacks())
-				game_board.current_player_turn == 0;
-
-			if (game_board.current_player_turn == 0)
-			{
-				attack_coord = game_board.player1.attack();
-			}
-			else if (game_board.current_player_turn == 1)
-			{
-				attack_coord = game_board.player2.attack();
-			}
-		}
-		else
+		if (!game_board.player1.attack_from_file.hasAttacks() && !game_board.player2.attack_from_file.hasAttacks())
 		{
 			break;
 		}
-
-		// Check validity of the attack coordinate
-		if (attack_coord.first > 9 || attack_coord.first < 0 || attack_coord.second > 9 || attack_coord.second < 0)
+		if (!game_board.player1.attack_from_file.hasAttacks())
 		{
-			continue;
+			cout << "No attacks for A" << endl;
+			game_board.current_player_turn == 1;
+		}
+		if (!game_board.player2.attack_from_file.hasAttacks())
+		{
+			cout << "No attacks for B" << endl;
+			game_board.current_player_turn == 0;
+		}
+		if (game_board.current_player_turn == 0)
+		{
+			attack_coord = game_board.player1.attack();
+		}
+		else if (game_board.current_player_turn == 1)
+		{
+			attack_coord = game_board.player2.attack();
 		}
 
-		char piece = game_board.board[attack_coord.first][attack_coord.second];
+		if (debug)
+		{
+			cout << "Player " << game_board.current_player_turn << " attacking at " << attack_coord.first << "," << attack_coord.second;
+		}
+
+		// Check validity of the attack coordinate
+		if (attack_coord.first > 10 || attack_coord.first < 1 || attack_coord.second > 10 || attack_coord.second < 1)
+		{
+			if (debug)
+			{
+				cout << endl;
+				getchar();
+			}
+			continue;
+		}
+		char piece = game_board.board[attack_coord.first - 1][attack_coord.second - 1];
+
+		if (debug)
+		{
+			cout << " (" << piece << ")" << endl;
+			getchar();
+		}
+		
 		// Attack player A ship
 		if (piece == ABOAT || piece == ACRUISER || piece == ASUBMARINE || piece == ADESTROYER)
 		{
-			game_board.board[attack_coord.first][attack_coord.second] = HIT_SYM;
+			game_board.board[attack_coord.first - 1][attack_coord.second - 1] = HIT_SYM;
 			// change score
 			// check if ship is sunk
 			result = AttackResult::Hit;
@@ -117,7 +137,7 @@ int main(int argc, char* argv[]) {
 		// Attack player B ship
 		else if (piece == BBOAT || piece == BCRUISER || piece == BSUBMARINE || piece == BDESTROYER)
 		{
-			game_board.current_player_turn = 0;
+			game_board.board[attack_coord.first - 1][attack_coord.second - 1] = HIT_SYM;
 			// change score
 			// check if ship is sunk
 			result = AttackResult::Hit;
@@ -128,14 +148,14 @@ int main(int argc, char* argv[]) {
 		// Attack an empty or already missed spot
 		else if (piece == BLANK || piece == MISS_SYM)
 		{
-			game_board.board[attack_coord.first][attack_coord.second] = MISS_SYM;
+			game_board.board[attack_coord.first - 1][attack_coord.second - 1] = MISS_SYM;
 			game_board.current_player_turn = 1 - game_board.current_player_turn;
 			result = AttackResult::Miss;
 		}
 		// Attack an already bombed spot
 		else if (piece == HIT_SYM)
 		{
-			game_board.board[attack_coord.first][attack_coord.second] = HIT_SYM;
+			game_board.board[attack_coord.first - 1][attack_coord.second - 1] = HIT_SYM;
 			game_board.current_player_turn = 1 - game_board.current_player_turn;
 			result = AttackResult::Miss;
 		}
@@ -155,6 +175,7 @@ int main(int argc, char* argv[]) {
 	cout << "Player B: " << game_board.player2.score << endl;
 	
 	// Free memory?
+	game_board.printBoard(game_board);
 	getchar();
 	return 0;
 };
