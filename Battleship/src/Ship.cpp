@@ -5,31 +5,20 @@ bool Ship::checkCoord(pair<int, int> coord) {
 		(coord.second <= this->vert.second && coord.second >= this->vert.first);
 }
 
-bool Ship::checkDimensions(int vertlow, int verthigh, int horzlow, int horzhigh, Type t)
-{
-	int len;
-	if (verthigh < vertlow || horzhigh < horzlow || (vertlow < verthigh && horzlow < horzhigh))
-		return false;
-	if (vertlow < verthigh)
-	{
-		len = verthigh - vertlow + 1;
-	}
-	else
-	{
-		len = horzhigh - horzlow + 1;
-	}
+bool Ship::checkDimensions(int len, char t)
+{	
 	switch (t)
 	{
-	case Boat:
+	case ABOAT:	case BBOAT:
 		return len == BOAT_LEN;
 		break;
-	case Cruiser:
+	case ACRUISER: case BCRUISER:
 		return len == CRUISER_LEN;
 		break;
-	case Submarine:
+	case ASUBMARINE: case BSUBMARINE:
 		return len == SUBMARINE_LEN;
 		break;
-	case Destroyer:
+	case ADESTROYER: case BDESTROYER:
 		return len == DESTROYER_LEN;
 		break;
 	}

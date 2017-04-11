@@ -76,10 +76,10 @@ public:
 		Pre: gets a coord.
 		Post: Checks if the coord is part of the current ship.
 	*/
-	bool checkCoord(pair<int, int>);
+	short int checkCoord(pair<int, int>);
 	/*
 		Pre: gets coordinates, and a ship type.
 		Post: return true iff these coordinates are legal for this ship type.
 	*/
-	static bool checkDimensions(int, int, int, int, Type);
+	static bool checkDimensions(int, char);
 };
