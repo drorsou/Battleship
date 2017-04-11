@@ -50,9 +50,16 @@ int main(int argc, char* argv[]) {
 	//board.player1
 	//board.player2
 
-	cout << "Press ENTER to continue." << endl;
+	getchar();
+	Board::updateBoard(game_board, 5, 5);
+	
+	getchar();
+	Board::updateBoard(game_board, 8, 4);
+	
 	getchar();
 
+	Board::updateBoard(game_board, 7, 4);	
+	getchar();
 	// board.player1.setBoard(board.board, 10, 10);
 	// board.player2.setBoard(board.board, 10, 10);
 	// run attacks from both players and notify the results

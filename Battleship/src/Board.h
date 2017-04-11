@@ -39,4 +39,5 @@ public:
 	Board();
 	Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2);
 	static void printBoard(const Board &);
+	static void updateBoard(const Board &, int, int);
 };

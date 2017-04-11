@@ -42,3 +42,17 @@
 /Battleship/src/clean_movesA.attack-a
 /Battleship/src/good_board_0.sboard
 /Battleship/src/clean_movesB.attack-b
+*.suo
+*.ilk
+*.pdb
+/LocalBattleship/LocalBattleship/Debug/LocalBattleship.tlog/LocalBattleship.lastbuildstate
+/LocalBattleship/LocalBattleship/Debug/LocalBattleship.tlog/link.write.1.tlog
+/LocalBattleship/LocalBattleship/Debug/LocalBattleship.tlog/link.read.1.tlog
+/LocalBattleship/LocalBattleship/Debug/LocalBattleship.tlog/link.command.1.tlog
+/LocalBattleship/LocalBattleship/Debug/LocalBattleship.tlog/CL.write.1.tlog
+/LocalBattleship/LocalBattleship/Debug/LocalBattleship.tlog/CL.read.1.tlog
+/LocalBattleship/LocalBattleship/Debug/LocalBattleship.tlog/CL.command.1.tlog
+/LocalBattleship/LocalBattleship/Debug/vc140.idb
+/LocalBattleship/LocalBattleship/Debug/LocalBattleship.log
+/LocalBattleship/LocalBattleship/LocalBattleship.vcxproj.user
+/LocalBattleship/LocalBattleship/dirFiles.txt
