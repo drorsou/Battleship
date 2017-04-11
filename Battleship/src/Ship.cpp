@@ -1,9 +1,5 @@
 #include "Ship.h"
 
-bool Ship::checkCoord(pair<int, int> coord) {
-	return (coord.first <= this->horz.second && coord.first >= this->horz.first) &&
-		(coord.second <= this->vert.second && coord.second >= this->vert.first);
-}
 
 bool Ship::checkDimensions(int len, char t)
 {	

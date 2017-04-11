@@ -126,7 +126,7 @@ bool Board::checkBoard() {
 					else
 					{						
 						if (currB < SHIPS_PER_PLAYER)
-							AShips[currB] = Ship(start, end, t);
+							BShips[currB] = Ship(start, end, t);
 						currB++;
 					}
 				}
@@ -142,22 +142,46 @@ bool Board::checkBoard() {
 			}
 					
 		}
-	for (int i = 0; i < 4; i++)
+	if (AsizeOShape[Boat])
 	{
-		if (AsizeOShape[i])
-		{
-			cout << "Wrong size or shape for ship " << Type(i) << " for player A\n";
-			result = false;
-		}
+		cout << "Wrong size or shape for ship B for player A\n";
+		result = false;
 	}
-	for (int i = 0; i < 4; i++)
+	if (AsizeOShape[Cruiser])
 	{
-		if (BsizeOShape[i])
-		{
-			cout << "Wrong size or shape for ship " << Type(i) << " for player B\n";
-			result = false;
-		}
+		cout << "Wrong size or shape for ship P for player A\n";
+		result = false;
 	}
+	if (AsizeOShape[Submarine])
+	{
+		cout << "Wrong size or shape for ship M for player A\n";
+		result = false;
+	}
+	if (AsizeOShape[Destroyer])
+	{
+		cout << "Wrong size or shape for ship D for player A\n";
+		result = false;
+	}
+	if (AsizeOShape[Boat])
+	{
+		cout << "Wrong size or shape for ship b for player B\n";
+		result = false;
+	}
+	if (AsizeOShape[Cruiser])
+	{
+		cout << "Wrong size or shape for ship p for player B\n";
+		result = false;
+	}
+	if (AsizeOShape[Submarine])
+	{
+		cout << "Wrong size or shape for ship m for player B\n";
+		result = false;
+	}
+	if (AsizeOShape[Destroyer])
+	{
+		cout << "Wrong size or shape for ship d for player B\n";
+		result = false;
+	}	
 	if (currA > SHIPS_PER_PLAYER)
 	{
 		cout << "Too many ships for player A\n";
