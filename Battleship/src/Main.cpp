@@ -40,11 +40,12 @@ int main(int argc, char* argv[]) {
 		return -1; // Error in parsing
 
 
-	Board game_board = Board(parsed_board);
-	game_board.printBoard(game_board);
-
 	Attack attack1 = Attack(attackAVector);
 	Attack attack2 = Attack(attackBVector);
+
+
+	Board game_board = Board(parsed_board, attack1, attack2);
+	game_board.printBoard(game_board);
 
 	//board.player1
 	//board.player2

@@ -1,5 +1,9 @@
 #include "Board.h"
 
+Board::Board() {
+	
+}
+
 
 Board::Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2) : current_player_turn(1) {
 	for (int i = 0; i < BOARD_SIZE; i++) {

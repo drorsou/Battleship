@@ -7,6 +7,7 @@ class Attack {
 	int index;
 	
 public:
+	Attack();
 	Attack(std::vector<std::pair<int, int>> list);
 	std::pair<int, int> getNextAttack();
 };
