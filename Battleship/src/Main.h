@@ -20,6 +20,8 @@ public:
 
 	static bool parseAttack(bool& errorOccur);
 
+	static bool checkChar(char);
+
 	static int parseBoard(string path, char b[BOARD_SIZE][BOARD_SIZE]);
 
 	static std::pair<bool, string> findPathOfFile(char* requiredExtention);

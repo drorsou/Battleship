@@ -26,14 +26,18 @@ void Board::gotoxy(int row, int col) {
 	coord.Y = row;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
-short int Board::checkCoord(bool temp[BOARD_SIZE][BOARD_SIZE], int row, int col, char t) {
+void Board::checkCoord(std::pair<bool, bool>& res, bool temp[BOARD_SIZE][BOARD_SIZE], int row, int col, char t) {
 	int len = 0;
-	if (this->board[row+1][col+1] != BLANK && this->board[row][col + 1] != BLANK)
-		return false; // adjacent ships or illegal ship size.
+	res.first = false;
+	res.second = false;
+	if ((row < BOARD_SIZE - 1 && this->board[row + 1][col] == t) && (col < BOARD_SIZE - 1 && this->board[row][col + 1] == t))
+		res.first = true; // illegal ship size.
 	for (int i = row + 1; i < BOARD_SIZE && this->board[i][col] != BLANK; i++)
 	{
-		if (temp[i][col] == true || this->board[i][col] != t)
-			return -1; // adjacent ships!
+		if (temp[i][col] == true && this->board[i][col] == t)
+			res.first = true;
+		if(this->board[i][col] != t)
+			res.second = true;// adjacent ships!
 		else
 		{
 			len++;
@@ -73,16 +77,16 @@ bool Board::checkBoard() {
 		{
 			if (temp[row][col] == false && this->board[row][col] != BLANK)
 			{
-				color = this->coordColor(row, col);
-				checkRes = checkCoord(temp, row, col, this->board[row][col]);
+				color = this->coordColor(row, col); 
 				t = this->shipType(row, col);
+				checkRes = checkCoord(temp, row, col, this->board[row][col]);
+				
 				if (checkRes == 1)
 				{
 					start = make_pair(row, col);
 					if (this->board[row][col] == ABOAT || this->board[row][col] == BBOAT)
 					{
-						end = make_pair(row, col);
-						t = Boat;
+						end = make_pair(row, col);						
 					}
 					else
 					{
@@ -132,7 +136,7 @@ bool Board::checkBoard() {
 				}
 				else if (checkRes == 0)
 				{
-					if (color = 1)
+					if (color == 1)
 						AsizeOShape[t] = true;
 					else
 						BsizeOShape[t] = true;
@@ -162,22 +166,22 @@ bool Board::checkBoard() {
 		cout << "Wrong size or shape for ship D for player A\n";
 		result = false;
 	}
-	if (AsizeOShape[Boat])
+	if (BsizeOShape[Boat])
 	{
 		cout << "Wrong size or shape for ship b for player B\n";
 		result = false;
 	}
-	if (AsizeOShape[Cruiser])
+	if (BsizeOShape[Cruiser])
 	{
 		cout << "Wrong size or shape for ship p for player B\n";
 		result = false;
 	}
-	if (AsizeOShape[Submarine])
+	if (BsizeOShape[Submarine])
 	{
 		cout << "Wrong size or shape for ship m for player B\n";
 		result = false;
 	}
-	if (AsizeOShape[Destroyer])
+	if (BsizeOShape[Destroyer])
 	{
 		cout << "Wrong size or shape for ship d for player B\n";
 		result = false;

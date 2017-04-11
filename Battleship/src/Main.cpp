@@ -49,6 +49,8 @@ int main(int argc, char* argv[]) {
 	Attack attack1 = Attack(attackAVector);
 	Attack attack2 = Attack(attackBVector);
 	Board game_board = Board(parsed_board, attack1, attack2);
+	game_board.checkBoard();
+
 	bool game_in_progress = true;
 	pair<int, int> attack_coord;
 	bool player_a_won = false;
@@ -235,7 +237,9 @@ bool Main::parseAttack(bool& errorOccur) {
 	return errorOccur;
 };
 
-
+bool Main::checkChar(char c) {
+	return (c == ABOAT || c == BBOAT || c == ACRUISER || c == BCRUISER || c == ASUBMARINE || c == BSUBMARINE || c == ADESTROYER || c == BDESTROYER);
+}
 /*
  * Parse Board into 'b' from 'path'
  * Return 0 if no error, otherwise 1
@@ -247,7 +251,10 @@ int Main::parseBoard(string path, char b[BOARD_SIZE][BOARD_SIZE]) {
 		std::getline(fin, temp_board[i]);
 
 		for (int j = 0; j < 10; j++) {
-			b[i][j] = temp_board[i][j];
+			if (checkChar(temp_board[i][j]))
+				b[i][j] = temp_board[i][j];
+			else
+				b[i][j] = BLANK;
 		}
 	}
 
