@@ -31,6 +31,6 @@ void Player::notifyOnAttackResult(int player, int row, int col, AttackResult res
 		player_board[row][col] = HIT_SYM;
 };
 
-void setAttackFromFile(Attack attack) {
+void Player::setAttackFromFile(Attack attack) {
 	attack_from_file = attack;
 }
