@@ -9,7 +9,14 @@ Attack::Attack(std::vector<std::pair<int, int>> list) : list(list), index(0) {}
 
 std::pair<int, int> Attack::getNextAttack()
 {
-	// Check if index < list.size
 	index++;
 	return list[index - 1];
+}
+
+bool Attack::hasAttacks()
+{
+	if (list.size() < index)
+		return true;
+	else
+		return false;
 }

@@ -15,7 +15,7 @@ Main::Main() {
 
 
 int main(int argc, char* argv[]) {
-
+	// Check for arguments
 	string path;
 	if (argc > 1)
 		path = argv[1];
@@ -28,43 +28,134 @@ int main(int argc, char* argv[]) {
 		return -1; //TODO-exit with errors
 	}
 
+	// Check for -quiet
+	// Check for -delay
 
+	// Parse Attacks
 	bool errorOccur = false;
 	Main::parseAttack(errorOccur);
 	if (errorOccur)//error accuured
 		return -1;///TODO-exit on errors
-				  //Attack attack2 = parseAttack(path.attack-b);
 
+	// Parse Board
 	char parsed_board[BOARD_SIZE][BOARD_SIZE];
 	if (Main::parseBoard(boardFile, parsed_board))
 		return -1; // Error in parsing
 
 
+	// Initialize game
 	Attack attack1 = Attack(attackAVector);
 	Attack attack2 = Attack(attackBVector);
-
-
 	Board game_board = Board(parsed_board, attack1, attack2);
-	game_board.checkBoard();
-	game_board.printBoard(game_board);
-
-	//board.player1
-	//board.player2
-
-	getchar();
-	Board::updateBoard(game_board, 5, 5);
-	
-	getchar();
-	Board::updateBoard(game_board, 8, 4);
-	
-	getchar();
-
-	Board::updateBoard(game_board, 7, 4);	
-	getchar();
+	bool game_in_progress = true;
+	pair<int, int> attack_coord;
+	bool player_a_won = false;
+	bool player_b_won = false;
+	AttackResult result;
 	// board.player1.setBoard(board.board, 10, 10);
 	// board.player2.setBoard(board.board, 10, 10);
-	// run attacks from both players and notify the results
+	
+	// End initialize
+	
 
+	// Some testing
+	game_board.printBoard(game_board);
+	getchar();
+	Board::updateBoard(game_board, 5, 5);
+	getchar();
+	Board::updateBoard(game_board, 8, 4);
+	getchar();
+	Board::updateBoard(game_board, 7, 4);
+	getchar();
+
+
+	/*
+	 * Battleships Game
+	 */
+	while (game_in_progress)
+	{
+		// Get the next attack
+		if (game_board.player1.attack_from_file.hasAttacks() || game_board.player2.attack_from_file.hasAttacks())
+		{
+			if (!game_board.player1.attack_from_file.hasAttacks())
+				game_board.current_player_turn == 1;
+			if (!game_board.player2.attack_from_file.hasAttacks())
+				game_board.current_player_turn == 0;
+
+			if (game_board.current_player_turn == 0)
+			{
+				attack_coord = game_board.player1.attack();
+			}
+			else if (game_board.current_player_turn == 1)
+			{
+				attack_coord = game_board.player2.attack();
+			}
+		}
+		else
+		{
+			break;
+		}
+
+		// Check validity of the attack coordinate
+		if (attack_coord.first > 9 || attack_coord.first < 0 || attack_coord.second > 9 || attack_coord.second < 0)
+		{
+			continue;
+		}
+
+		char piece = game_board.board[attack_coord.first][attack_coord.second];
+		// Attack player A ship
+		if (piece == ABOAT || piece == ACRUISER || piece == ASUBMARINE || piece == ADESTROYER)
+		{
+			game_board.board[attack_coord.first][attack_coord.second] = HIT_SYM;
+			// change score
+			// check if ship is sunk
+			result = AttackResult::Hit;
+			// check if game is over
+
+			game_board.current_player_turn = 1;
+		}
+		// Attack player B ship
+		else if (piece == BBOAT || piece == BCRUISER || piece == BSUBMARINE || piece == BDESTROYER)
+		{
+			game_board.current_player_turn = 0;
+			// change score
+			// check if ship is sunk
+			result = AttackResult::Hit;
+			// check if game is over
+
+			game_board.current_player_turn = 0;
+		}
+		// Attack an empty or already missed spot
+		else if (piece == BLANK || piece == MISS_SYM)
+		{
+			game_board.board[attack_coord.first][attack_coord.second] = MISS_SYM;
+			game_board.current_player_turn = 1 - game_board.current_player_turn;
+			result = AttackResult::Miss;
+		}
+		// Attack an already bombed spot
+		else if (piece == HIT_SYM)
+		{
+			game_board.board[attack_coord.first][attack_coord.second] = HIT_SYM;
+			game_board.current_player_turn = 1 - game_board.current_player_turn;
+			result = AttackResult::Miss;
+		}
+
+		// Notify players on results
+		game_board.player1.notifyOnAttackResult(0, attack_coord.first, attack_coord.second, result);
+		game_board.player2.notifyOnAttackResult(0, attack_coord.first, attack_coord.second, result);
+	}
+
+	// End the game
+	if (player_a_won)
+		cout << "Player A won" << endl;
+	if (player_b_won)
+		cout << "Player B won" << endl;
+	cout << "Points:" << endl;
+	cout << "Player A: " << game_board.player1.score << endl;
+	cout << "Player B: " << game_board.player2.score << endl;
+	
+	// Free memory?
+	getchar();
 	return 0;
 };
 
@@ -124,6 +215,10 @@ bool Main::parseAttack(bool& errorOccur) {
 };
 
 
+/*
+ * Parse Board into 'b' from 'path'
+ * Return 0 if no error, otherwise 1
+ */
 int Main::parseBoard(string path, char b[BOARD_SIZE][BOARD_SIZE]) {
 	ifstream fin(path);
 	string* temp_board = new string[10];;
