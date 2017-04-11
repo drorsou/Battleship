@@ -16,12 +16,6 @@
 #define COLOR_LIGHT_AQUA 0x000B
 #define COLOR_WHITE 0x0007
 
-#define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_COLOR_YELLOW  "\x1b[33m"
-#define ANSI_COLOR_BLUE    "\x1b[34m"
-#define ANSI_COLOR_MAGENTA "\x1b[35m"
-#define ANSI_COLOR_CYAN    "\x1b[36m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
 
 class Board {
 	char board[BOARD_SIZE][BOARD_SIZE];
@@ -38,6 +32,46 @@ class Board {
 public:
 	Board();
 	Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2);
+	short int checkCoord(bool [BOARD_SIZE][BOARD_SIZE], int, int, char);
+	/*
+		Pre: None
+		Post: returns true iff the board is legal.
+	*/
+	bool checkBoard();
+
+	int coordColor(int row,int col){
+		return (this->board[row][col] >= 'A' && this->board[row][col] <= 'Z') ? 1 : 2;
+	}
+
+	Type shipType(int row, int col) {
+		Type t;
+		switch (this->board[row][col])
+		{
+		case ABOAT: case BBOAT:
+			t = Boat;
+			break;
+		case ACRUISER: case BCRUISER:
+			t = Cruiser;
+			break;
+		case ASUBMARINE: case BSUBMARINE:
+			t = Submarine;
+			break;
+		case ADESTROYER: case BDESTROYER:
+			t = Destroyer;
+			break;
+		}
+		return t;
+	}
+	/*
+		Pre: Gets a legal board.
+		Post: prints the board in the console.
+	*/
 	static void printBoard(const Board &);
+	/*
+		Pre: Gets a legal board, and the attack coordinate.
+			Assuming the board is already printed in the console.
+		Post: updates the board to show the attack according to the appropriate attack result.
+	*/
 	static void updateBoard(const Board &, int, int);
+
 };

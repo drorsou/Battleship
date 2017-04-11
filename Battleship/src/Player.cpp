@@ -1,6 +1,6 @@
 #include "Player.h"
 
-Attack attack_from_file;
+
 
 Player::Player() {
 	

@@ -1,13 +1,11 @@
 #include "Attack.h"
 
 Attack::Attack()
-{
-	
-}
-
-Attack::Attack(std::vector<std::pair<int, int>> list) : list(list), index(0) {
+{	
 
 }
+
+Attack::Attack(std::vector<std::pair<int, int>> list) : list(list), index(0) {}
 
 std::pair<int, int> Attack::getNextAttack()
 {

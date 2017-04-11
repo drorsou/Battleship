@@ -8,6 +8,7 @@
 class Player: IBattleshipGameAlgo {
 	char player_board[10][10];
 	Ship ships[SHIPS_PER_PLAYER];
+	Attack attack_from_file;
 	int score;
 
 public:
