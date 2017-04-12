@@ -7,13 +7,20 @@ Board::Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2) : c
 			board[i][j] = b[i][j];
 		}
 	}
-
-	// Need to create here the ships lists for each player
+	this->player1 = Player::Player(0);
+	this->player2 = Player::Player(1);
+	if (this->checkBoard() == true)
+	{
+		player1.setAttackFromFile(attack1);
+		player2.setAttackFromFile(attack2);
+	}
+	else
+	{
+		// Marking for main that the board is faulty.
+		player1.score = -1;
+		player2.score = -1;
+	}
 	
-	player1 = Player(0);
-	player1.setAttackFromFile(attack1);
-	player2 = Player(1);
-	player2.setAttackFromFile(attack2);
 }
 
 void Board::gotoxy(int row, int col) {
@@ -28,6 +35,7 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool temp[BOARD_SIZE]
 	bool dimensionFlag;
 	if ((row < BOARD_SIZE - 1 && this->board[row + 1][col] == t) && (col < BOARD_SIZE - 1 && this->board[row][col + 1] == t))
 		*sizeOShape = true; // illegal ship size.
+	// check top to down ships
 	for (int i = row + 1; i < BOARD_SIZE && this->board[i][col] != BLANK; i++)
 	{
 		// Check for adjacent with the same type or if this tile was used in a different ship of this type.
@@ -40,8 +48,7 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool temp[BOARD_SIZE]
 		// check if we already checked this tile (maybe a part of different ship)
 		if (this->board[i][col] != t)
 		{
-			*adjacent = true;// adjacent ships!
-			//res = false;
+			*adjacent = true;// adjacent ships!			
 			break;
 		} // No problems found
 		else
@@ -49,7 +56,8 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool temp[BOARD_SIZE]
 			len++;
 			temp[i][col] = true;
 		}
-	}		
+	}	
+	// check left to right ships - marks seen parts even if this is illegal ship size or shape!
 	for (int j = col + 1; j < BOARD_SIZE && this->board[row][j] != BLANK; j++)
 	{
 		// Check for adjacent with the same type or if this tile was used in a different ship of this type.
@@ -62,8 +70,7 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool temp[BOARD_SIZE]
 		// check if we already checked this tile (maybe a part of different ship)
 		if (this->board[row][j] != t)
 		{
-			*adjacent = true;// adjacent ships!
-			//res = false;
+			*adjacent = true;// adjacent ships!			
 			break;
 		} // No problems found
 		else
@@ -73,9 +80,9 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool temp[BOARD_SIZE]
 		}
 	}
 	len++; // for the original point.
-	dimensionFlag = Ship::checkDimensions(len, t);
+	dimensionFlag = Ship::checkDimensions(len, t); // check if the dimension create a legal ship, even if there is an adjacent ship
 	if (dimensionFlag == false)
-		*sizeOShape = true;
+		*sizeOShape = true; // happens if the ship is shorter or longer than the legal size
 	return (res && dimensionFlag);
 }
 bool Board::checkBoard() {
@@ -83,8 +90,8 @@ bool Board::checkBoard() {
 	Ship AShips[SHIPS_PER_PLAYER];
 	Ship BShips[SHIPS_PER_PLAYER];
 	Type t;
-	pair<int, int> start;
-	pair<int, int> end;
+	pair<int, int> vert;
+	pair<int, int> horz;
 	int color;
 	int currA = 0;
 	int currB = 0;
@@ -96,6 +103,7 @@ bool Board::checkBoard() {
 	for(int row = 0; row < BOARD_SIZE; row++)
 		for (int col = 0; col < BOARD_SIZE; col++)
 		{
+			// check all unmarked (i.e not visited) non-blank tiles
 			if (temp[row][col] == false && this->board[row][col] != BLANK)
 			{
 				color = this->coordColor(row, col); 
@@ -104,62 +112,75 @@ bool Board::checkBoard() {
 					checkRes = checkCoord(&(AsizeOShape[t]), &Adjacent, temp, row, col, this->board[row][col]);
 				else
 					checkRes = checkCoord(&(BsizeOShape[t]), &Adjacent, temp, row, col, this->board[row][col]);
+				// Create the ship
 				if (checkRes == true)
 				{
-					start = make_pair(row, col);
+					vert = make_pair(row, col);
 					if (this->board[row][col] == ABOAT || this->board[row][col] == BBOAT)
 					{
-						end = make_pair(row, col);						
+						horz = make_pair(col, col);	
+						vert = make_pair(row, row);
 					}
 					else
 					{
 						if (this->board[row + 1][col] != BLANK)
 						{
+							horz = make_pair(col, col);
 							switch (t)
 							{
 							case Cruiser:								
-								end = make_pair(row + CRUISER_LEN, col);
+								vert = make_pair(row, row + CRUISER_LEN - 1);
 								break;
 							case Submarine:								
-								end = make_pair(row + SUBMARINE_LEN, col);
+								vert = make_pair(row, row + SUBMARINE_LEN - 1);
 								break;
 							case Destroyer:								
-								end = make_pair(row + DESTROYER_LEN, col);
+								vert = make_pair(row, row + DESTROYER_LEN - 1);
 								break;
 							}
 						}
 						else
 						{
+							vert = make_pair(row, row);
 							switch (t)
 							{
 							case Cruiser:
-								end = make_pair(row, col + CRUISER_LEN);
+								horz = make_pair(col, col + CRUISER_LEN - 1);
 								break;
 							case Submarine:
-								end = make_pair(row, col + SUBMARINE_LEN);
+								horz = make_pair(col, col + SUBMARINE_LEN - 1);
 								break;
 							case Destroyer:
-								end = make_pair(row, col + DESTROYER_LEN);
+								horz = make_pair(col, col + DESTROYER_LEN - 1);
 								break;
 							}
 						}
 					}
+					// create the new ship in the proper list, count the ships even if there are too many
 					if (color == 1)
 					{						
 						if (currA < SHIPS_PER_PLAYER)
-							AShips[currA] = Ship(start, end, t);
+							AShips[currA] = Ship(vert, horz, t);
 						currA++;
 					}
 					else
 					{						
 						if (currB < SHIPS_PER_PLAYER)
-							BShips[currB] = Ship(start, end, t);
+							BShips[currB] = Ship(vert, horz, t);
 						currB++;
 					}
 				}				
 			}
 					
 		}
+
+	/*
+		Printing the error messages according to the following order - first player A then B:
+		Wrong size/shape.
+		Too many
+		Too few
+		Adjacent (not player oriented!)
+	*/
 	if (AsizeOShape[Boat])
 	{
 		cout << "Wrong size or shape for ship B for player A\n";
@@ -224,6 +245,12 @@ bool Board::checkBoard() {
 	{
 		cout << "Adjacent Ships on Board\n";
 		result = false;
+	}
+	// sets the ships only if it is a valid board.
+	if (result == true)
+	{
+		this->player1.setShips(AShips);
+		this->player2.setShips(BShips);
 	}
 	return result;
 }

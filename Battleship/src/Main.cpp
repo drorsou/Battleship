@@ -49,7 +49,10 @@ int main(int argc, char* argv[]) {
 	Attack attack1 = Attack(attackAVector);
 	Attack attack2 = Attack(attackBVector);
 	Board game_board = Board(parsed_board, attack1, attack2);
-	game_board.checkBoard();
+	
+	// In case of wrong board init, errors already printed on console!
+	if (game_board.player1.score == -1 || game_board.player2.score == -1)
+		return EXIT_FAILURE;
 
 	bool game_in_progress = true;
 	pair<int, int> attack_coord;

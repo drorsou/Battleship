@@ -72,10 +72,29 @@ public:
 			break;
 		}
 	}	
-	
+	Ship(const Ship& ship) {
+		this->horz = make_pair(ship.horz.first, ship.horz.second);
+		this->vert = make_pair(ship.vert.first, ship.vert.second);
+		this->type = ship.type;
+		this->size = ship.size;
+	}
+
+	Type getType() { 
+		return this->type;
+	}
 	/*
 		Pre: gets coordinates, and a ship type.
 		Post: return true iff these coordinates are legal for this ship type.
 	*/
 	static bool checkDimensions(int, char);
+
+	/*
+		Pre: the ship was attacked, 
+			AND this isn't the second attack at this tile!
+		Post: lowers its size by 1, 
+			and returns true iff the ship has sunk.
+	*/
+	bool hit() {
+		return (--this->size) == 0 ? true : false;
+	}
 };
