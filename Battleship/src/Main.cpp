@@ -79,38 +79,42 @@ int main(int argc, char* argv[]) {
 	while (game_in_progress)
 	{
 		// Get the next attack
-		if (!game_board.player1.attack_from_file.hasAttacks() && !game_board.player2.attack_from_file.hasAttacks())
+		if (game_board.player1.attack_from_file.hasAttacks() || game_board.player2.attack_from_file.hasAttacks())
+		{
+			if (!game_board.player1.attack_from_file.hasAttacks())
+			{
+				if (debug) // Debug
+					cout << "No attacks left for player A" << endl;
+				game_board.current_player_turn = 1;
+			}
+			if (!game_board.player2.attack_from_file.hasAttacks())
+			{
+				if (debug) // Debug
+					cout << "No attacks left for player B" << endl;
+				game_board.current_player_turn = 0;
+			}
+
+			if (game_board.current_player_turn == 0)
+			{
+				attack_coord = game_board.player1.attack();
+			}
+			else if (game_board.current_player_turn == 1)
+			{
+				attack_coord = game_board.player2.attack();
+			}
+		}
+		else
 		{
 			break;
 		}
-		if (!game_board.player1.attack_from_file.hasAttacks())
-		{
-			cout << "No attacks for A" << endl;
-			game_board.current_player_turn == 1;
-		}
-		if (!game_board.player2.attack_from_file.hasAttacks())
-		{
-			cout << "No attacks for B" << endl;
-			game_board.current_player_turn == 0;
-		}
-		if (game_board.current_player_turn == 0)
-		{
-			attack_coord = game_board.player1.attack();
-		}
-		else if (game_board.current_player_turn == 1)
-		{
-			attack_coord = game_board.player2.attack();
-		}
 
-		if (debug)
-		{
+		if (debug) // Debug
 			cout << "Player " << game_board.current_player_turn << " attacking at " << attack_coord.first << "," << attack_coord.second;
-		}
 
 		// Check validity of the attack coordinate
 		if (attack_coord.first > 10 || attack_coord.first < 1 || attack_coord.second > 10 || attack_coord.second < 1)
 		{
-			if (debug)
+			if (debug) // Debug
 			{
 				cout << endl;
 				getchar();
@@ -119,7 +123,7 @@ int main(int argc, char* argv[]) {
 		}
 		char piece = game_board.board[attack_coord.first - 1][attack_coord.second - 1];
 
-		if (debug)
+		if (debug) // Debug
 		{
 			cout << " (" << piece << ")" << endl;
 			getchar();
@@ -165,6 +169,9 @@ int main(int argc, char* argv[]) {
 		// Notify players on results
 		game_board.player1.notifyOnAttackResult(0, attack_coord.first, attack_coord.second, result);
 		game_board.player2.notifyOnAttackResult(0, attack_coord.first, attack_coord.second, result);
+
+		if (debug) // Debug
+			game_board.printBoard(game_board);
 	}
 
 	// End the game

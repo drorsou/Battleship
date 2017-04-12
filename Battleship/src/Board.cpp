@@ -1,9 +1,5 @@
 #include "Board.h"
 
-Board::Board() {
-	
-}
-
 
 Board::Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2) : current_player_turn(0) {
 	for (int i = 0; i < BOARD_SIZE; i++) {
@@ -14,9 +10,9 @@ Board::Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2) : c
 
 	// Need to create here the ships lists for each player
 	
-	player1 = Player();
+	player1 = Player(0);
 	player1.setAttackFromFile(attack1);
-	player2 = Player();
+	player2 = Player(1);
 	player2.setAttackFromFile(attack2);
 }
 
@@ -26,7 +22,7 @@ void Board::gotoxy(int row, int col) {
 	coord.Y = row;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
-void Board::checkCoord(std::pair<bool, bool>& res, bool temp[BOARD_SIZE][BOARD_SIZE], int row, int col, char t) {
+int Board::checkCoord(std::pair<bool, bool>& res, bool temp[BOARD_SIZE][BOARD_SIZE], int row, int col, char t) {
 	int len = 0;
 	res.first = false;
 	res.second = false;
@@ -71,7 +67,7 @@ bool Board::checkBoard() {
 	bool BsizeOShape[4] = { false };
 	bool Adjacent = false;
 	bool result = true;
-	int checkRes;
+	int checkRes = 0;
 	for(int row = 0; row < BOARD_SIZE; row++)
 		for (int col = 0; col < BOARD_SIZE; col++)
 		{
@@ -79,7 +75,7 @@ bool Board::checkBoard() {
 			{
 				color = this->coordColor(row, col); 
 				t = this->shipType(row, col);
-				checkRes = checkCoord(temp, row, col, this->board[row][col]);
+				// checkRes = checkCoord(temp, row, col, this->board[row][col]); // Incorrect use of the function
 				
 				if (checkRes == 1)
 				{

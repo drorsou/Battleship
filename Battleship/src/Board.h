@@ -31,9 +31,8 @@ public:
 	Player player2;
 	int current_player_turn;
 
-	Board();
 	Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2);
-	void checkCoord(std::pair<bool, bool>&, bool [BOARD_SIZE][BOARD_SIZE], int, int, char);
+	int checkCoord(std::pair<bool, bool>&, bool [BOARD_SIZE][BOARD_SIZE], int, int, char);
 	/*
 		Pre: None
 		Post: returns true iff the board is legal.
