@@ -44,5 +44,7 @@ public:
 
 	static bool checkFilesAndPrintErrorsInOrder(string path);
 
+	static int ArgPos(char *str, int argc, char **argv);
+
 	Main();
 };

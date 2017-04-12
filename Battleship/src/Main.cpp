@@ -7,7 +7,7 @@ string attackBFile;
 vector<std::pair<int, int>> attackAVector;
 vector<std::pair<int, int>> attackBVector;
 
-bool debug = true;
+bool debug = false;
 
 
 
@@ -15,10 +15,22 @@ Main::Main() {
 
 }
 
+int Main::ArgPos(char *str, int argc, char **argv) {
+	int a;
+	for (a = 1; a < argc; a++)
+	{
+		if (!strcmp(str, argv[a]))		
+			return a;
+	}
+	return -1;
+}
 
 int main(int argc, char* argv[]) {
 	// Check for arguments
 	string path;
+	bool isPrint = true; // default true
+	int delay = 500; // defualt - half a second per attack
+	int pos;	
 	if (argc > 1)
 		path = argv[1];
 	else
@@ -27,7 +39,34 @@ int main(int argc, char* argv[]) {
 	if (!filesExist)
 	{
 		getchar();
-		return -1; //TODO-exit with errors
+		return EXIT_FAILURE; //TODO-exit with errors
+	}
+	if (argc > 2)
+	{
+		if ((pos = Main::ArgPos((char *)"-quiet", argc, argv)) > 0)
+		{
+			isPrint = false;
+			delay = 0;
+		}
+		else
+		{
+			if ((pos = Main::ArgPos((char *)"-delay", argc, argv)) > 0)
+			{
+				if (pos < argc - 1)
+					delay = atoi(argv[pos + 1]);
+				else
+				{
+					cout << "Error: No value for delay parameter\n";
+					return EXIT_FAILURE;
+				}
+			}
+			else
+			{
+				cout << "Error: Wrong parameter\n";
+				return EXIT_FAILURE;
+			}
+		}
+			
 	}
 
 	// Check for -quiet
@@ -37,12 +76,12 @@ int main(int argc, char* argv[]) {
 	bool errorOccur = false;
 	Main::parseAttack(errorOccur);
 	if (errorOccur)//error accuured
-		return -1;///TODO-exit on errors
+		return EXIT_FAILURE;///TODO-exit on errors
 
 	// Parse Board
 	char parsed_board[BOARD_SIZE][BOARD_SIZE];
 	if (Main::parseBoard(boardFile, parsed_board))
-		return -1; // Error in parsing
+		return EXIT_FAILURE; // Error in parsing
 
 
 	// Initialize game
@@ -62,7 +101,8 @@ int main(int argc, char* argv[]) {
 	// board.player1.setBoard(board.board, 10, 10);
 	// board.player2.setBoard(board.board, 10, 10);
 	
-	game_board.printBoard(game_board);
+	if(isPrint == true)
+		game_board.printBoard(game_board);
 	// End initialize
 	
 
@@ -129,7 +169,7 @@ int main(int argc, char* argv[]) {
 		if (debug) // Debug
 		{
 			cout << " (" << piece << ")" << endl;
-			getchar();
+			//getchar();
 		}
 		
 		// Attack player A ship
@@ -173,8 +213,11 @@ int main(int argc, char* argv[]) {
 		game_board.player1.notifyOnAttackResult(0, attack_coord.first, attack_coord.second, result);
 		game_board.player2.notifyOnAttackResult(0, attack_coord.first, attack_coord.second, result);
 
-		if (debug) // Debug
-			game_board.printBoard(game_board);
+		if (isPrint == true) // update the board
+		{
+			Board::updateBoard(game_board, attack_coord.first, attack_coord.second);
+			Sleep(delay);
+		}
 	}
 
 	// End the game
@@ -186,8 +229,7 @@ int main(int argc, char* argv[]) {
 	cout << "Player A: " << game_board.player1.score << endl;
 	cout << "Player B: " << game_board.player2.score << endl;
 	
-	// Free memory?
-	game_board.printBoard(game_board);
+	// Free memory?	
 	getchar();
 	return 0;
 };
