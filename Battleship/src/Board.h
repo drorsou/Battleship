@@ -33,7 +33,7 @@ public:
 
 	Board();
 	Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2);
-	void checkCoord(std::pair<bool, bool>&, bool [BOARD_SIZE][BOARD_SIZE], int, int, char);
+	bool checkCoord(bool*, bool*, bool [BOARD_SIZE][BOARD_SIZE], int, int, char);
 	/*
 		Pre: None
 		Post: returns true iff the board is legal.

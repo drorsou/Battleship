@@ -26,18 +26,28 @@ void Board::gotoxy(int row, int col) {
 	coord.Y = row;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
-void Board::checkCoord(std::pair<bool, bool>& res, bool temp[BOARD_SIZE][BOARD_SIZE], int row, int col, char t) {
+bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool temp[BOARD_SIZE][BOARD_SIZE], int row, int col, char t) {
 	int len = 0;
-	res.first = false;
-	res.second = false;
+	bool res = true;
+	bool dimensionFlag;
 	if ((row < BOARD_SIZE - 1 && this->board[row + 1][col] == t) && (col < BOARD_SIZE - 1 && this->board[row][col + 1] == t))
-		res.first = true; // illegal ship size.
+		*sizeOShape = true; // illegal ship size.
 	for (int i = row + 1; i < BOARD_SIZE && this->board[i][col] != BLANK; i++)
 	{
-		if (temp[i][col] == true && this->board[i][col] == t)
-			res.first = true;
-		if(this->board[i][col] != t)
-			res.second = true;// adjacent ships!
+		// Check for adjacent with the same type or if this tile was used in a different ship of this type.
+		if ((this->board[i][col] == t && temp[i][col] == true) || (col > 0 && this->board[i][col - 1] == t) || (col < BOARD_SIZE - 1 && this->board[i][col+1]) == t)
+		{
+			*sizeOShape = true;
+			temp[i][col] = true;
+			res = false;
+		}
+		// check if we already checked this tile (maybe a part of different ship)
+		if (this->board[i][col] != t)
+		{
+			*adjacent = true;// adjacent ships!
+			//res = false;
+			break;
+		} // No problems found
 		else
 		{
 			len++;
@@ -46,8 +56,20 @@ void Board::checkCoord(std::pair<bool, bool>& res, bool temp[BOARD_SIZE][BOARD_S
 	}		
 	for (int j = col + 1; j < BOARD_SIZE && this->board[row][j] != BLANK; j++)
 	{
-		if (temp[row][j] == true || this->board[row][j] != t)
-			return -1; // adjacent ships!
+		// Check for adjacent with the same type or if this tile was used in a different ship of this type.
+		if ((this->board[row][j] == t && temp[row][j] == true) || (row > 0 && this->board[row - 1][j] == t) || (row < BOARD_SIZE - 1 && this->board[row + 1][j]) == t)
+		{
+			*sizeOShape = true;
+			temp[row][j] = true;
+			res = false;
+		}
+		// check if we already checked this tile (maybe a part of different ship)
+		if (this->board[row][j] != t)
+		{
+			*adjacent = true;// adjacent ships!
+			//res = false;
+			break;
+		} // No problems found
 		else
 		{
 			len++;
@@ -55,7 +77,10 @@ void Board::checkCoord(std::pair<bool, bool>& res, bool temp[BOARD_SIZE][BOARD_S
 		}
 	}
 	len++; // for the original point.
-	return Ship::checkDimensions(len, t) ? 1 : 0;
+	dimensionFlag = Ship::checkDimensions(len, t);
+	if (dimensionFlag == false)
+		*sizeOShape = true;
+	return (res && dimensionFlag);
 }
 bool Board::checkBoard() {
 	bool temp[BOARD_SIZE][BOARD_SIZE] = { false }; // creates a shadow board initialized to false.
@@ -71,7 +96,7 @@ bool Board::checkBoard() {
 	bool BsizeOShape[4] = { false };
 	bool Adjacent = false;
 	bool result = true;
-	int checkRes;
+	bool checkRes;
 	for(int row = 0; row < BOARD_SIZE; row++)
 		for (int col = 0; col < BOARD_SIZE; col++)
 		{
@@ -79,9 +104,11 @@ bool Board::checkBoard() {
 			{
 				color = this->coordColor(row, col); 
 				t = this->shipType(row, col);
-				checkRes = checkCoord(temp, row, col, this->board[row][col]);
-				
-				if (checkRes == 1)
+				if(color == 1)
+					checkRes = checkCoord(&(AsizeOShape[t]), &Adjacent, temp, row, col, this->board[row][col]);
+				else
+					checkRes = checkCoord(&(BsizeOShape[t]), &Adjacent, temp, row, col, this->board[row][col]);
+				if (checkRes == true)
 				{
 					start = make_pair(row, col);
 					if (this->board[row][col] == ABOAT || this->board[row][col] == BBOAT)
@@ -133,16 +160,7 @@ bool Board::checkBoard() {
 							BShips[currB] = Ship(start, end, t);
 						currB++;
 					}
-				}
-				else if (checkRes == 0)
-				{
-					if (color == 1)
-						AsizeOShape[t] = true;
-					else
-						BsizeOShape[t] = true;
-				}
-				else
-					Adjacent = true;
+				}				
 			}
 					
 		}
