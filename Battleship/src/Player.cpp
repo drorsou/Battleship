@@ -1,19 +1,27 @@
 #include "Player.h"
 
 
-Player::Player() : score(0) {
-	
+Player::Player()
+{
 }
 
-Player::Player(Ship ships[SHIPS_PER_PLAYER]){
-	for (int i = 0; i < SHIPS_PER_PLAYER; i++)
-		this->ships[i] = ships[i];
-};
+Player::Player(int player_number) : score(0),  player_number(player_number) {
+	
+}
 
 void Player::setBoard(const char** board, int numRows, int numCols) {
 	for (int i = 0; i < numRows; i++) {
 		for (int j = 0; j < numCols; j++)
 			player_board[i][j] = board[i][j];
+	}
+
+	if (player_number == 0)
+	{
+		// Change the player_board, ships accordingly
+	}
+	else if (player_number == 1)
+	{
+		// Change the player_board, ships accordingly
 	}
 };
 

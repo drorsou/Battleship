@@ -1,9 +1,5 @@
 #include "Board.h"
 
-Board::Board() {
-	
-}
-
 
 Board::Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2) : current_player_turn(0) {
 	for (int i = 0; i < BOARD_SIZE; i++) {
@@ -14,9 +10,9 @@ Board::Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2) : c
 
 	// Need to create here the ships lists for each player
 	
-	player1 = Player();
+	player1 = Player(0);
 	player1.setAttackFromFile(attack1);
-	player2 = Player();
+	player2 = Player(1);
 	player2.setAttackFromFile(attack2);
 }
 
