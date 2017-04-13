@@ -89,6 +89,11 @@ public:
 	static bool checkDimensions(int, char);
 
 	/*
+		Pre: gets a valid coordinate.
+		Post: returns true iff the coordinate is part of this ship
+	*/
+	bool isInThisShip(int row, int col)	{ return (row <= vert.second && row >= vert.first) && (col <= horz.second && col >= horz.first); }
+	/*
 		Pre: the ship was attacked, 
 			AND this isn't the second attack at this tile!
 		Post: lowers its size by 1, 
