@@ -99,8 +99,6 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool temp[BOARD_SIZE]
 
 bool Board::checkBoard() {
 	bool temp[BOARD_SIZE][BOARD_SIZE] = { false }; // creates a shadow board initialized to false.
-	Ship AShips[SHIPS_PER_PLAYER];
-	Ship BShips[SHIPS_PER_PLAYER];
 	Type t;
 	pair<int, int> vert;
 	pair<int, int> horz;
@@ -172,13 +170,13 @@ bool Board::checkBoard() {
 					if (color == 1)
 					{						
 						if (currA < SHIPS_PER_PLAYER)
-							AShips[currA] = Ship(vert, horz, t);
+							this->shipsA[currA] = Ship(vert, horz, t);
 						currA++;
 					}
 					else
 					{						
 						if (currB < SHIPS_PER_PLAYER)
-							BShips[currB] = Ship(vert, horz, t);
+							this->shipsB[currB] = Ship(vert, horz, t);
 						currB++;
 					}
 				}				
@@ -257,12 +255,6 @@ bool Board::checkBoard() {
 	{
 		cout << "Adjacent Ships on Board\n";
 		result = false;
-	}
-	// sets the ships only if it is a valid board.
-	if (result == true)
-	{
-		this->playerA.setShips(AShips);
-		this->playerB.setShips(BShips);
 	}
 	return result;
 }

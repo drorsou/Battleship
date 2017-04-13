@@ -122,9 +122,9 @@ int main(int argc, char* argv[]) {
 	while (game_in_progress)
 	{
 		// Get the next attack
-		if (game_board.playerAHasAttacks() || game_board.playerBHasAttacks)
+		if (game_board.playerAHasAttacks() == true || game_board.playerBHasAttacks() == true)
 		{
-			if (!game_board.playerAHasAttacks)
+			if (game_board.playerAHasAttacks() == false)
 			{
 				if (debug) // Debug
 					cout << "No attacks left for player A" << endl;

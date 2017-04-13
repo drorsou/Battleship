@@ -9,10 +9,6 @@ Player::Player(int player_number) : score(0),  player_number(player_number) {
 	
 }
 
-void Player::setShips(Ship ships[SHIPS_PER_PLAYER]) {
-	for (int i = 0; i < SHIPS_PER_PLAYER; i++)
-		this->ships[i] = ships[i];
-}
 
 void Player::setBoard(const char** board, int numRows, int numCols) {
 	for (int i = 0; i < numRows; i++) {
