@@ -7,7 +7,6 @@
 
 class Player: IBattleshipGameAlgo {
 	char player_board[10][10];
-	Ship ships[SHIPS_PER_PLAYER];
 	int player_number; // 0 for A and 1 for B
 
 public:

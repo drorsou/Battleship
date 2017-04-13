@@ -18,18 +18,18 @@
 
 
 class Board {
-	
-	/*
-		privte methods
-	*/
+	char board[BOARD_SIZE][BOARD_SIZE];
+	int current_player_turn;
+	Player playerA;
+	Player playerB;
+	Ship shipsA[SHIPS_PER_PLAYER];
+	Ship shipsB[SHIPS_PER_PLAYER];
+
+
 	static void printLine();
 	static void gotoxy(int, int);
 
 public:
-	char board[BOARD_SIZE][BOARD_SIZE];
-	Player player1;
-	Player player2;
-	int current_player_turn;
 
 	Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2);
 	bool checkCoord(bool*, bool*, bool [BOARD_SIZE][BOARD_SIZE], int, int, char);
@@ -74,4 +74,16 @@ public:
 	*/
 	static void updateBoard(const Board &, int, int);
 
+	void notifyResult(int row, int col, AttackResult result);
+
+	char getCoordValue(int row, int col) { return board[row][col]; }
+	void setCoordValue(int row, int col, char val) { board[row][col] = val; }
+	int getScoreA() { return playerA.score; }
+	int getScoreB() { return playerB.score; }
+	bool playerAHasAttacks() { return playerA.attack_from_file.hasAttacks(); }
+	bool playerBHasAttacks() { return playerB.attack_from_file.hasAttacks(); }
+	std::pair<int, int> attackPlayerA() { return playerA.attack(); }
+	std::pair<int, int> attackPlayerB() { return playerB.attack(); }
+	int getTurn() { return current_player_turn; }
+	void setTurn(int num) { current_player_turn = num; }
 };

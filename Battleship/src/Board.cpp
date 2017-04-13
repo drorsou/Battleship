@@ -7,21 +7,29 @@ Board::Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2) : c
 			board[i][j] = b[i][j];
 		}
 	}
-	this->player1 = Player::Player(0);
-	this->player2 = Player::Player(1);
+	this->playerA = Player::Player(0);
+	this->playerB = Player::Player(1);
 	if (this->checkBoard() == true)
 	{
-		player1.setAttackFromFile(attack1);
-		player2.setAttackFromFile(attack2);
+		playerA.setAttackFromFile(attack1);
+		playerB.setAttackFromFile(attack2);
 	}
 	else
 	{
 		// Marking for main that the board is faulty.
-		player1.score = -1;
-		player2.score = -1;
+		playerA.score = -1;
+		playerB.score = -1;
 	}
 	
 }
+
+
+void Board::notifyResult(int row, int col, AttackResult result)
+{
+	playerA.notifyOnAttackResult(0, row, col, result);
+	playerB.notifyOnAttackResult(1, row, col, result);
+}
+
 
 void Board::gotoxy(int row, int col) {
 	COORD coord;
@@ -29,6 +37,8 @@ void Board::gotoxy(int row, int col) {
 	coord.Y = row;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
+
+
 bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool temp[BOARD_SIZE][BOARD_SIZE], int row, int col, char t) {
 	int len = 0;
 	bool res = true;
@@ -85,6 +95,8 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool temp[BOARD_SIZE]
 		*sizeOShape = true; // happens if the ship is shorter or longer than the legal size
 	return (res && dimensionFlag);
 }
+
+
 bool Board::checkBoard() {
 	bool temp[BOARD_SIZE][BOARD_SIZE] = { false }; // creates a shadow board initialized to false.
 	Ship AShips[SHIPS_PER_PLAYER];
@@ -249,11 +261,12 @@ bool Board::checkBoard() {
 	// sets the ships only if it is a valid board.
 	if (result == true)
 	{
-		this->player1.setShips(AShips);
-		this->player2.setShips(BShips);
+		this->playerA.setShips(AShips);
+		this->playerB.setShips(BShips);
 	}
 	return result;
 }
+
 
 void Board::printBoard(const Board & br) {
 	int i, j;	
@@ -324,6 +337,8 @@ void Board::printBoard(const Board & br) {
 		Board::printLine();
 	}	
 }
+
+
 void Board::updateBoard(const Board & br, int row, int col) {
 	row--;
 	col--;
@@ -346,6 +361,8 @@ void Board::updateBoard(const Board & br, int row, int col) {
 	}
 	Board::gotoxy(22, 0); // moving cursor back to the bottom.
 }
+
+
 void Board::printLine(){
 	int i;
 	printf("  |");

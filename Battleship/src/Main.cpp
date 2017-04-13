@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
 	Board game_board = Board(parsed_board, attack1, attack2);
 	
 	// In case of wrong board init, errors already printed on console!
-	if (game_board.player1.score == -1 || game_board.player2.score == -1)
+	if (game_board.getScoreA() == -1 || game_board.getScoreB() == -1)
 		return EXIT_FAILURE;
 
 	bool game_in_progress = true;
@@ -122,28 +122,28 @@ int main(int argc, char* argv[]) {
 	while (game_in_progress)
 	{
 		// Get the next attack
-		if (game_board.player1.attack_from_file.hasAttacks() || game_board.player2.attack_from_file.hasAttacks())
+		if (game_board.playerAHasAttacks() || game_board.playerBHasAttacks)
 		{
-			if (!game_board.player1.attack_from_file.hasAttacks())
+			if (!game_board.playerAHasAttacks)
 			{
 				if (debug) // Debug
 					cout << "No attacks left for player A" << endl;
-				game_board.current_player_turn = 1;
+				game_board.setTurn(1);
 			}
-			if (!game_board.player2.attack_from_file.hasAttacks())
+			if (!game_board.playerBHasAttacks())
 			{
 				if (debug) // Debug
 					cout << "No attacks left for player B" << endl;
-				game_board.current_player_turn = 0;
+				game_board.setTurn(0);
 			}
 
-			if (game_board.current_player_turn == 0)
+			if (game_board.getTurn() == 0)
 			{
-				attack_coord = game_board.player1.attack();
+				attack_coord = game_board.attackPlayerA();
 			}
-			else if (game_board.current_player_turn == 1)
+			else if (game_board.getTurn() == 1)
 			{
-				attack_coord = game_board.player2.attack();
+				attack_coord = game_board.attackPlayerB();
 			}
 		}
 		else
@@ -152,7 +152,7 @@ int main(int argc, char* argv[]) {
 		}
 
 		if (debug) // Debug
-			cout << "Player " << game_board.current_player_turn << " attacking at " << attack_coord.first << "," << attack_coord.second;
+			cout << "Player " << game_board.getTurn() << " attacking at " << attack_coord.first << "," << attack_coord.second;
 
 		// Check validity of the attack coordinate
 		if (attack_coord.first > 10 || attack_coord.first < 1 || attack_coord.second > 10 || attack_coord.second < 1)
@@ -164,7 +164,7 @@ int main(int argc, char* argv[]) {
 			}
 			continue;
 		}
-		char piece = game_board.board[attack_coord.first - 1][attack_coord.second - 1];
+		char piece = game_board.getCoordValue(attack_coord.first - 1, attack_coord.second - 1);
 
 		if (debug) // Debug
 		{
@@ -175,43 +175,42 @@ int main(int argc, char* argv[]) {
 		// Attack player A ship
 		if (piece == ABOAT || piece == ACRUISER || piece == ASUBMARINE || piece == ADESTROYER)
 		{
-			game_board.board[attack_coord.first - 1][attack_coord.second - 1] = HIT_SYM;
+			game_board.setCoordValue(attack_coord.first - 1, attack_coord.second - 1, HIT_SYM);
 			// change score
 			// check if ship is sunk
 			result = AttackResult::Hit;
 			// check if game is over
 
-			game_board.current_player_turn = 1;
+			game_board.setTurn(1);
 		}
 		// Attack player B ship
 		else if (piece == BBOAT || piece == BCRUISER || piece == BSUBMARINE || piece == BDESTROYER)
 		{
-			game_board.board[attack_coord.first - 1][attack_coord.second - 1] = HIT_SYM;
+			game_board.setCoordValue(attack_coord.first - 1, attack_coord.second - 1, HIT_SYM);
 			// change score
 			// check if ship is sunk
 			result = AttackResult::Hit;
 			// check if game is over
 
-			game_board.current_player_turn = 0;
+			game_board.setTurn(0);
 		}
 		// Attack an empty or already missed spot
 		else if (piece == BLANK || piece == MISS_SYM)
 		{
-			game_board.board[attack_coord.first - 1][attack_coord.second - 1] = MISS_SYM;
-			game_board.current_player_turn = 1 - game_board.current_player_turn;
+			game_board.setCoordValue(attack_coord.first - 1, attack_coord.second - 1, MISS_SYM);
+			game_board.setTurn(1 - game_board.getTurn());
 			result = AttackResult::Miss;
 		}
 		// Attack an already bombed spot
 		else if (piece == HIT_SYM)
 		{
-			game_board.board[attack_coord.first - 1][attack_coord.second - 1] = HIT_SYM;
-			game_board.current_player_turn = 1 - game_board.current_player_turn;
+			game_board.setCoordValue(attack_coord.first - 1, attack_coord.second - 1, HIT_SYM);
+			game_board.setTurn(1 - game_board.getTurn());
 			result = AttackResult::Miss;
 		}
 
 		// Notify players on results
-		game_board.player1.notifyOnAttackResult(0, attack_coord.first, attack_coord.second, result);
-		game_board.player2.notifyOnAttackResult(0, attack_coord.first, attack_coord.second, result);
+		game_board.notifyResult(attack_coord.first, attack_coord.second, result);
 
 		if (isPrint == true) // update the board
 		{
@@ -226,8 +225,8 @@ int main(int argc, char* argv[]) {
 	if (player_b_won)
 		cout << "Player B won" << endl;
 	cout << "Points:" << endl;
-	cout << "Player A: " << game_board.player1.score << endl;
-	cout << "Player B: " << game_board.player2.score << endl;
+	cout << "Player A: " << game_board.getScoreA() << endl;
+	cout << "Player B: " << game_board.getScoreB() << endl;
 	
 	// Free memory?	
 	getchar();
