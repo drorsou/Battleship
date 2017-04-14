@@ -125,11 +125,42 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool temp[BOARD_SIZE]
 	return (res && dimensionFlag);
 }
 
-bool Board::checkTarget(int color, char target) {
-	if (color == 0)
+bool Board::checkTarget(char target) {
+	if (this->current_player_turn == 0)
 		return target == ABOAT || target == ACRUISER || target == ASUBMARINE || target == ADESTROYER;
 	else
 		return target == BBOAT || target == BCRUISER || target == BSUBMARINE || target == BDESTROYER;
+}
+
+void Board::addScore(char piece)
+{
+	switch (piece)
+	{
+	case ABOAT:
+		this->scoreB += BOAT_SCORE;
+		break;
+	case ACRUISER:
+		this->scoreB += CRUISER_SCORE;
+		break;
+	case ASUBMARINE:
+		this->scoreB += SUBMARINE_SCORE;
+		break;
+	case ADESTROYER:
+		this->scoreB += DESTROYER_SCORE;
+		break;
+	case BBOAT:
+		this->scoreA += BOAT_SCORE;
+		break;
+	case BCRUISER:
+		this->scoreA += CRUISER_SCORE;
+		break;
+	case BSUBMARINE:
+		this->scoreA += SUBMARINE_SCORE;
+		break;
+	case BDESTROYER:
+		this->scoreA += DESTROYER_SCORE;
+		break;
+	}
 }
 /*
  * Perform a hit on a ship of 'type' in coords <row, col>

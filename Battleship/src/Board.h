@@ -70,10 +70,10 @@ public:
 
 	char getCoordValue(int row, int col) { return board[row][col]; }
 	void setCoordValue(int row, int col, char val) { board[row][col] = val; }
-	int getScoreA() { return scoreA; }
-	int getScoreB() { return scoreB; }	
+	int getScore(int color) { return color == 0? scoreA: scoreB; }
+	void addScore(char piece);
 	std::pair<int, int> attackPlayer(int color) { return color == 0 ? playerA->attack() : playerB->attack(); }	
 	int getTurn() { return current_player_turn; }
 	void changeTurn() { current_player_turn = 1 - current_player_turn ; }
-	bool checkTarget(int color, char target);
+	bool checkTarget(char target);
 };
