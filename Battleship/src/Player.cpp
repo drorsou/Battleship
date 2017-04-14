@@ -5,7 +5,7 @@ Player::Player()
 {
 }
 
-Player::Player(int player_number) : score(0),  player_number(player_number) {
+Player::Player(int player_number) : player_number(player_number) {
 	
 }
 
@@ -27,7 +27,10 @@ void Player::setBoard(const char** board, int numRows, int numCols) {
 };
 
 pair<int, int> Player::attack() {
-	return attack_from_file.getNextAttack();
+	if (this->attack_from_file.hasAttacks() == true)
+		return attack_from_file.getNextAttack();
+	else
+		return make_pair(-1, -1);
 };
 
 void Player::notifyOnAttackResult(int player, int row, int col, AttackResult result) {

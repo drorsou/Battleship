@@ -1,18 +1,20 @@
 #include "Board.h"
 
 
-Board::Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2) : current_player_turn(0) {
+Board::Board(char b[BOARD_SIZE][BOARD_SIZE], IBattleshipGameAlgo * playerA, IBattleshipGameAlgo * playerB) : current_player_turn(0) {
 	for (int i = 0; i < BOARD_SIZE; i++) {
 		for (int j = 0; j < BOARD_SIZE; j++) {
 			board[i][j] = b[i][j];
 		}
 	}
-	this->playerA = Player::Player(0);
-	this->playerB = Player::Player(1);
+	this->playerA = playerA;
+	this->playerB = playerB;
 	if (this->checkBoard() == true)
 	{
+		/*
 		playerA.setAttackFromFile(attack1);
 		playerB.setAttackFromFile(attack2);
+		*/
 
 		totalShipsAScore = 0;
 		totalShipsBScore = 0;
@@ -25,8 +27,8 @@ Board::Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2) : c
 	else
 	{
 		// Marking for main that the board is faulty.
-		playerA.score = -1;
-		playerB.score = -1;
+		scoreA = -1;
+		scoreB = -1;
 	}
 	
 }
@@ -34,8 +36,8 @@ Board::Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2) : c
 
 void Board::notifyResult(int row, int col, AttackResult result)
 {
-	playerA.notifyOnAttackResult(0, row, col, result);
-	playerB.notifyOnAttackResult(1, row, col, result);
+	playerA->notifyOnAttackResult(0, row, col, result);
+	playerB->notifyOnAttackResult(1, row, col, result);
 }
 
 
@@ -46,6 +48,25 @@ void Board::gotoxy(int row, int col) {
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
+Type Board::shipType(int row, int col) {
+	Type t;
+	switch (this->board[row][col])
+	{
+	case ABOAT: case BBOAT:
+		t = Boat;
+		break;
+	case ACRUISER: case BCRUISER:
+		t = Cruiser;
+		break;
+	case ASUBMARINE: case BSUBMARINE:
+		t = Submarine;
+		break;
+	case ADESTROYER: case BDESTROYER:
+		t = Destroyer;
+		break;
+	}
+	return t;
+}
 
 bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool temp[BOARD_SIZE][BOARD_SIZE], int row, int col, char t) {
 	int len = 0;
@@ -104,7 +125,12 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool temp[BOARD_SIZE]
 	return (res && dimensionFlag);
 }
 
-
+bool Board::checkTarget(int color, char target) {
+	if (color == 0)
+		return target == ABOAT || target == ACRUISER || target == ASUBMARINE || target == ADESTROYER;
+	else
+		return target == BBOAT || target == BCRUISER || target == BSUBMARINE || target == BDESTROYER;
+}
 /*
  * Perform a hit on a ship of 'type' in coords <row, col>
  * Update the board accordingly
@@ -121,7 +147,7 @@ bool Board::hitShip(int row, int col, char type) {
 		{
 			if (shipsA[i].hit())
 			{
-				playerB.score += shipsA[i].getScore();
+				scoreB += shipsA[i].getScore();
 				return true;
 			}
 			else
@@ -133,7 +159,7 @@ bool Board::hitShip(int row, int col, char type) {
 		{
 			if (shipsB[i].hit())
 			{
-				playerA.score += shipsB[i].getScore();
+				scoreA += shipsB[i].getScore();
 				return true;
 			}
 			else
@@ -152,9 +178,9 @@ bool Board::hitShip(int row, int col, char type) {
 bool Board::hasPlayerWon(int player)
 {
 	if (player == 0)
-		return playerA.score == totalShipsBScore ? true : false;
+		return scoreA == totalShipsBScore ? true : false;
 	if (player == 1)
-		return playerB.score == totalShipsAScore ? true : false;
+		return scoreB == totalShipsAScore ? true : false;
 
 	return false;
 }

@@ -29,8 +29,15 @@ int main(int argc, char* argv[]) {
 	// Check for arguments
 	string path;
 	bool isPrint = true; // default true
+	bool playerExhausted = false;
 	int delay = 500; // defualt - half a second per attack
-	int pos;	
+	int pos;
+	Player playerA = Player::Player(0);
+	Player playerB = Player::Player(1);
+	IBattleshipGameAlgo * curr;
+	bool isSunk;
+	char piece;
+
 	if (argc > 1)
 		path = argv[1];
 	else
@@ -87,11 +94,13 @@ int main(int argc, char* argv[]) {
 	// Initialize game
 	Attack attack1 = Attack(attackAVector);
 	Attack attack2 = Attack(attackBVector);
-	Board game_board = Board(parsed_board, attack1, attack2);
+	playerA.setAttackFromFile(attack1);
+	playerB.setAttackFromFile(attack2);
+	Board game_board = Board(parsed_board, &playerA, &playerB);
 	
-	// In case of wrong board init, errors already printed on console!
+	// In case of wrong board init - quit, the errors are already printed on console!
 	if (game_board.getScoreA() == -1 || game_board.getScoreB() == -1)
-		return EXIT_FAILURE;
+		return EXIT_FAILURE;	
 
 	bool game_in_progress = true;
 	pair<int, int> attack_coord;
@@ -106,72 +115,32 @@ int main(int argc, char* argv[]) {
 	// End initialize
 	
 
-	// Some testing
-	/*getchar();
-	Board::updateBoard(game_board, 5, 5);
-	getchar();
-	Board::updateBoard(game_board, 8, 4);
-	getchar();
-	Board::updateBoard(game_board, 7, 4);
-	getchar();*/
-
 
 	/*
 	 * Battleships Game
 	 */
 	while (game_in_progress)
 	{
-		// Get the next attack
-		if (game_board.playerAHasAttacks() == true || game_board.playerBHasAttacks() == true)
+		attack_coord = game_board.attackPlayer(game_board.getTurn());
+		if (attack_coord.first == -1 && attack_coord.second == -1)
 		{
-			if (game_board.playerAHasAttacks() == false)
+			if (playerExhausted == false)
 			{
-				if (debug) // Debug
-					cout << "No attacks left for player A" << endl;
-				game_board.setTurn(1);
+				playerExhausted = true;
+				game_board.changeTurn();
 			}
-			if (!game_board.playerBHasAttacks())
+			else
 			{
-				if (debug) // Debug
-					cout << "No attacks left for player B" << endl;
-				game_board.setTurn(0);
-			}
-
-			if (game_board.getTurn() == 0)
-			{
-				attack_coord = game_board.attackPlayerA();
-			}
-			else if (game_board.getTurn() == 1)
-			{
-				attack_coord = game_board.attackPlayerB();
+				game_in_progress = false;
 			}
 		}
 		else
 		{
-			break;
-		}
+			piece = game_board.getCoordValue(attack_coord.first - 1, attack_coord.second - 1);
+			isSunk = false;
 
-		if (debug) // Debug
-			cout << "Player " << game_board.getTurn() << " attacking at " << attack_coord.first << "," << attack_coord.second;
-
-		// Check validity of the attack coordinate
-		if (attack_coord.first > 10 || attack_coord.first < 1 || attack_coord.second > 10 || attack_coord.second < 1)
-		{
-			if (debug) // Debug
-			{
-				cout << endl;
-				getchar();
-			}
-			continue;
-		}
-		char piece = game_board.getCoordValue(attack_coord.first - 1, attack_coord.second - 1);
-		bool isSunk = false;
-
-		if (debug) // Debug
-		{
-			cout << " (" << piece << ")" << endl;
-			//getchar();
-		}
+		}	
+		
 		
 		// Attack player A ship
 		if (piece == ABOAT || piece == ACRUISER || piece == ASUBMARINE || piece == ADESTROYER)
@@ -188,7 +157,7 @@ int main(int argc, char* argv[]) {
 				break;
 			}
 
-			game_board.setTurn(1);
+			game_board.changeTurn();
 		}
 		// Attack player B ship
 		else if (piece == BBOAT || piece == BCRUISER || piece == BSUBMARINE || piece == BDESTROYER)

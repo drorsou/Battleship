@@ -5,13 +5,12 @@
 
 #define SHIPS_PER_PLAYER 5
 
-class Player: IBattleshipGameAlgo {
+class Player: public IBattleshipGameAlgo {
 	char player_board[10][10];
 	int player_number; // 0 for A and 1 for B
-
-public:
 	Attack attack_from_file;
-	int score;
+
+public:	
 	Player();
 	Player(int player_num);
 	void setBoard(const char** board, int numRows, int numCols) override; // called once to notify player on his board

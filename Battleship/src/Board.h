@@ -20,54 +20,40 @@
 class Board {
 	char board[BOARD_SIZE][BOARD_SIZE];
 	int current_player_turn;
-	Player playerA;
-	Player playerB;
+	IBattleshipGameAlgo * playerA;
+	IBattleshipGameAlgo * playerB;
 	Ship shipsA[SHIPS_PER_PLAYER];
 	Ship shipsB[SHIPS_PER_PLAYER];
 	int totalShipsAScore;
 	int totalShipsBScore;
-
+	int scoreA;
+	int scoreB;
 
 	static void printLine();
 	static void gotoxy(int, int);
 
-public:
+	Type shipType(int row, int col);
 
-	Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2);
-	bool checkCoord(bool*, bool*, bool [BOARD_SIZE][BOARD_SIZE], int, int, char);
+	int coordColor(int row, int col) {
+		return (this->board[row][col] >= 'A' && this->board[row][col] <= 'Z') ? 1 : 2;
+	}
+
 	/*
-		Pre: None
-		Post: returns true iff the board is legal.
+	Pre: None
+	Post: returns true iff the board is legal.
 	*/
 	bool checkBoard();
+
+	
+public:
+
+	Board(char b[BOARD_SIZE][BOARD_SIZE], IBattleshipGameAlgo * playerA, IBattleshipGameAlgo * playerB);
+	bool checkCoord(bool*, bool*, bool [BOARD_SIZE][BOARD_SIZE], int, int, char);
+	
 
 	bool Board::hasPlayerWon(int player);
 	bool hitShip(int row, int col, char type);
 
-
-	int coordColor(int row,int col){
-		return (this->board[row][col] >= 'A' && this->board[row][col] <= 'Z') ? 1 : 2;
-	}
-
-	Type shipType(int row, int col) {
-		Type t;
-		switch (this->board[row][col])
-		{
-		case ABOAT: case BBOAT:
-			t = Boat;
-			break;
-		case ACRUISER: case BCRUISER:
-			t = Cruiser;
-			break;
-		case ASUBMARINE: case BSUBMARINE:
-			t = Submarine;
-			break;
-		case ADESTROYER: case BDESTROYER:
-			t = Destroyer;
-			break;
-		}
-		return t;
-	}
 	/*
 		Pre: Gets a legal board.
 		Post: prints the board in the console.
@@ -84,12 +70,10 @@ public:
 
 	char getCoordValue(int row, int col) { return board[row][col]; }
 	void setCoordValue(int row, int col, char val) { board[row][col] = val; }
-	int getScoreA() { return playerA.score; }
-	int getScoreB() { return playerB.score; }
-	bool playerAHasAttacks() { return playerA.attack_from_file.hasAttacks(); }
-	bool playerBHasAttacks() { return playerB.attack_from_file.hasAttacks(); }
-	std::pair<int, int> attackPlayerA() { return playerA.attack(); }
-	std::pair<int, int> attackPlayerB() { return playerB.attack(); }
+	int getScoreA() { return scoreA; }
+	int getScoreB() { return scoreB; }	
+	std::pair<int, int> attackPlayer(int color) { return color == 0 ? playerA->attack() : playerB->attack(); }	
 	int getTurn() { return current_player_turn; }
-	void setTurn(int num) { current_player_turn = num; }
+	void changeTurn() { current_player_turn = 1 - current_player_turn ; }
+	bool checkTarget(int color, char target);
 };
