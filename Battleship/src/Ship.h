@@ -8,6 +8,10 @@ enum Type { Boat, Cruiser, Submarine, Destroyer };
 #define CRUISER_LEN 2
 #define SUBMARINE_LEN 3
 #define DESTROYER_LEN 4
+#define BOAT_SCORE 2
+#define CRUISER_SCORE 3
+#define SUBMARINE_SCORE 7
+#define DESTROYER_SCORE 8
 #define ABOAT 'B'
 #define BBOAT 'b'
 #define ACRUISER 'P'
@@ -24,6 +28,8 @@ class Ship {
 	std::pair<int, int> horz;
 	Type type;
 	short int size;
+	int score;
+
 public:	
 	/*
 		Pre: vertlow <= verthigh, horzlow <= horzhigh and one must be an equallity.
@@ -32,56 +38,20 @@ public:
 	*/
 	Ship(){
 	}
-	Ship(int vertlow, int verthigh, int horzlow, int horzhigh, Type t) {
-		vert = std::make_pair(vertlow, verthigh);
-		horz = std::make_pair(horzlow, horzhigh);
-		type = t;
-		switch (t)
-		{
-		case Boat:
-			size = BOAT_LEN;
-			break;
-		case Cruiser:
-			size = CRUISER_LEN;
-			break;
-		case Submarine:
-			size = SUBMARINE_LEN;
-			break;
-		case Destroyer:
-			size = DESTROYER_LEN;
-			break;
-		}
-	}
-	Ship(std::pair<int, int> v, std::pair<int, int> h, Type t) {
-		vert = v;
-		horz = h;
-		type = t;
-		switch (t)
-		{
-		case Boat:
-			size = BOAT_LEN;
-			break;
-		case Cruiser:
-			size = CRUISER_LEN;
-			break;
-		case Submarine:
-			size = SUBMARINE_LEN;
-			break;
-		case Destroyer:
-			size = DESTROYER_LEN;
-			break;
-		}
-	}	
-	Ship(const Ship& ship) {
-		this->horz = make_pair(ship.horz.first, ship.horz.second);
-		this->vert = make_pair(ship.vert.first, ship.vert.second);
-		this->type = ship.type;
-		this->size = ship.size;
-	}
+
+	Ship(int vertlow, int verthigh, int horzlow, int horzhigh, Type t);
+
+	Ship(std::pair<int, int> v, std::pair<int, int> h, Type t);
+
+	Ship(const Ship& ship);
 
 	Type getType() { 
 		return this->type;
 	}
+
+	int Ship::getScore() { return this->score; }
+
+
 	/*
 		Pre: gets coordinates, and a ship type.
 		Post: return true iff these coordinates are legal for this ship type.
@@ -93,6 +63,8 @@ public:
 		Post: returns true iff the coordinate is part of this ship
 	*/
 	bool isInThisShip(int row, int col)	{ return (row <= vert.second && row >= vert.first) && (col <= horz.second && col >= horz.first); }
+
+
 	/*
 		Pre: the ship was attacked, 
 			AND this isn't the second attack at this tile!

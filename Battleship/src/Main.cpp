@@ -165,6 +165,7 @@ int main(int argc, char* argv[]) {
 			continue;
 		}
 		char piece = game_board.getCoordValue(attack_coord.first - 1, attack_coord.second - 1);
+		bool isSunk = false;
 
 		if (debug) // Debug
 		{
@@ -175,22 +176,34 @@ int main(int argc, char* argv[]) {
 		// Attack player A ship
 		if (piece == ABOAT || piece == ACRUISER || piece == ASUBMARINE || piece == ADESTROYER)
 		{
-			game_board.setCoordValue(attack_coord.first - 1, attack_coord.second - 1, HIT_SYM);
-			// change score
-			// check if ship is sunk
-			result = AttackResult::Hit;
-			// check if game is over
+			isSunk = game_board.hitShip(attack_coord.first - 1, attack_coord.second - 1, piece);
+			if (isSunk)
+				result = AttackResult::Sink;
+			else
+				result = AttackResult::Hit;
+			
+			if (game_board.hasPlayerWon(1) == true)
+			{
+				player_b_won = true;
+				break;
+			}
 
 			game_board.setTurn(1);
 		}
 		// Attack player B ship
 		else if (piece == BBOAT || piece == BCRUISER || piece == BSUBMARINE || piece == BDESTROYER)
 		{
-			game_board.setCoordValue(attack_coord.first - 1, attack_coord.second - 1, HIT_SYM);
-			// change score
-			// check if ship is sunk
-			result = AttackResult::Hit;
-			// check if game is over
+			isSunk = game_board.hitShip(attack_coord.first - 1, attack_coord.second - 1, piece);
+			if (isSunk)
+				result = AttackResult::Sink;
+			else
+				result = AttackResult::Hit;
+			
+			if (game_board.hasPlayerWon(0) == true)
+			{
+				player_a_won = true;
+				break;
+			}
 
 			game_board.setTurn(0);
 		}

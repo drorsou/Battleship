@@ -13,6 +13,14 @@ Board::Board(char b[BOARD_SIZE][BOARD_SIZE], Attack attack1, Attack attack2) : c
 	{
 		playerA.setAttackFromFile(attack1);
 		playerB.setAttackFromFile(attack2);
+
+		totalShipsAScore = 0;
+		totalShipsBScore = 0;
+		for (int i = 0; i < SHIPS_PER_PLAYER; i++)
+		{
+			totalShipsAScore += shipsA[i].getScore();
+			totalShipsBScore += shipsB[i].getScore();
+		}
 	}
 	else
 	{
@@ -94,6 +102,61 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool temp[BOARD_SIZE]
 	if (dimensionFlag == false)
 		*sizeOShape = true; // happens if the ship is shorter or longer than the legal size
 	return (res && dimensionFlag);
+}
+
+
+/*
+ * Perform a hit on a ship of 'type' in coords <row, col>
+ * Update the board accordingly
+ * Return true if the ship is sunk, otherwise false
+ */
+bool Board::hitShip(int row, int col, char type) {
+	// Update the board
+	setCoordValue(row, col, HIT_SYM);
+
+	// Check if the ship is sunk
+	for (int i = 0; i < SHIPS_PER_PLAYER; i++)
+	{
+		if (shipsA[i].isInThisShip(row, col))
+		{
+			if (shipsA[i].hit())
+			{
+				playerB.score += shipsA[i].getScore();
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		};
+		if (shipsB[i].isInThisShip(row, col))
+		{
+			if (shipsB[i].hit())
+			{
+				playerA.score += shipsB[i].getScore();
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		};
+	}
+	return false;
+}
+
+
+/*
+ *
+ */
+bool Board::hasPlayerWon(int player)
+{
+	if (player == 0)
+		return playerA.score == totalShipsBScore ? true : false;
+	if (player == 1)
+		return playerB.score == totalShipsAScore ? true : false;
+
+	return false;
 }
 
 

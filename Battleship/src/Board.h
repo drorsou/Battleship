@@ -24,6 +24,8 @@ class Board {
 	Player playerB;
 	Ship shipsA[SHIPS_PER_PLAYER];
 	Ship shipsB[SHIPS_PER_PLAYER];
+	int totalShipsAScore;
+	int totalShipsBScore;
 
 
 	static void printLine();
@@ -38,6 +40,10 @@ public:
 		Post: returns true iff the board is legal.
 	*/
 	bool checkBoard();
+
+	bool Board::hasPlayerWon(int player);
+	bool hitShip(int row, int col, char type);
+
 
 	int coordColor(int row,int col){
 		return (this->board[row][col] >= 'A' && this->board[row][col] <= 'Z') ? 1 : 2;

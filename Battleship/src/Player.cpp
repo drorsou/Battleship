@@ -18,11 +18,11 @@ void Player::setBoard(const char** board, int numRows, int numCols) {
 
 	if (player_number == 0)
 	{
-		// Change the player_board, ships accordingly
+		// Change the player_board, ships accordingly // TODO
 	}
 	else if (player_number == 1)
 	{
-		// Change the player_board, ships accordingly
+		// Change the player_board, ships accordingly // TODO
 	}
 };
 
