@@ -10,8 +10,7 @@ class Player: public IBattleshipGameAlgo {
 	int player_number; // 0 for A and 1 for B
 	Attack attack_from_file;
 
-public:	
-	Player();
+public:		
 	Player(int player_num);
 	void setBoard(const char** board, int numRows, int numCols) override; // called once to notify player on his board
 	pair<int, int> attack() override; // ask player for his move

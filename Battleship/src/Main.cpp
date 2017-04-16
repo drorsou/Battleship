@@ -31,10 +31,7 @@ int main(int argc, char* argv[]) {
 	bool isPrint = true; // default true
 	bool playerExhausted = false;
 	int delay = 500; // defualt - half a second per attack
-	int pos;
-	Player playerA = Player::Player(0);
-	Player playerB = Player::Player(1);
-	IBattleshipGameAlgo * curr;
+	int pos;		
 	bool isSunk;
 	char piece;
 
@@ -81,9 +78,11 @@ int main(int argc, char* argv[]) {
 
 	// Parse Attacks
 	bool errorOccur = false;
+	/*
 	Main::parseAttack(errorOccur);
 	if (errorOccur)//error accuured
 		return EXIT_FAILURE;///TODO-exit on errors
+		*/
 
 	// Parse Board
 	char parsed_board[BOARD_SIZE][BOARD_SIZE];
@@ -92,8 +91,10 @@ int main(int argc, char* argv[]) {
 
 
 	// Initialize game
-	Attack attack1 = Attack(attackAVector);
-	Attack attack2 = Attack(attackBVector);
+	Player playerA = Player::Player(0);
+	Player playerB = Player::Player(1);
+	Attack attack1 = Attack(attackAFile);
+	Attack attack2 = Attack(attackBFile);
 	playerA.setAttackFromFile(attack1);
 	playerB.setAttackFromFile(attack2);
 	Board game_board = Board(parsed_board, &playerA, &playerB);
@@ -138,11 +139,8 @@ int main(int argc, char* argv[]) {
 		{
 			piece = game_board.getCoordValue(attack_coord.first - 1, attack_coord.second - 1);
 			if (piece != BLANK && piece != MISS_SYM && piece != HIT_SYM)
-			{
-				isSunk = game_board.hitShip(attack_coord.first - 1, attack_coord.second - 1, piece);
-				result = isSunk ? AttackResult::Sink : AttackResult::Hit;
-				if (isSunk == true)
-					game_board.addScore(piece);
+			{				
+				result = game_board.hitShip(attack_coord.first - 1, attack_coord.second - 1, piece) ? AttackResult::Sink : AttackResult::Hit;
 				if (game_board.checkTarget(piece) == false)
 					game_board.changeTurn();
 				game_board.setCoordValue(attack_coord.first - 1, attack_coord.second - 1, HIT_SYM);

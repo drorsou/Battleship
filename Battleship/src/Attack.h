@@ -1,20 +1,33 @@
 #pragma once
 #include <utility>
 #include <vector>
-
+#include <queue>
+#include <sstream>
+#include <iostream>
+#include <fstream>
 class Attack {
-	std::vector<std::pair<int, int>> list;
-	unsigned int index;
+	std::queue<std::pair<int, int>> list;	
 	
+	/*
+		private methods
+	*/
+	bool processLine(const std::string& line, std::pair<int, int> * res);
+	bool is_number(const std::string &s);
+	std::vector<std::string> split(const std::string &s, char delim);
+	void removeCharFromString(std::string &str, char charToRemove);
 public:
+	bool init;
 	Attack() {}
-
-	Attack(std::vector<std::pair<int, int>> list) : list(list), index(0) {}
+	Attack(std::string & path);
+	
 	/*
 		Pre: there are available attacks (i.e index < list.size)
 		Post: returns the coords of the next attack
 	*/
-	std::pair<int, int> getNextAttack() { return list[index++]; }
+	std::pair<int, int> getNextAttack();
+	
+	bool hasAttacks() { return !list.empty(); }
 
-	bool hasAttacks() { return index < list.size(); }
+	bool loadFromAttackFile(const std::string& attackPath);
+	
 };

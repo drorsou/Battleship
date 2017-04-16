@@ -1,9 +1,6 @@
 #include "Player.h"
 
 
-Player::Player()
-{
-}
 
 Player::Player(int player_number) : player_number(player_number) {
 	
@@ -34,6 +31,8 @@ pair<int, int> Player::attack() {
 };
 
 void Player::notifyOnAttackResult(int player, int row, int col, AttackResult result) {
+	row--;
+	col--;
 	if (result == AttackResult::Miss)
 		player_board[row][col] = MISS_SYM;
 	else if (result == AttackResult::Hit)
