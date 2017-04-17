@@ -18,7 +18,7 @@ public:
 
 	//static string fileInDirFileName ;//the name of the file which will consust the name of the files in dir
 
-	static bool parseAttack(bool& errorOccur);
+	//static bool parseAttack(bool& errorOccur);
 
 	static bool checkChar(char);
 
@@ -31,7 +31,7 @@ public:
 	static void writeToFileTheFilesInDir(string path);
 
 	static void printErrorOfFiles(string fileType, string path);
-
+	/*
 	static vector<std::pair<int, int>> loadFromAttackFile(const string& attackPath, bool& errorOccur);
 
 	static std::pair<int, int> processLine(const string& line, bool& errorOcuured, bool& invalidAttack);
@@ -41,7 +41,7 @@ public:
 	static bool is_number(const std::string &s);
 
 	static std::vector<std::string> split(const std::string &s, char delim);
-
+	*/
 	static bool checkFilesAndPrintErrorsInOrder(string path);
 
 	static int ArgPos(char *str, int argc, char **argv);

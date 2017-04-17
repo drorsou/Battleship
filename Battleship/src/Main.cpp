@@ -31,8 +31,7 @@ int main(int argc, char* argv[]) {
 	bool isPrint = true; // default true
 	bool playerExhausted = false;
 	int delay = 500; // defualt - half a second per attack
-	int pos;		
-	bool isSunk;
+	int pos;	
 	char piece;
 
 	if (argc > 1)
@@ -127,7 +126,7 @@ int main(int argc, char* argv[]) {
 			if (playerExhausted == false)
 			{
 				playerExhausted = true;
-				game_board.changeTurn();
+				game_board.changeTurn();				
 			}
 			else
 			{
@@ -137,7 +136,7 @@ int main(int argc, char* argv[]) {
 		else
 		{
 			piece = game_board.getCoordValue(attack_coord.first, attack_coord.second);
-			
+	
 #ifdef DEBUG
 			std::cout << "Attacking " << attack_coord.first << "," << attack_coord.second << " (" << piece << ")" << endl;
 #endif
@@ -153,12 +152,12 @@ int main(int argc, char* argv[]) {
 				if (game_board.hasPlayerWon(0))
 				{
 					std::cout << "Player A won" << endl;
-					break;
+					game_in_progress = false;
 				}
 				if (game_board.hasPlayerWon(1))
 				{
 					std::cout << "Player B won" << endl;
-					break;
+					game_in_progress = false;
 				}
 
 #ifdef DEBUG
@@ -181,7 +180,7 @@ int main(int argc, char* argv[]) {
 		// Notify players on results
 		game_board.notifyResult(attack_coord.first, attack_coord.second, result);
 
-		if (isPrint == true) // update the board print
+		if (isPrint == true && attack_coord.first != -1 && attack_coord.second != -1) // update the board print
 		{
 			Board::updateBoard(game_board, attack_coord.first, attack_coord.second);
 			Sleep(delay);
@@ -244,14 +243,14 @@ bool Main::checkFilesAndPrintErrorsInOrder(string path)
 	}
 }
 
-
+/*
 //return bool- if true-error occured
 bool Main::parseAttack(bool& errorOccur) {
 
 	attackAVector = Main::loadFromAttackFile(attackAFile, errorOccur);
 	attackBVector = Main::loadFromAttackFile(attackBFile, errorOccur);
 	return errorOccur;
-};
+};*/
 
 bool Main::checkChar(char c) {
 	return (c == ABOAT || c == BBOAT || c == ACRUISER || c == BCRUISER || c == ASUBMARINE || c == BSUBMARINE || c == ADESTROYER || c == BDESTROYER);
@@ -349,7 +348,7 @@ void Main::printErrorOfFiles(string fileType, string path)
 	std::cout << error << endl;
 }
 
-
+/*
 //loads a file (this is public becouse we allow to initialize our object with no param)
 vector<std::pair<int, int>> Main::loadFromAttackFile(const string& attackPath, bool& errorOccur)
 {
@@ -437,7 +436,7 @@ void Main::removeCharFromString(string &str, char charToRemove) {
 }
 
 
-
+*/
 
 
 

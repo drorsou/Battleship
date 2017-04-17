@@ -155,7 +155,10 @@ bool Board::hitShip(int row, int col, char type) {
 			{
 				return false;
 			}
-		};
+		}
+	}
+	for (int i = 0; i < SHIPS_PER_PLAYER; i++)
+	{
 		if (shipsB[i].isInThisShip(row, col))
 		{
 			if (shipsB[i].hit())
@@ -167,7 +170,7 @@ bool Board::hitShip(int row, int col, char type) {
 			{
 				return false;
 			}
-		};
+		}
 	}
 	return false;
 }
@@ -214,44 +217,43 @@ bool Board::checkBoard() {
 					checkRes = checkCoord(&(BsizeOShape[t]), &Adjacent, temp, row, col, this->board[row][col]);
 				// Create the ship
 				if (checkRes == true)
-				{
-					vert = make_pair(row, col);
+				{					
 					if (this->board[row][col] == ABOAT || this->board[row][col] == BBOAT)
 					{
-						horz = make_pair(col, col);	
-						vert = make_pair(row, row);
+						horz = make_pair(col + 1, col + 1);	
+						vert = make_pair(row + 1, row + 1);
 					}
 					else
 					{
-						if (this->board[row + 1][col] != BLANK)
+						if (row < BOARD_SIZE - 1 && this->board[row + 1][col] != BLANK)
 						{
-							horz = make_pair(col, col);
+							horz = make_pair(col + 1, col + 1);
 							switch (t)
 							{
 							case Cruiser:								
-								vert = make_pair(row, row + CRUISER_LEN - 1);
+								vert = make_pair(row + 1, row + CRUISER_LEN);
 								break;
 							case Submarine:								
-								vert = make_pair(row, row + SUBMARINE_LEN - 1);
+								vert = make_pair(row + 1, row + SUBMARINE_LEN);
 								break;
 							case Destroyer:								
-								vert = make_pair(row, row + DESTROYER_LEN - 1);
+								vert = make_pair(row + 1, row + DESTROYER_LEN);
 								break;
 							}
 						}
 						else
 						{
-							vert = make_pair(row, row);
+							vert = make_pair(row + 1, row + 1);
 							switch (t)
 							{
 							case Cruiser:
-								horz = make_pair(col, col + CRUISER_LEN - 1);
+								horz = make_pair(col + 1, col + CRUISER_LEN);
 								break;
 							case Submarine:
-								horz = make_pair(col, col + SUBMARINE_LEN - 1);
+								horz = make_pair(col + 1, col + SUBMARINE_LEN);
 								break;
 							case Destroyer:
-								horz = make_pair(col, col + DESTROYER_LEN - 1);
+								horz = make_pair(col + 1, col + DESTROYER_LEN);
 								break;
 							}
 						}
@@ -406,10 +408,7 @@ void Board::printBoard(const Board & br) {
 				break;
 			case MISS_SYM:
 				SetConsoleTextAttribute(hConsole, COLOR_RED);
-				break;
-			default:
-				// Not writing anything!
-				break;
+				break;			
 			}
 			cout << br.board[j][i] << " ";
 			// resetting the color
