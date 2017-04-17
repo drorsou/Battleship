@@ -7,7 +7,7 @@ string attackBFile;
 vector<std::pair<int, int>> attackAVector;
 vector<std::pair<int, int>> attackBVector;
 
-bool debug = false;
+//#define DEBUG
 
 
 
@@ -60,13 +60,13 @@ int main(int argc, char* argv[]) {
 					delay = atoi(argv[pos + 1]);
 				else
 				{
-					cout << "Error: No value for delay parameter\n";
+					std::cout << "Error: No value for delay parameter\n";
 					return EXIT_FAILURE;
 				}
 			}
 			else
 			{
-				cout << "Error: Wrong parameter\n";
+				std::cout << "Error: Wrong parameter\n";
 				return EXIT_FAILURE;
 			}
 		}
@@ -90,7 +90,9 @@ int main(int argc, char* argv[]) {
 		return EXIT_FAILURE; // Error in parsing
 
 
-	// Initialize game
+	/*
+	 *Initialize game
+	 */
 	Player playerA = Player::Player(0);
 	Player playerB = Player::Player(1);
 	Attack attack1 = Attack(attackAFile);
@@ -108,14 +110,11 @@ int main(int argc, char* argv[]) {
 	bool player_a_won = false;
 	bool player_b_won = false;
 	AttackResult result;
-	// board.player1.setBoard(board.board, 10, 10);
-	// board.player2.setBoard(board.board, 10, 10);
 	
-	if(isPrint == true)
+	if (isPrint == true)
 		game_board.printBoard(game_board);
 	// End initialize
 	
-
 
 	/*
 	 * Battleships Game
@@ -137,14 +136,34 @@ int main(int argc, char* argv[]) {
 		}
 		else
 		{
-			piece = game_board.getCoordValue(attack_coord.first - 1, attack_coord.second - 1);
+			piece = game_board.getCoordValue(attack_coord.first, attack_coord.second);
+			
+#ifdef DEBUG
+			std::cout << "Attacking " << attack_coord.first << "," << attack_coord.second << " (" << piece << ")" << endl;
+#endif
+
 			if (piece != BLANK && piece != MISS_SYM && piece != HIT_SYM)
 			{				
-				result = game_board.hitShip(attack_coord.first - 1, attack_coord.second - 1, piece) ? AttackResult::Sink : AttackResult::Hit;
+				result = game_board.hitShip(attack_coord.first, attack_coord.second, piece) ? AttackResult::Sink : AttackResult::Hit;
 				if (game_board.checkTarget(piece) == false)
 					game_board.changeTurn();
-				game_board.setCoordValue(attack_coord.first - 1, attack_coord.second - 1, HIT_SYM);
+				game_board.setCoordValue(attack_coord.first, attack_coord.second, HIT_SYM);
 				result = AttackResult::Hit;
+				
+				if (game_board.hasPlayerWon(0))
+				{
+					std::cout << "Player A won" << endl;
+					break;
+				}
+				if (game_board.hasPlayerWon(1))
+				{
+					std::cout << "Player B won" << endl;
+					break;
+				}
+
+#ifdef DEBUG
+				std::cout << "Player A: " << game_board.getScore(0) << " , Player B: " << game_board.getScore(1) << endl;
+#endif
 			}
 			else
 			{
@@ -153,7 +172,7 @@ int main(int argc, char* argv[]) {
 					result = AttackResult::Hit;
 				else
 				{
-					game_board.setCoordValue(attack_coord.first - 1, attack_coord.second - 1, MISS_SYM);
+					game_board.setCoordValue(attack_coord.first, attack_coord.second, MISS_SYM);
 					result = AttackResult::Miss;
 				}
 			}
@@ -170,13 +189,9 @@ int main(int argc, char* argv[]) {
 	}
 
 	// End the game
-	if (player_a_won)
-		cout << "Player A won" << endl;
-	if (player_b_won)
-		cout << "Player B won" << endl;
-	cout << "Points:" << endl;
-	cout << "Player A: " << game_board.getScore(0) << endl;
-	cout << "Player B: " << game_board.getScore(1) << endl;
+	std::cout << "Points:" << endl;
+	std::cout << "Player A: " << game_board.getScore(0) << endl;
+	std::cout << "Player B: " << game_board.getScore(1) << endl;
 	
 	// Free memory?	
 	getchar();

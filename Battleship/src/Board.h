@@ -46,7 +46,7 @@ class Board {
 
 	
 public:
-
+	
 	Board(char b[BOARD_SIZE][BOARD_SIZE], IBattleshipGameAlgo * playerA, IBattleshipGameAlgo * playerB);
 	bool checkCoord(bool*, bool*, bool [BOARD_SIZE][BOARD_SIZE], int, int, char);
 	
@@ -68,8 +68,8 @@ public:
 
 	void notifyResult(int row, int col, AttackResult result);
 
-	char getCoordValue(int row, int col) { return board[row][col]; }
-	void setCoordValue(int row, int col, char val) { board[row][col] = val; }
+	char getCoordValue(int row, int col) { return board[row - 1][col - 1]; }
+	void setCoordValue(int row, int col, char val) { board[row - 1][col - 1] = val; }
 	int getScore(int color) { return color == 0? scoreA: scoreB; }	
 	std::pair<int, int> attackPlayer(int color) { return color == 0 ? playerA->attack() : playerB->attack(); }	
 	int getTurn() { return current_player_turn; }
