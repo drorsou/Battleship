@@ -42,10 +42,11 @@ int main(int argc, char* argv[]) {
 	if (!filesExist)
 	{
 		getchar();
-		return EXIT_FAILURE; //TODO-exit with errors
+		return EXIT_FAILURE;
 	}
 	if (argc > 2)
 	{
+		// Check for -quiet
 		if ((pos = Main::ArgPos((char *)"-quiet", argc, argv)) > 0)
 		{
 			isPrint = false;
@@ -53,6 +54,7 @@ int main(int argc, char* argv[]) {
 		}
 		else
 		{
+			// Check for -delay, can't appear at the same time!
 			if ((pos = Main::ArgPos((char *)"-delay", argc, argv)) > 0)
 			{
 				if (pos < argc - 1)
@@ -72,16 +74,11 @@ int main(int argc, char* argv[]) {
 			
 	}
 
-	// Check for -quiet
-	// Check for -delay
+	
+	
 
 	// Parse Attacks
-	bool errorOccur = false;
-	/*
-	Main::parseAttack(errorOccur);
-	if (errorOccur)//error accuured
-		return EXIT_FAILURE;///TODO-exit on errors
-		*/
+	bool errorOccur = false;	
 
 	// Parse Board
 	char parsed_board[BOARD_SIZE][BOARD_SIZE];
@@ -100,7 +97,7 @@ int main(int argc, char* argv[]) {
 	playerB.setAttackFromFile(attack2);
 	Board game_board = Board(parsed_board, &playerA, &playerB);
 	
-	// In case of wrong board init - quit, the errors are already printed on console!
+	// In case of wrong board init - quit, the errors are already printed on the console!
 	if (game_board.getScore(0) == -1 || game_board.getScore(1) == -1)
 		return EXIT_FAILURE;	
 
@@ -120,9 +117,11 @@ int main(int argc, char* argv[]) {
 	 */
 	while (game_in_progress)
 	{
+		// pulling a new attack, where -1,-1 represent an empty queue.
 		attack_coord = game_board.attackPlayer(game_board.getTurn());
 		if (attack_coord.first == -1 && attack_coord.second == -1)
 		{
+			// if both players are exhausted, end the game, otherwise continue attacking with the first player
 			if (playerExhausted == false)
 			{
 				playerExhausted = true;
@@ -136,37 +135,24 @@ int main(int argc, char* argv[]) {
 		else
 		{
 			piece = game_board.getCoordValue(attack_coord.first, attack_coord.second);
-	
-#ifdef DEBUG
-			std::cout << "Attacking " << attack_coord.first << "," << attack_coord.second << " (" << piece << ")" << endl;
-#endif
-
 			if (piece != BLANK && piece != MISS_SYM && piece != HIT_SYM)
 			{				
 				result = game_board.hitShip(attack_coord.first, attack_coord.second, piece) ? AttackResult::Sink : AttackResult::Hit;
-				if (game_board.checkTarget(piece) == false)
+				if (game_board.checkTarget(piece) == false && playerExhausted == false)
 					game_board.changeTurn();
 				game_board.setCoordValue(attack_coord.first, attack_coord.second, HIT_SYM);
 				result = AttackResult::Hit;
 				
-				if (game_board.hasPlayerWon(0))
-				{
-					std::cout << "Player A won" << endl;
+				if (game_board.hasPlayerWon(0) || game_board.hasPlayerWon(1))
+				{					
 					game_in_progress = false;
 				}
-				if (game_board.hasPlayerWon(1))
-				{
-					std::cout << "Player B won" << endl;
-					game_in_progress = false;
-				}
-
-#ifdef DEBUG
-				std::cout << "Player A: " << game_board.getScore(0) << " , Player B: " << game_board.getScore(1) << endl;
-#endif
+				
 			}
 			else
 			{
-				game_board.changeTurn();
+				if(playerExhausted == false)
+					game_board.changeTurn();
 				if (piece == HIT_SYM)
 					result = AttackResult::Hit;
 				else
@@ -186,7 +172,14 @@ int main(int argc, char* argv[]) {
 			Sleep(delay);
 		}
 	}
-
+	if (game_board.hasPlayerWon(0))
+	{
+		std::cout << "Player A won" << endl;
+	}
+	else if (game_board.hasPlayerWon(1))
+	{
+		std::cout << "Player B won" << endl;		
+	}
 	// End the game
 	std::cout << "Points:" << endl;
 	std::cout << "Player A: " << game_board.getScore(0) << endl;
