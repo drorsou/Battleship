@@ -64,13 +64,20 @@ bool Attack::processLine(const std::string& line, std::pair<int, int> * res) {
 		res->second = -1;
 		return  false; // ignore this line
 	}
-	row = stoi(tokens[0]);
-	col = stoi(tokens[1]);
+	try
+	{
+		row = stoi(tokens[0]);
+		col = stoi(tokens[1]);
+	}
+	catch (const std::exception&)
+	{
+		return false;
+	}
 	if (row < 1 || row > 10 || col < 1 || col > 10)
 	{
 		res->first = -1;
 		res->second = -1;
-		return  false; // ignore this line
+		return false; // ignore this line
 	}
 	res->first = row;
 	res->second = col;

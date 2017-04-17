@@ -74,11 +74,6 @@ int main(int argc, char* argv[]) {
 			
 	}
 
-	
-	
-
-	// Parse Attacks
-	bool errorOccur = false;	
 
 	// Parse Board
 	char parsed_board[BOARD_SIZE][BOARD_SIZE];
@@ -138,7 +133,7 @@ int main(int argc, char* argv[]) {
 			if (piece != BLANK && piece != MISS_SYM && piece != HIT_SYM)
 			{				
 				result = game_board.hitShip(attack_coord.first, attack_coord.second, piece) ? AttackResult::Sink : AttackResult::Hit;
-				if (game_board.checkTarget(piece) == false && playerExhausted == false)
+				if (game_board.checkTarget(piece) == true && playerExhausted == false)
 					game_board.changeTurn();
 				game_board.setCoordValue(attack_coord.first, attack_coord.second, HIT_SYM);
 				result = AttackResult::Hit;
