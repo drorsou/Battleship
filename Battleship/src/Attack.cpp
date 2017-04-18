@@ -54,8 +54,8 @@ bool Attack::processLine(const std::string& line, std::pair<int, int> * res) {
 	int col;
 	if (tokens.size() != 2)
 	{	
-		res->first = -10;
-		res->second = -10;
+		res->first = -1;
+		res->second = -1;
 		return false; // invalid line format
 	}
 	if (!Attack::is_number(tokens[0]) || !Attack::is_number(tokens[1]))
@@ -68,9 +68,12 @@ bool Attack::processLine(const std::string& line, std::pair<int, int> * res) {
 	{
 		row = stoi(tokens[0]);
 		col = stoi(tokens[1]);
+
 	}
 	catch (const std::exception&)
 	{
+		res->first = -1;
+		res->second = -1;
 		return false;
 	}
 	if (row < 1 || row > 10 || col < 1 || col > 10)
