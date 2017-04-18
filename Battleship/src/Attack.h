@@ -28,6 +28,11 @@ public:
 	
 	bool hasAttacks() { return !list.empty(); }
 
+	/*
+		Pre: gets a valid path to the attack file.
+		Post: parse the attacks from the file,
+				save it into the queue.
+	*/
 	bool loadFromAttackFile(const std::string& attackPath);
 	
 };

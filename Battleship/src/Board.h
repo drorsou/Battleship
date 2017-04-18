@@ -28,44 +28,79 @@ class Board {
 	int totalShipsBScore;
 	int scoreA;
 	int scoreB;
+	POINT origin;
 
 	static void printLine();
-	static void gotoxy(int, int);
+
+	void gotoxy(int, int);
 
 	Type shipType(int row, int col);
+	/*
+		Pre: None
+		Post: sets the current cursor position as the origin.
+	*/
+	void getCursorXY();
 
+	/*
+		Pre: gets a non-empty valid coordinate.
+		Post: returns the color of the piece on the board.
+	*/
 	int coordColor(int row, int col) {
 		return (this->board[row][col] >= 'A' && this->board[row][col] <= 'Z') ? 1 : 2;
 	}
 
 	/*
-	Pre: None
-	Post: returns true iff the board is legal.
+		Pre: None
+		Post: returns true iff the board is legal.
 	*/
 	bool checkBoard();
 
-	
+	/*
+	Pre: gets a pointer to the size or shape flag, 
+			to the adjacent flag,
+			The shadow board (which it changes), 
+			a non-empty valid coordinate and the char in it.
+	Post: returns true if this coord makes a valid ship,
+			if the size or shape aren't okay, update the flag,
+			and if there is an adajacent ship, update the flag.
+	*/
+	bool checkCoord(bool*, bool*, bool[BOARD_SIZE][BOARD_SIZE], int, int, char);
+
 public:
 	
 	Board(char b[BOARD_SIZE][BOARD_SIZE], IBattleshipGameAlgo * playerA, IBattleshipGameAlgo * playerB);
-	bool checkCoord(bool*, bool*, bool [BOARD_SIZE][BOARD_SIZE], int, int, char);
-	
 
+	
+	
+	/*
+		Pre: None
+		Post: returns true if this player won.
+	*/
 	bool Board::hasPlayerWon(int player);
+
+	/*
+		Pre: gets a non-empty valid coordinate and ship char in it.
+		Post: updates the board after shooting the coordinate,
+				if a ship was sunk, update the score,
+				return true iff a ship was sunk.
+	*/
 	bool hitShip(int row, int col, char type);
 
 	/*
 		Pre: Gets a legal board.
 		Post: prints the board in the console.
 	*/
-	static void printBoard(const Board &);
+	void printBoard();
 	/*
 		Pre: Gets a legal board, and the attack coordinate.
 			Assuming the board is already printed in the console.
 		Post: updates the board to show the attack according to the appropriate attack result.
 	*/
-	static void updateBoard(const Board &, int, int);
+	void updateBoard(int, int);
 
+	/*
+		Notify both players.
+	*/
 	void notifyResult(int row, int col, AttackResult result);
 
 	char getCoordValue(int row, int col) { return board[row - 1][col - 1]; }
@@ -74,5 +109,10 @@ public:
 	std::pair<int, int> attackPlayer(int color) { return color == 0 ? playerA->attack() : playerB->attack(); }	
 	int getTurn() { return current_player_turn; }
 	void changeTurn() { current_player_turn = 1 - current_player_turn ; }
+
+	/*
+		Pre: gets a valid tile value.
+		Post: return true if it was a self-hit.
+	*/
 	bool checkTarget(char target);
 };

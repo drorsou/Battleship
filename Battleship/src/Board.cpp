@@ -30,7 +30,7 @@ Board::Board(char b[BOARD_SIZE][BOARD_SIZE], IBattleshipGameAlgo * playerA, IBat
 		scoreA = -1;
 		scoreB = -1;
 	}
-	
+	getCursorXY();	
 }
 
 
@@ -43,8 +43,8 @@ void Board::notifyResult(int row, int col, AttackResult result)
 
 void Board::gotoxy(int row, int col) {
 	COORD coord;
-	coord.X = col;
-	coord.Y = row;
+	coord.X = col + this->origin.x;
+	coord.Y = row + this->origin.y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
@@ -352,7 +352,7 @@ bool Board::checkBoard() {
 }
 
 
-void Board::printBoard(const Board & br) {
+void Board::printBoard() {
 	int i, j;	
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	
@@ -377,7 +377,7 @@ void Board::printBoard(const Board & br) {
 			/* 
 				Color text according to player and ship type 
 			*/
-			switch (br.board[j][i])
+			switch (this->board[j][i])
 			{
 			case ABOAT:
 				SetConsoleTextAttribute(hConsole, COLOR_AQUA);				
@@ -410,7 +410,7 @@ void Board::printBoard(const Board & br) {
 				SetConsoleTextAttribute(hConsole, COLOR_RED);
 				break;			
 			}
-			cout << br.board[j][i] << " ";
+			cout << this->board[j][i] << " ";
 			// resetting the color
 			SetConsoleTextAttribute(hConsole, COLOR_WHITE);			
 		}
@@ -419,14 +419,25 @@ void Board::printBoard(const Board & br) {
 	}	
 }
 
-
-void Board::updateBoard(const Board & br, int row, int col) {
+void Board::getCursorXY() {
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	if(GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
+	    this->origin.x = csbi.dwCursorPosition.X;
+	    this->origin.y = csbi.dwCursorPosition.Y;
+	}
+	else
+	{
+		this->origin.x = 0;
+		this->origin.y = 0;
+	}
+}
+void Board::updateBoard(int row, int col) {
 	row--;
-	col--;
-	Board::gotoxy(2 * row + 2, 4 * col + 4);
+	col--;	
+	this->gotoxy(2 * row + 2, 4 * col + 4);
 	cout << "\b";
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	if (br.board[row][col] == BLANK || br.board[row][col] == MISS_SYM)
+	if (this->board[row][col] == BLANK || this->board[row][col] == MISS_SYM)
 	{
 		SetConsoleTextAttribute(hConsole, COLOR_RED);
 		cout << " " << MISS_SYM << " ";
@@ -440,7 +451,7 @@ void Board::updateBoard(const Board & br, int row, int col) {
 		// resetting the color
 		SetConsoleTextAttribute(hConsole, COLOR_WHITE);
 	}
-	Board::gotoxy(22, 0); // moving cursor back to the bottom.
+	this->gotoxy(22, 0); // moving cursor back to the bottom.
 }
 
 

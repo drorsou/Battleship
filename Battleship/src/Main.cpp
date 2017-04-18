@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
 	AttackResult result;
 	
 	if (isPrint == true)
-		game_board.printBoard(game_board);
+		game_board.printBoard();
 	// End initialize
 	
 
@@ -163,7 +163,7 @@ int main(int argc, char* argv[]) {
 
 		if (isPrint == true && attack_coord.first != -1 && attack_coord.second != -1) // update the board print
 		{
-			Board::updateBoard(game_board, attack_coord.first, attack_coord.second);
+			game_board.updateBoard(attack_coord.first, attack_coord.second);
 			Sleep(delay);
 		}
 	}
