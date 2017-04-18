@@ -207,7 +207,7 @@ bool Main::checkFilesAndPrintErrorsInOrder(string path)
 	if (!Main::checkIsValidDir(path))
 	{
 		Main::printErrorOfFiles("wrong path", path);
-		return true; //TODO -throw exception
+		return false; //TODO -throw exception
 	}
 	else
 	{
