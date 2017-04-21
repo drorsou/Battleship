@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
 	char piece;
 
 	if(argc < 2)
-		path = "";
+		path = ".";
 	else
 	{
 		if (std::string{ "-quiet" }.compare(argv[1]) == 0)
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
 				if (std::string{ "-quiet" }.compare(argv[2]) == 0)
 				{
 					isPrint = false;
-					path = "";
+					path = ".";
 				}
 				else if (std::string{ "-delay" }.compare(argv[2]) == 0)
 				{
@@ -87,22 +87,19 @@ int main(int argc, char* argv[]) {
 			}
 		}
 	}	
-	
 	bool filesExist = Main::checkFilesAndPrintErrorsInOrder(path);
+	
 	if (!filesExist)
 	{
 		getchar();
 		return EXIT_FAILURE;
-	}
-	
-
+	}	
 
 	// Parse Board
 	char parsed_board[BOARD_SIZE][BOARD_SIZE];
 	if (Main::parseBoard(boardFile, parsed_board))
 		return EXIT_FAILURE; // Error in parsing
-
-
+	
 	/*
 	 *Initialize game
 	 */
@@ -270,7 +267,7 @@ bool Main::checkChar(char c) {
  * Return 0 if no error, otherwise 1
  */
 int Main::parseBoard(string path, char b[BOARD_SIZE][BOARD_SIZE]) {
-	ifstream fin(path);
+	ifstream fin(path);	
 	string* temp_board = new string[10];;
 	for (int i = 0; i < 10; i++) {
 		std::getline(fin, temp_board[i]);
@@ -281,8 +278,7 @@ int Main::parseBoard(string path, char b[BOARD_SIZE][BOARD_SIZE]) {
 			else
 				b[i][j] = BLANK;
 		}
-	}
-
+	}	
 	// Check for error?
 
 	return 0;
