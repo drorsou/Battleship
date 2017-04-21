@@ -1,6 +1,8 @@
-bad_board_0.txt
-bad_board_1.txt
-bad_board_2.txt
-dirty_ilegal_movesA.attack-a
-dirty_ilegal_movesB.attack-b
+clean_movesA.attack-a
+clean_movesB.attack-b
+dirFiles.txt
 good_board_1.sboard
+LocalBattleship.exe
+LocalBattleship.exe.lnk
+LocalBattleship.ilk
+LocalBattleship.pdb

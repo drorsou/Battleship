@@ -9,7 +9,13 @@ vector<std::pair<int, int>> attackBVector;
 
 //#define DEBUG
 
-
+void Main::replaceChar(std::string& str, char ch1, char ch2) {
+	for (int i = 0; i < str.length(); i++) 
+	{
+		if (str[i] == ch1)
+			str[i] = ch2;
+	}	
+}
 
 Main::Main() {
 
@@ -34,45 +40,61 @@ int main(int argc, char* argv[]) {
 	int pos;	
 	char piece;
 
-	if (argc > 1)
-		path = argv[1];
-	else
+	if(argc < 2)
 		path = "";
+	else
+	{
+		if (std::string{ "-quiet" }.compare(argv[1]) == 0)
+		{
+			isPrint = false;
+			path = "";
+		}
+		else if(std::string{"-delay"}.compare(argv[1]) == 0) 
+		{
+			if (argc == 2) // illegal parameter - no delay set
+			{
+				std::cout << "Error: No value for delay parameter\n";
+				return EXIT_FAILURE;
+			}
+			else
+			{
+				delay = atoi(argv[2]);
+			}
+		}
+		else
+		{
+			path = argv[1];
+			Main::replaceChar(path, '/', '\\');
+			if (argc > 2)
+			{
+				if (std::string{ "-quiet" }.compare(argv[2]) == 0)
+				{
+					isPrint = false;
+					path = "";
+				}
+				else if (std::string{ "-delay" }.compare(argv[2]) == 0)
+				{
+					if (argc == 3) // illegal parameter - no delay set
+					{
+						std::cout << "Error: No value for delay parameter\n";
+						return EXIT_FAILURE;
+					}
+					else
+					{
+						delay = atoi(argv[3]);
+					}
+				}
+			}
+		}
+	}	
+	
 	bool filesExist = Main::checkFilesAndPrintErrorsInOrder(path);
 	if (!filesExist)
 	{
 		getchar();
 		return EXIT_FAILURE;
 	}
-	if (argc > 2)
-	{
-		// Check for -quiet
-		if ((pos = Main::ArgPos((char *)"-quiet", argc, argv)) > 0)
-		{
-			isPrint = false;
-			delay = 0;
-		}
-		else
-		{
-			// Check for -delay, can't appear at the same time!
-			if ((pos = Main::ArgPos((char *)"-delay", argc, argv)) > 0)
-			{
-				if (pos < argc - 1)
-					delay = atoi(argv[pos + 1]);
-				else
-				{
-					std::cout << "Error: No value for delay parameter\n";
-					return EXIT_FAILURE;
-				}
-			}
-			else
-			{
-				std::cout << "Error: Wrong parameter\n";
-				return EXIT_FAILURE;
-			}
-		}
-			
-	}
+	
 
 
 	// Parse Board
