@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 	// Check for arguments
 	string path;
 	bool isPrint = true; // default true
-	bool playerExhausted = false;
+	bool playerExhausted = false;//no more attcks from file 
 	int delay = 500; // defualt - half a second per attack
 	int pos;	
 	char piece;
@@ -317,7 +317,7 @@ std::pair<bool, string> Main::findPathOfFile(char* requiredExtention)
 
 }
 
-//find the first dll files at the folder(assume ordered by lexicographic order)
+//find the first dll files at the folder(assumes ordered in lexicographic order)
 std::pair<string, string> Main::findDllFiles()
 {
 	char* requiredExtention = "dll"; //TODO -uppercase?
@@ -354,7 +354,7 @@ std::pair<string, string> Main::findDllFiles()
 	return dllsNames;
 }
 
-std::pair<string, string> Main::printErrorsForDllFiles(string fileType, string path)
+void Main::printErrorsForDllFiles(string fileType, string path)
 {
 	if (path == "") {
 		//as written in the forum in moodle
@@ -383,7 +383,7 @@ void Main::writeToFileTheFilesInDir(string path)
 {
 	string cmd = "dir ";
 	cmd.append(path);
-//	cmd.append(" /b /a-d  > ");
+//	cmd.append(" /b /a-d  > ")
 	cmd.append(" /b /a-d /o-n > ");// /o-n for sorted order by file name(lexicographically)
 	cmd.append(fileInDirFileName);//name of the file to erite to
 	cmd.append(" 2> nul");

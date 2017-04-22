@@ -26,7 +26,7 @@ public:
 	//player A should get the first of the pait. player B should get second.
 	static std::pair<string, string> Main::findDllFiles();
 
-	static std::pair<string, string> Main::printErrorsForDllFiles(string fileType, string path);
+	static void Main::printErrorsForDllFiles(string fileType, string path);
 
 	static bool checkIsValidDir(string pathName);
 
@@ -39,6 +39,8 @@ public:
 	static int ArgPos(char *str, int argc, char **argv);
 
 	static void replaceChar(std::string& str, char ch1, char ch2);
+
+
 
 	Main();
 };
