@@ -21,6 +21,13 @@ public:
 
 	static std::pair<bool, string> findPathOfFile(char* requiredExtention);
 
+	//PRE: assumes the files name are ordered lexicorgrphically in the file
+	//POST: returns pair with dll names (without the directory path). if didn't find two dlls returns pair of nullptr.
+	//player A should get the first of the pait. player B should get second.
+	static std::pair<string, string> Main::findDllFiles();
+
+	static std::pair<string, string> Main::printErrorsForDllFiles(string fileType, string path);
+
 	static bool checkIsValidDir(string pathName);
 
 	static void writeToFileTheFilesInDir(string path);

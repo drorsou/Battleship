@@ -317,13 +317,74 @@ std::pair<bool, string> Main::findPathOfFile(char* requiredExtention)
 
 }
 
+//find the first dll files at the folder(assume ordered by lexicographic order)
+std::pair<string, string> Main::findDllFiles()
+{
+	char* requiredExtention = "dll"; //TODO -uppercase?
+	string line = "";
+	int indexOfSuffix = string::npos;
+	std::ifstream fin(fileInDirFileName);
+	int numDllsFound = 0;
+	std::pair<string, string> dllsNames;
+
+	if (!fin.fail()) {
+		while (std::getline(fin, line)&& numDllsFound!=2)
+		{
+			indexOfSuffix = line.find_last_of(".") + 1;
+			if (indexOfSuffix != string::npos)
+			{
+				string currSuffixOfFile = line.substr(indexOfSuffix);
+				if (currSuffixOfFile.compare(requiredExtention) == 0)
+				{
+					if (numDllsFound == 0)
+						dllsNames.first = line;
+					else
+						dllsNames.second = line;
+					numDllsFound++;
+				}
+			}
+		}
+	}
+	//there are no two dll files-> initialize with pair of nullptr
+	if (numDllsFound != 2)
+	{
+		dllsNames.first = nullptr;
+		dllsNames.second = nullptr;
+	}
+	return dllsNames;
+}
+
+std::pair<string, string> Main::printErrorsForDllFiles(string fileType, string path)
+{
+	if (path == "") {
+		//as written in the forum in moodle
+		path = "Working Directory";
+	}
+	string error;
+
+	if (fileType == "wrong path")
+		error = "Wrong path: ";
+	if (fileType == "board")
+		error = "Missing board file(*.sboard) looking in path : ";
+	if (fileType == "dll")
+		error = "Missing an algorithm(dll) file looking in path : ";
+	//TODO- print two other errors for load and intialization of dll
+
+	error.append(path);
+
+	std::cout << error << endl;
+	
+}
+
 
 //use system command to write all the files at the given dir to another file
+//the files are ordered lexicographically
 void Main::writeToFileTheFilesInDir(string path)
 {
 	string cmd = "dir ";
 	cmd.append(path);
-	cmd.append(" /b /a-d  > ");
+//	cmd.append(" /b /a-d  > ");
+	cmd.append(" /b /a-d /o-n > ");// /o-n for sorted order by file name(lexicographically)
 	cmd.append(fileInDirFileName);//name of the file to erite to
 	cmd.append(" 2> nul");
 	system(cmd.c_str());
@@ -335,7 +396,7 @@ void Main::writeToFileTheFilesInDir(string path)
 void Main::printErrorOfFiles(string fileType, string path)
 {
 	if (path == "") {
-		//as wrriten in the forum in moodle
+		//as written in the forum in moodle
 		path = "Working Directory";
 	}
 	string error;
