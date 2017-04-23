@@ -1,5 +1,6 @@
 #pragma once
-#include "Player.h"
+#include "attackFromFileAlgo.h"
+#include "FileReader.h"
 #include <iostream>
 #include <windows.h>
 
@@ -18,7 +19,7 @@
 
 
 class Board {
-	char board[BOARD_SIZE][BOARD_SIZE];
+	char** board;
 	int current_player_turn;
 	IBattleshipGameAlgo * playerA;
 	IBattleshipGameAlgo * playerB;
@@ -68,7 +69,7 @@ class Board {
 
 public:
 	
-	Board(char b[BOARD_SIZE][BOARD_SIZE], IBattleshipGameAlgo * playerA, IBattleshipGameAlgo * playerB);
+	Board(string path, IBattleshipGameAlgo * playerA, IBattleshipGameAlgo * playerB);
 
 	
 	
@@ -115,4 +116,12 @@ public:
 		Post: return true if it was a self-hit.
 	*/
 	bool checkTarget(char target);
+
+
+
+
+
+	bool parseBoard(string path);
+
+	bool checkChar(char c);
 };

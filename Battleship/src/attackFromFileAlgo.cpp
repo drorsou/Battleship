@@ -1,13 +1,12 @@
-#include "Player.h"
+#include "attackFromFileAlgo.h"
 
 
-
-Player::Player(int player_number) : player_number(player_number) {
-	
+attackFromFileAlgo::attackFromFileAlgo() {
 }
 
 
-void Player::setBoard(const char** board, int numRows, int numCols) {
+void attackFromFileAlgo::setBoard(int player, const char** board, int numRows, int numCols) {
+	player_number = player;
 	for (int i = 0; i < numRows; i++)
 		for (int j = 0; j < numCols; j++) {
 			player_board[i][j] = board[i][j];
@@ -22,14 +21,24 @@ void Player::setBoard(const char** board, int numRows, int numCols) {
 	}
 };
 
-pair<int, int> Player::attack() {
+
+bool attackFromFileAlgo::init(const std::string& path) {
+	attack_from_file = Attack(path);
+	if (attack_from_file.init == false)
+		return false;
+	return true;
+}
+
+
+pair<int, int> attackFromFileAlgo::attack() {
 	if (this->attack_from_file.hasAttacks() == true)
 		return attack_from_file.getNextAttack();
 	else
 		return make_pair(-1, -1);
 };
 
-void Player::notifyOnAttackResult(int player, int row, int col, AttackResult result) {
+
+void attackFromFileAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult result) {
 	row--;
 	col--;
 	if (result == AttackResult::Miss)
@@ -40,6 +49,7 @@ void Player::notifyOnAttackResult(int player, int row, int col, AttackResult res
 		player_board[row][col] = HIT_SYM;
 };
 
-void Player::setAttackFromFile(Attack attack) {
+
+void attackFromFileAlgo::setAttackFromFile(Attack attack) {
 	attack_from_file = attack;
 }

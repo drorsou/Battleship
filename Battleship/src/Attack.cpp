@@ -1,10 +1,12 @@
 #include "Attack.h"
 #include <iostream>
 
-Attack::Attack(std::string& path)
+
+Attack::Attack(const std::string& path)
 {
 	init = this->loadFromAttackFile(path);
 }
+
 
 std::pair<int, int> Attack::getNextAttack()
 {
@@ -14,11 +16,19 @@ std::pair<int, int> Attack::getNextAttack()
 	return temp;
 }
 
-bool Attack::loadFromAttackFile(const std::string& attackPath)
+
+bool Attack::loadFromAttackFile(const std::string& path)
 {
 	std::string line;
 	std::pair<int, int> singleAttack;
-	std::ifstream fin(attackPath); //creating an ifstream object and opening file in path attackPath 
+
+	// TODO
+	std::pair<bool, std::string> attackAFileDetails = FileReader::findPathOfFile("attack-a"); // TODO Find the correct attackPath
+	if (!attackAFileDetails.first)
+		FileReader::printError("attack-a", path);
+
+
+	std::ifstream fin(path + "\\" + attackAFileDetails.second); //creating an ifstream object and opening file in path attackPath 
 
 	if (fin.fail()) //error openning file
 	{

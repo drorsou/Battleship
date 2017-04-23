@@ -1,21 +1,18 @@
 #include "Board.h"
 
 
-Board::Board(char b[BOARD_SIZE][BOARD_SIZE], IBattleshipGameAlgo * playerA, IBattleshipGameAlgo * playerB) : current_player_turn(0) {
-	for (int i = 0; i < BOARD_SIZE; i++) {
-		for (int j = 0; j < BOARD_SIZE; j++) {
-			board[i][j] = b[i][j];
-		}
+Board::Board(string path, IBattleshipGameAlgo * playerA, IBattleshipGameAlgo * playerB) : current_player_turn(0) {
+
+	if (!parseBoard(path))
+	{
+		scoreA = -1;
+		scoreB = -1;
 	}
+	
 	this->playerA = playerA;
 	this->playerB = playerB;
 	if (this->checkBoard() == true)
 	{
-		/*
-		playerA.setAttackFromFile(attack1);
-		playerB.setAttackFromFile(attack2);
-		*/
-
 		totalShipsAScore = 0;
 		totalShipsBScore = 0;
 		for (int i = 0; i < SHIPS_PER_PLAYER; i++)
@@ -23,6 +20,22 @@ Board::Board(char b[BOARD_SIZE][BOARD_SIZE], IBattleshipGameAlgo * playerA, IBat
 			totalShipsAScore += shipsA[i].getScore();
 			totalShipsBScore += shipsB[i].getScore();
 		}
+
+		this->playerA->setBoard(0, const_cast<const char**> (board), BOARD_SIZE, BOARD_SIZE);
+		this->playerB->setBoard(1, const_cast<const char**> (board), BOARD_SIZE, BOARD_SIZE);
+		
+		if (this->playerA->init(path) == false)
+		{
+			scoreA = -1;
+			scoreB = -1;
+			FileReader::printError("", path); // TODO Which error?
+		};
+		if (this->playerB->init(path) == false)
+		{
+			scoreA = -1;
+			scoreB = -1;
+			FileReader::printError("", path); // TODO Which error?
+		};
 	}
 	else
 	{
@@ -462,4 +475,40 @@ void Board::printLine(){
 		printf("-");
 	}
 	printf("|\n");
+}
+
+
+/*
+* Parse Board into field 'board' from 'path'
+* Return true if no error, otherwise false
+*/
+bool Board::parseBoard(string path) {
+	
+	std::pair<bool, string> boardFileDetails = FileReader::findPathOfFile("sboard");
+	if (boardFileDetails.first == false)
+	{
+		FileReader::printError("board", path);
+		return false;
+	}
+
+	ifstream fin(path + "\\" + boardFileDetails.second);
+	string* temp_board = new string[BOARD_SIZE];
+	board = new char*[BOARD_SIZE];
+	for (int i = 0; i < BOARD_SIZE; i++) {
+		std::getline(fin, temp_board[i]);
+		board[i] = new char[BOARD_SIZE];
+
+		for (int j = 0; j < BOARD_SIZE; j++) {
+			if (checkChar(temp_board[i][j]))
+				board[i][j] = temp_board[i][j];
+			else
+				board[i][j] = BLANK;
+		}
+	}
+
+	return true;
+}
+
+bool Board::checkChar(char c) {
+	return (c == ABOAT || c == BBOAT || c == ACRUISER || c == BCRUISER || c == ASUBMARINE || c == BSUBMARINE || c == ADESTROYER || c == BDESTROYER);
 }

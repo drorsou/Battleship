@@ -5,6 +5,9 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
+#include "FileReader.h"
+
+
 class Attack {
 	std::queue<std::pair<int, int>> list;	
 	
@@ -17,8 +20,8 @@ class Attack {
 	void removeCharFromString(std::string &str, char charToRemove);
 public:
 	bool init;
-	Attack() {}
-	Attack(std::string & path);
+	Attack() {};
+	Attack(const std::string & path);
 	
 	/*
 		Pre: there are available attacks (i.e index < list.size)
