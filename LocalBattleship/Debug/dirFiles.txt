@@ -1,3 +1,0 @@
-dirty_ilegal_movesA.attack-a
-dirty_ilegal_movesB.attack-b
-good_board_1.sboard

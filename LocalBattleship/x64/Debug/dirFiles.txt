@@ -1,8 +1,0 @@
-clean_movesA.attack-a
-clean_movesB.attack-b
-dirFiles.txt
-good_board_1.sboard
-LocalBattleship.exe
-LocalBattleship.exe.lnk
-LocalBattleship.ilk
-LocalBattleship.pdb

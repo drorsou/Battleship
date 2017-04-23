@@ -1,7 +1,6 @@
 #pragma once
-#include "C:\Users\הדר\Source\Repos\Battleship3\Battleship\src\IBattleshipGameAlgo.h"
-#include "C:\Users\הדר\Source\Repos\Battleship3\Battleship\src\Ship.h"
-#include "AttackNaive.h"
+#include "IBattleshipGameAlgo.h"
+#include "Ship.h"
 #include <list>
 
 

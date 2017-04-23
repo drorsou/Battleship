@@ -78,20 +78,20 @@ int main(int argc, char* argv[]) {
 	/*
 	 *Initialize game
 	 */
-	string chooseAlgoA = "file"; // Temporary until we have DLLs - "naive" or "file"
-	string chooseAlgoB = "file"; // Temporary until we have DLLs - "naive" or "file"
+	string chooseAlgoA = "naive"; // Temporary until we have DLLs - "naive" or "file"
+	string chooseAlgoB = "naive"; // Temporary until we have DLLs - "naive" or "file"
 
 	IBattleshipGameAlgo* playerA;
 	IBattleshipGameAlgo* playerB;
 
 	if (chooseAlgoA == "file")
 		playerA = &attackFromFileAlgo::attackFromFileAlgo();
-	else
-		playerA = &attackFromFileAlgo::attackFromFileAlgo();
+	else (chooseAlgoA == "naive")
+		playerA = &NaiveAlgoPlayer::NaiveAlgoPlayer();
 	if (chooseAlgoB == "file")
 		playerB = &attackFromFileAlgo::attackFromFileAlgo();
-	else
-		playerB = &attackFromFileAlgo::attackFromFileAlgo();
+	else chooseAlgoB == "naive")
+		playerB = &NaiveAlgoPlayer::NaiveAlgoPlayer();
 	
 	Board game_board = Board(path, playerA, playerB);
 	

@@ -1,5 +1,6 @@
 #pragma once
 #include "attackFromFileAlgo.h"
+#include "NaiveAlgoPlayer.h"
 #include "FileReader.h"
 #include <iostream>
 #include <windows.h>
