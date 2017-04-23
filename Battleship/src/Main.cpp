@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
 	// Check for arguments
 	string path;
 	bool isPrint = true; // default true
-	bool playerExhausted = false;
+	bool playerExhausted = false;//no more attcks from file 
 	int delay = 500; // defualt - half a second per attack
 	
 	if(argc < 2)
