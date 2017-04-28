@@ -1,10 +1,9 @@
 #include "Attack.h"
-#include <iostream>
 
 
-Attack::Attack(const std::string& path)
+Attack::Attack(const std::string& path, int player_num)
 {
-	init = this->loadFromAttackFile(path);
+	init = this->loadFromAttackFile(path, player_num);
 }
 
 
@@ -17,18 +16,36 @@ std::pair<int, int> Attack::getNextAttack()
 }
 
 
-bool Attack::loadFromAttackFile(const std::string& path)
+bool Attack::loadFromAttackFile(const std::string& path, int player_num)
 {
-	std::string line;
+	std::string line, pathToFile;
 	std::pair<int, int> singleAttack;
 
-	// TODO
-	std::pair<bool, std::string> attackAFileDetails = FileReader::findPathOfFile("attack-a"); // TODO Find the correct attackPath
-	if (!attackAFileDetails.first)
-		FileReader::printError("attack-a", path);
+	std::pair<std::string, std::string> attackFiles = FileReader::findFilesLexicographically("attack");
+	
 
+	// Creating an ifstream object and opening file in path attackPath
+	if (player_num == 0)
+	{
+		if (attackFiles.first.empty())
+			FileReader::printError(FileReader::Error::AlGO_INIT, path); // TODO - Which error?
+		else
+			pathToFile = path + "\\" + attackFiles.first;
+	}
+	else if (player_num == 1)
+	{
+		if (attackFiles.second.empty())
+		{
+			if (attackFiles.first.empty())
+				FileReader::printError(FileReader::Error::AlGO_INIT, path); // TODO - Which error?
+			else
+				pathToFile = path + "\\" + attackFiles.first;
+		}
+		else
+			pathToFile = path + "\\" + attackFiles.second;
+	}
 
-	std::ifstream fin(path + "\\" + attackAFileDetails.second); //creating an ifstream object and opening file in path attackPath 
+	std::ifstream fin(pathToFile);
 
 	if (fin.fail()) //error openning file
 	{

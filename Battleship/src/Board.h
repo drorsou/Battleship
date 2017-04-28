@@ -6,6 +6,7 @@
 #include <windows.h>
 
 #define BOARD_SIZE 10
+#define SHIPS_PER_PLAYER 5
 #define COLOR_RED     0x0004
 #define COLOR_LIGHT_RED 0x000C
 #define COLOR_GREEN 0x0002
@@ -72,6 +73,8 @@ public:
 	
 	Board(string path, IBattleshipGameAlgo * playerA, IBattleshipGameAlgo * playerB);
 
+	// Set the board size
+	enum Size { ROWS = 10, COLS = 10};
 	
 	
 	/*

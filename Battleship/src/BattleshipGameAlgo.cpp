@@ -1,32 +1,17 @@
-#include "attackFromFileAlgo.h"
+#include "BattleshipGameAlgo.h"
 
 
-attackFromFileAlgo::attackFromFileAlgo() {
+BattleshipGameAlgo::BattleshipGameAlgo()
+{
 }
 
 
-bool attackFromFileAlgo::init(const std::string& path) {
-	attack_from_file = Attack(path, player_number);
-	if (attack_from_file.init == false)
-		return false;
-	return true;
+BattleshipGameAlgo::~BattleshipGameAlgo()
+{
 }
 
 
-pair<int, int> attackFromFileAlgo::attack() {
-	if (this->attack_from_file.hasAttacks() == true)
-		return attack_from_file.getNextAttack();
-	else
-		return make_pair(-1, -1);
-};
-
-
-void attackFromFileAlgo::setAttackFromFile(Attack attack) {
-	attack_from_file = attack;
-}
-
-
-void attackFromFileAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult result) {
+/*void BattleshipGameAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult result) {
 	row--;
 	col--;
 	if (result == AttackResult::Miss)
@@ -38,7 +23,7 @@ void attackFromFileAlgo::notifyOnAttackResult(int player, int row, int col, Atta
 }
 
 
-void attackFromFileAlgo::setBoard(int player, const char** board, int numRows, int numCols) {
+void BattleshipGameAlgo::setBoard(int player, const char** board, int numRows, int numCols) {
 	player_number = player;
 	for (int i = 0; i < numRows; i++)
 		for (int j = 0; j < numCols; j++) {
@@ -52,4 +37,4 @@ void attackFromFileAlgo::setBoard(int player, const char** board, int numRows, i
 					player_board[i][j] = BLANK;
 			}
 		}
-}
+}*/

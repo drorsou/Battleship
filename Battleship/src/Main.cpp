@@ -8,21 +8,24 @@ Main::Main() {
 }
 
 
-int main(int argc, char* argv[]) {
-	// Check for arguments
-	string path;
-	bool isPrint = true; // default true
-	bool playerExhausted = false;//no more attcks from file 
-	int delay = 500; // defualt - half a second per attack
+int main(int argc, char* argv[])
+{
+	
+	Main::isPrint = true;
+	Main::delay = 500;
+
+	/*
+	 * Check for arguments
+	 */
 	
 	if(argc < 2)
-		path = ".";
+		Main::path = ".";
 	else
 	{
 		if (std::string{ "-quiet" }.compare(argv[1]) == 0)
 		{
-			isPrint = false;
-			path = "";
+			Main::isPrint = false;
+			Main::path = "";
 		}
 		else if(std::string{"-delay"}.compare(argv[1]) == 0) 
 		{
@@ -33,19 +36,19 @@ int main(int argc, char* argv[]) {
 			}
 			else
 			{
-				delay = atoi(argv[2]);
+				Main::delay = atoi(argv[2]);
 			}
 		}
 		else
 		{
-			path = argv[1];
-			Main::replaceChar(path, '/', '\\');
+			Main::path = argv[1];
+			Main::replaceChar(Main::path, '/', '\\');
 			if (argc > 2)
 			{
 				if (std::string{ "-quiet" }.compare(argv[2]) == 0)
 				{
-					isPrint = false;
-					path = ".";
+					Main::isPrint = false;
+					Main::path = ".";
 				}
 				else if (std::string{ "-delay" }.compare(argv[2]) == 0)
 				{
@@ -56,73 +59,91 @@ int main(int argc, char* argv[]) {
 					}
 					else
 					{
-						delay = atoi(argv[3]);
+						Main::delay = atoi(argv[3]);
 					}
 				}
 			}
 		}
 	}	
-	
 
+
+	if (Main::init() == false)
+		return EXIT_FAILURE;
+
+	Main::play();
+
+	std::getchar(); // TODO - Remove!!!
+	return 0;
+};
+
+
+
+bool Main::init()
+{
 	// Check if directory exists and list all its files
 	//FileReader::setDirFileName("dirFiles.txt");
-	if (!FileReader::checkIsValidDir(path))
+	if (!FileReader::checkIsValidDir(Main::path))
 	{
-		FileReader::printError("wrong path", path);
-		return EXIT_FAILURE;
+		FileReader::printError(FileReader::Error::PATH, Main::path);
+		return false;
 	}
 	else
-		FileReader::writeToFileTheFilesInDir(path);
+		FileReader::writeToVectorTheFilesInDir(Main::path);
 
-
-	/*
-	 *Initialize game
-	 */
-	string chooseAlgoA = "naive"; // Temporary until we have DLLs - "naive" or "file"
-	string chooseAlgoB = "naive"; // Temporary until we have DLLs - "naive" or "file"
+	
+	string chooseAlgoA = "file"; // Temporary until we have DLLs - "naive" or "file"
+	string chooseAlgoB = "file"; // Temporary until we have DLLs - "naive" or "file"
 
 	IBattleshipGameAlgo* playerA;
 	IBattleshipGameAlgo* playerB;
 
-	if (chooseAlgoA == "file")
+	//if (chooseAlgoA == "file")
 		playerA = &attackFromFileAlgo::attackFromFileAlgo();
-	else (chooseAlgoA == "naive")
-		playerA = &NaiveAlgoPlayer::NaiveAlgoPlayer();
-	if (chooseAlgoB == "file")
+	//else if (chooseAlgoA == "naive")
+	//	;playerA = &NaiveAlgoPlayer::NaiveAlgoPlayer();
+	//if (chooseAlgoB == "file")
 		playerB = &attackFromFileAlgo::attackFromFileAlgo();
-	else chooseAlgoB == "naive")
-		playerB = &NaiveAlgoPlayer::NaiveAlgoPlayer();
-	
-	Board game_board = Board(path, playerA, playerB);
-	
+	//else if (chooseAlgoB == "naive")
+	//	;playerB = &NaiveAlgoPlayer::NaiveAlgoPlayer();
+
+	Main::game_board = Board(Main::path, playerA, playerB);
+
 	// In case of wrong board init - quit, the errors are already printed on the console!
 	if (game_board.getScore(0) == -1 || game_board.getScore(1) == -1)
-		return EXIT_FAILURE;	
+		return false;
 
+	return true;
+}
+
+
+void Main::play()
+{
+	/*
+	 * Initialize vars
+	 */
 	bool game_in_progress = true;
-	pair<int, int> attack_coord;
+	bool playerExhausted = false; // No more attacks from file 
 	AttackResult result;
-	char piece;
-	
-	if (isPrint == true)
+
+	if (Main::isPrint == true)
 		game_board.printBoard();
 	// End initialize
-	
+
 
 	/*
-	 * Battleships Game
-	 */
+	* Battleships Game
+	*/
 	while (game_in_progress)
 	{
 		// pulling a new attack, where -1,-1 represent an empty queue.
-		attack_coord = game_board.attackPlayer(game_board.getTurn());
+		pair<int, int> attack_coord = game_board.attackPlayer(game_board.getTurn());
 		if (attack_coord.first == -1 && attack_coord.second == -1)
 		{
 			// if both players are exhausted, end the game, otherwise continue attacking with the first player
 			if (playerExhausted == false)
 			{
 				playerExhausted = true;
-				game_board.changeTurn();				
+				game_board.changeTurn();
 			}
 			else
 			{
@@ -131,22 +152,22 @@ int main(int argc, char* argv[]) {
 		}
 		else
 		{
-			piece = game_board.getCoordValue(attack_coord.first, attack_coord.second);
+			char piece = game_board.getCoordValue(attack_coord.first, attack_coord.second);
 			if (piece != BLANK && piece != MISS_SYM && piece != HIT_SYM)
-			{				
+			{
 				result = game_board.hitShip(attack_coord.first, attack_coord.second, piece) ? AttackResult::Sink : AttackResult::Hit;
 				if (game_board.checkTarget(piece) == true && playerExhausted == false)
 					game_board.changeTurn();
-				
+
 				if (game_board.hasPlayerWon(0) || game_board.hasPlayerWon(1))
-				{					
+				{
 					game_in_progress = false;
 				}
-				
+
 			}
 			else
 			{
-				if(playerExhausted == false)
+				if (playerExhausted == false)
 					game_board.changeTurn();
 				if (piece == HIT_SYM)
 					result = AttackResult::Hit;
@@ -156,17 +177,17 @@ int main(int argc, char* argv[]) {
 					result = AttackResult::Miss;
 				}
 			}
-				
+
 		}
 
 		// Notify players on results
 		game_board.notifyResult(attack_coord.first, attack_coord.second, result);
 
 		// Update the board print
-		if (isPrint == true && attack_coord.first != -1 && attack_coord.second != -1)
+		if (Main::isPrint == true && attack_coord.first != -1 && attack_coord.second != -1)
 		{
 			game_board.updateBoard(attack_coord.first, attack_coord.second);
-			Sleep(delay);
+			Sleep(Main::delay);
 		}
 	}
 
@@ -177,16 +198,12 @@ int main(int argc, char* argv[]) {
 	}
 	else if (game_board.hasPlayerWon(1))
 	{
-		std::cout << "Player B won" << endl;		
+		std::cout << "Player B won" << endl;
 	}
 	std::cout << "Points:" << endl;
 	std::cout << "Player A: " << game_board.getScore(0) << endl;
 	std::cout << "Player B: " << game_board.getScore(1) << endl;
-	
-	std::getchar(); // TODO Remove!!!
-	return 0;
-};
-
+}
 
 
 void Main::replaceChar(std::string& str, char ch1, char ch2) {

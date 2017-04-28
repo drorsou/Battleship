@@ -28,13 +28,13 @@ Board::Board(string path, IBattleshipGameAlgo * playerA, IBattleshipGameAlgo * p
 		{
 			scoreA = -1;
 			scoreB = -1;
-			FileReader::printError("", path); // TODO Which error?
+			FileReader::printError(FileReader::Error::AlGO_INIT, path); // TODO Which error?
 		};
 		if (this->playerB->init(path) == false)
 		{
 			scoreA = -1;
 			scoreB = -1;
-			FileReader::printError("", path); // TODO Which error?
+			FileReader::printError(FileReader::Error::AlGO_INIT, path); // TODO Which error?
 		};
 	}
 	else
@@ -484,10 +484,10 @@ void Board::printLine(){
 */
 bool Board::parseBoard(string path) {
 	
-	std::pair<bool, string> boardFileDetails = FileReader::findPathOfFile("sboard");
-	if (boardFileDetails.first == false)
+	std::pair<std::string, string> boardFileDetails = FileReader::findFilesLexicographically("sboard");
+	if (boardFileDetails.first.empty())
 	{
-		FileReader::printError("board", path);
+		FileReader::printError(FileReader::Error::BOARD, path);
 		return false;
 	}
 

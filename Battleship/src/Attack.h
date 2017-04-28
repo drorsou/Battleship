@@ -21,7 +21,7 @@ class Attack {
 public:
 	bool init;
 	Attack() {};
-	Attack(const std::string & path);
+	Attack(const std::string & path, int player_num);
 	
 	/*
 		Pre: there are available attacks (i.e index < list.size)
@@ -36,6 +36,6 @@ public:
 		Post: parse the attacks from the file,
 				save it into the queue.
 	*/
-	bool loadFromAttackFile(const std::string& attackPath);
+	bool loadFromAttackFile(const std::string& attackPath, int player_num);
 	
 };
