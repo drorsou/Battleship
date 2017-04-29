@@ -1,5 +1,5 @@
 #include "FileReader.h"
-
+std::vector<std::string> FileReader::filesVector;
 
 FileReader::FileReader()
 {

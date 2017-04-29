@@ -137,3 +137,8 @@ void NaiveAlgoPlayer::setBoard(int player, const char** board, int numRows, int 
 			}
 		}
 }
+
+bool NaiveAlgoPlayer::init(const std::string& path)
+{
+	return true;
+}

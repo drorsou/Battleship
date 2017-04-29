@@ -2,6 +2,9 @@
 
 //#define DEBUG
 
+Board game_board;
+bool isPrint;
+int delay;
 
 Main::Main() {
 
@@ -10,22 +13,22 @@ Main::Main() {
 
 int main(int argc, char* argv[])
 {
-	
-	Main::isPrint = true;
-	Main::delay = 500;
+	string path;
+	isPrint = true;
+	delay = 500;
 
 	/*
 	 * Check for arguments
 	 */
 	
 	if(argc < 2)
-		Main::path = ".";
+		path = ".";
 	else
 	{
 		if (std::string{ "-quiet" }.compare(argv[1]) == 0)
 		{
-			Main::isPrint = false;
-			Main::path = "";
+			isPrint = false;
+			path = "";
 		}
 		else if(std::string{"-delay"}.compare(argv[1]) == 0) 
 		{
@@ -36,19 +39,19 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				Main::delay = atoi(argv[2]);
+				delay = atoi(argv[2]);
 			}
 		}
 		else
 		{
-			Main::path = argv[1];
-			Main::replaceChar(Main::path, '/', '\\');
+			path = argv[1];
+			Main::replaceChar(path, '/', '\\');
 			if (argc > 2)
 			{
 				if (std::string{ "-quiet" }.compare(argv[2]) == 0)
 				{
-					Main::isPrint = false;
-					Main::path = ".";
+					isPrint = false;
+					path = ".";
 				}
 				else if (std::string{ "-delay" }.compare(argv[2]) == 0)
 				{
@@ -59,7 +62,7 @@ int main(int argc, char* argv[])
 					}
 					else
 					{
-						Main::delay = atoi(argv[3]);
+						delay = atoi(argv[3]);
 					}
 				}
 			}
@@ -67,7 +70,7 @@ int main(int argc, char* argv[])
 	}	
 
 
-	if (Main::init() == false)
+	if (Main::init(path) == false)
 		return EXIT_FAILURE;
 
 	Main::play();
@@ -78,17 +81,17 @@ int main(int argc, char* argv[])
 
 
 
-bool Main::init()
+bool Main::init(const std::string& path)
 {
 	// Check if directory exists and list all its files
 	//FileReader::setDirFileName("dirFiles.txt");
-	if (!FileReader::checkIsValidDir(Main::path))
+	if (!FileReader::checkIsValidDir(path))
 	{
-		FileReader::printError(FileReader::Error::PATH, Main::path);
+		FileReader::printError(FileReader::Error::PATH, path);
 		return false;
 	}
 	else
-		FileReader::writeToVectorTheFilesInDir(Main::path);
+		FileReader::writeToVectorTheFilesInDir(path);
 
 	
 	string chooseAlgoA = "file"; // Temporary until we have DLLs - "naive" or "file"
@@ -98,15 +101,15 @@ bool Main::init()
 	IBattleshipGameAlgo* playerB;
 
 	//if (chooseAlgoA == "file")
-		playerA = &attackFromFileAlgo::attackFromFileAlgo();
+		playerA = new attackFromFileAlgo();
 	//else if (chooseAlgoA == "naive")
 	//	;playerA = &NaiveAlgoPlayer::NaiveAlgoPlayer();
 	//if (chooseAlgoB == "file")
-		playerB = &attackFromFileAlgo::attackFromFileAlgo();
+		playerB = new attackFromFileAlgo();
 	//else if (chooseAlgoB == "naive")
 	//	;playerB = &NaiveAlgoPlayer::NaiveAlgoPlayer();
 
-	Main::game_board = Board(Main::path, playerA, playerB);
+	game_board = Board(path, playerA, playerB);
 
 	// In case of wrong board init - quit, the errors are already printed on the console!
 	if (game_board.getScore(0) == -1 || game_board.getScore(1) == -1)
@@ -125,7 +128,7 @@ void Main::play()
 	bool playerExhausted = false; // No more attacks from file 
 	AttackResult result;
 
-	if (Main::isPrint == true)
+	if (isPrint == true)
 		game_board.printBoard();
 	// End initialize
 
@@ -184,10 +187,10 @@ void Main::play()
 		game_board.notifyResult(attack_coord.first, attack_coord.second, result);
 
 		// Update the board print
-		if (Main::isPrint == true && attack_coord.first != -1 && attack_coord.second != -1)
+		if (isPrint == true && attack_coord.first != -1 && attack_coord.second != -1)
 		{
 			game_board.updateBoard(attack_coord.first, attack_coord.second);
-			Sleep(Main::delay);
+			Sleep(delay);
 		}
 	}
 

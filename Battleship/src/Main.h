@@ -13,7 +13,7 @@ class Main {
 public:
 	Main();
 
-	static bool init();
+	static bool init(const std::string& path);
 
 	static void play();
 
@@ -21,8 +21,11 @@ public:
 
 	static void replaceChar(std::string& str, char ch1, char ch2);
 
+#if DEBUG
 	static string path; // Path to the directory containing the game files
 	static bool isPrint; // Default true
 	static int delay; // Default - half a second per attack
 	static Board game_board; // Game progress details
+#endif
+
 };

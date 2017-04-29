@@ -1,7 +1,12 @@
 #include "Board.h"
 
+Board::~Board()
+{
+	delete playerA;
+	delete playerB;
+}
 
-Board::Board(string path, IBattleshipGameAlgo * playerA, IBattleshipGameAlgo * playerB) : current_player_turn(0) {
+Board::Board(string path, int numOfRows, int numOfCols, IBattleshipGameAlgo * playerA, IBattleshipGameAlgo * playerB) : current_player_turn(0) {
 
 	if (!parseBoard(path))
 	{
@@ -54,16 +59,16 @@ void Board::notifyResult(int row, int col, AttackResult result)
 }
 
 
-void Board::gotoxy(int row, int col) {
+void Board::gotoxy(int row, int col) const {
 	COORD coord;
 	coord.X = col + this->origin.x;
 	coord.Y = row + this->origin.y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
-Type Board::shipType(int row, int col) {
+Type Board::shipType(int row, int col) const {
 	Type t;
-	switch (this->board[row][col])
+	switch (this->board.getPos(row,col))
 	{
 	case ABOAT: case BBOAT:
 		t = Boat;
@@ -81,24 +86,23 @@ Type Board::shipType(int row, int col) {
 	return t;
 }
 
-bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool temp[BOARD_SIZE][BOARD_SIZE], int row, int col, char t) {
+bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool ** temp, int row, int col, char t) const {
 	int len = 0;
 	bool res = true;
-	bool dimensionFlag;
-	if ((row < BOARD_SIZE - 1 && this->board[row + 1][col] == t) && (col < BOARD_SIZE - 1 && this->board[row][col + 1] == t))
+	if ((row < board.num_of_rows() - 1 && this->board.getPos(row + 1,col) == t) && (col < board.num_of_cols() - 1 && this->board.getPos(row,col + 1) == t))
 		*sizeOShape = true; // illegal ship size.
 	// check top to down ships
-	for (int i = row + 1; i < BOARD_SIZE && this->board[i][col] != BLANK; i++)
+	for (int i = row + 1; i < board.num_of_rows() && this->board.getPos(i,col) != BLANK; i++)
 	{
 		// Check for adjacent with the same type or if this tile was used in a different ship of this type.
-		if ((this->board[i][col] == t && temp[i][col] == true) || (col > 0 && this->board[i][col - 1] == t) || (col < BOARD_SIZE - 1 && this->board[i][col+1]) == t)
+		if ((this->board.getPos(i,col) == t && temp[i][col] == true) || (col > 0 && this->board.getPos(i,col - 1) == t) || (col < BOARD_SIZE - 1 && this->board.getPos(i,col+1) == t))
 		{
 			*sizeOShape = true;
 			temp[i][col] = true;
 			res = false;
 		}
 		// check if we already checked this tile (maybe a part of different ship)
-		if (this->board[i][col] != t)
+		if (this->board.getPos(i,col) != t)
 		{
 			*adjacent = true;// adjacent ships!			
 			break;
@@ -110,17 +114,17 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool temp[BOARD_SIZE]
 		}
 	}	
 	// check left to right ships - marks seen parts even if this is illegal ship size or shape!
-	for (int j = col + 1; j < BOARD_SIZE && this->board[row][j] != BLANK; j++)
+	for (int j = col + 1; j < board.num_of_cols() && this->board.getPos(row,j) != BLANK; j++)
 	{
 		// Check for adjacent with the same type or if this tile was used in a different ship of this type.
-		if ((this->board[row][j] == t && temp[row][j] == true) || (row > 0 && this->board[row - 1][j] == t) || (row < BOARD_SIZE - 1 && this->board[row + 1][j]) == t)
+		if ((this->board.getPos(row,j) == t && temp[row][j] == true) || (row > 0 && this->board.getPos(row - 1,j) == t) || (row < board.num_of_rows() - 1 && this->board.getPos(row + 1,j) == t))
 		{
 			*sizeOShape = true;
 			temp[row][j] = true;
 			res = false;
 		}
 		// check if we already checked this tile (maybe a part of different ship)
-		if (this->board[row][j] != t)
+		if (this->board.getPos(row,j) != t)
 		{
 			*adjacent = true;// adjacent ships!			
 			break;
@@ -132,13 +136,13 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool temp[BOARD_SIZE]
 		}
 	}
 	len++; // for the original point.
-	dimensionFlag = Ship::checkDimensions(len, t); // check if the dimension create a legal ship, even if there is an adjacent ship
+	bool dimensionFlag = Ship::checkDimensions(len, t); // check if the dimension create a legal ship, even if there is an adjacent ship
 	if (dimensionFlag == false)
 		*sizeOShape = true; // happens if the ship is shorter or longer than the legal size
 	return (res && dimensionFlag);
 }
 
-bool Board::checkTarget(char target) {
+bool Board::checkTarget(char target) const {
 	if (this->current_player_turn == 0)
 		return target == ABOAT || target == ACRUISER || target == ASUBMARINE || target == ADESTROYER;
 	else
@@ -192,19 +196,22 @@ bool Board::hitShip(int row, int col, char type) {
 /*
  *
  */
-bool Board::hasPlayerWon(int player)
-{
-	if (player == 0)
-		return scoreA == totalShipsBScore ? true : false;
-	if (player == 1)
-		return scoreB == totalShipsAScore ? true : false;
-
-	return false;
+bool Board::hasPlayerWon(int player) const {
+	return (player == 0 && scoreA == totalShipsBScore) || (player == 1 && scoreB == totalShipsAScore);
 }
 
 
 bool Board::checkBoard() {
-	bool temp[BOARD_SIZE][BOARD_SIZE] = { false }; // creates a shadow board initialized to false.
+	// creates a shadow board initialized to false.
+	bool ** temp = new bool*[board.num_of_rows()]; 
+	for(int i = 0; i < board.num_of_rows(); i++)
+	{
+		temp[i] = new bool[board.num_of_cols()];
+		for(int j = 0; j < board.num_of_cols(); j++)
+		{
+			temp[i][j] = false;
+		}
+	}
 	Type t;
 	pair<int, int> vert;
 	pair<int, int> horz;
@@ -216,29 +223,29 @@ bool Board::checkBoard() {
 	bool Adjacent = false;
 	bool result = true;
 	bool checkRes;
-	for(int row = 0; row < BOARD_SIZE; row++)
-		for (int col = 0; col < BOARD_SIZE; col++)
+	for(int row = 0; row < board.num_of_rows(); row++)
+		for (int col = 0; col < board.num_of_cols(); col++)
 		{
 			// check all unmarked (i.e not visited) non-blank tiles
-			if (temp[row][col] == false && this->board[row][col] != BLANK)
+			if (temp[row][col] == false && this->board.getPos(row,col) != BLANK)
 			{
 				color = this->coordColor(row, col); 
 				t = this->shipType(row, col);
 				if(color == 1)
-					checkRes = checkCoord(&(AsizeOShape[t]), &Adjacent, temp, row, col, this->board[row][col]);
+					checkRes = checkCoord(&(AsizeOShape[t]), &Adjacent, temp, row, col, this->board.getPos(row,col));
 				else
-					checkRes = checkCoord(&(BsizeOShape[t]), &Adjacent, temp, row, col, this->board[row][col]);
+					checkRes = checkCoord(&(BsizeOShape[t]), &Adjacent, temp, row, col, this->board.getPos(row,col));
 				// Create the ship
 				if (checkRes == true)
 				{					
-					if (this->board[row][col] == ABOAT || this->board[row][col] == BBOAT)
+					if (this->board.getPos(row,col) == ABOAT || this->board.getPos(row,col) == BBOAT)
 					{
 						horz = make_pair(col + 1, col + 1);	
 						vert = make_pair(row + 1, row + 1);
 					}
 					else
 					{
-						if (row < BOARD_SIZE - 1 && this->board[row + 1][col] != BLANK)
+						if (row < board.num_of_rows() - 1 && this->board.getPos(row + 1,col) != BLANK)
 						{
 							horz = make_pair(col + 1, col + 1);
 							switch (t)
@@ -365,32 +372,31 @@ bool Board::checkBoard() {
 }
 
 
-void Board::printBoard() {
-	int i, j;	
+void Board::printBoard() const {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	
 	/*
 		Printing the first line with the column numbers.
 		First box is empty
 	*/	
-	for (j = 0; j < BOARD_SIZE; j++)
+	for (int col = 0; col < this->board.num_of_cols(); col++)
 	{
-		printf((j == 0 ? "  | %d |" : (j < 9 ? " %d |" : " %d|")), j + 1);
+		printf((col == 0 ? "  | %d |" : (col < 9 ? " %d |" : " %d|")), col + 1);
 	}
 	printf("\n");
 	Board::printLine();
 	/*
 		Printing the rest of the board.
 	*/
-	for (j = 0; j <= BOARD_SIZE-1; j++)
+	for (int row = 0; row <= this->board.num_of_rows() -1; row++)
 	{
-		printf((j < 9 ? "%d " : "%d"), j + 1);
-		for (i = 0; i <= BOARD_SIZE-1; i++){
+		printf((row < 9 ? "%d " : "%d"), row + 1);
+		for (int col = 0; col <= this->board.num_of_cols() -1; col++){
 			cout << "| ";
 			/* 
 				Color text according to player and ship type 
 			*/
-			switch (this->board[j][i])
+			switch (this->board.getPos(row,col))
 			{
 			case ABOAT:
 				SetConsoleTextAttribute(hConsole, COLOR_AQUA);				
@@ -423,7 +429,7 @@ void Board::printBoard() {
 				SetConsoleTextAttribute(hConsole, COLOR_RED);
 				break;			
 			}
-			cout << this->board[j][i] << " ";
+			cout << this->board.getPos(row,col) << " ";
 			// resetting the color
 			SetConsoleTextAttribute(hConsole, COLOR_WHITE);			
 		}
@@ -444,13 +450,13 @@ void Board::getCursorXY() {
 		this->origin.y = 0;
 	}
 }
-void Board::updateBoard(int row, int col) {
+void Board::updateBoard(int row, int col) const {
 	row--;
 	col--;	
 	this->gotoxy(2 * row + 2, 4 * col + 4);
 	cout << "\b";
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	if (this->board[row][col] == BLANK || this->board[row][col] == MISS_SYM)
+	if (this->board.getPos(row,col) == BLANK || this->board.getPos(row,col) == MISS_SYM)
 	{
 		SetConsoleTextAttribute(hConsole, COLOR_RED);
 		cout << " " << MISS_SYM << " ";
@@ -482,7 +488,7 @@ void Board::printLine(){
 * Parse Board into field 'board' from 'path'
 * Return true if no error, otherwise false
 */
-bool Board::parseBoard(string path) {
+bool Board::parseBoard(std::string& path) {
 	
 	std::pair<std::string, string> boardFileDetails = FileReader::findFilesLexicographically("sboard");
 	if (boardFileDetails.first.empty())
@@ -492,17 +498,19 @@ bool Board::parseBoard(string path) {
 	}
 
 	ifstream fin(path + "\\" + boardFileDetails.second);
-	string* temp_board = new string[BOARD_SIZE];
-	board = new char*[BOARD_SIZE];
-	for (int i = 0; i < BOARD_SIZE; i++) {
+	if(!fin.is_open())
+	{
+		std::cout << "Error: Cannot open the board file for parsing." << endl;
+		return false;
+	}
+	string* temp_board = new string[board.num_of_cols()];
+	for (int i = 0; i < board.num_of_rows(); i++) {
 		std::getline(fin, temp_board[i]);
-		board[i] = new char[BOARD_SIZE];
-
 		for (int j = 0; j < BOARD_SIZE; j++) {
-			if (checkChar(temp_board[i][j]))
-				board[i][j] = temp_board[i][j];
+			if (Board::checkChar(temp_board[i][j]))
+				board.setPos(i,j,temp_board[i][j]);
 			else
-				board[i][j] = BLANK;
+				board.setPos(i, j, BLANK);
 		}
 	}
 
