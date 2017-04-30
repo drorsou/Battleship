@@ -20,7 +20,7 @@ public:
 	static int ArgPos(char *str, int argc, char **argv);
 
 	static void replaceChar(std::string& str, char ch1, char ch2);
-
+	static Board game_board;
 #if DEBUG
 	static string path; // Path to the directory containing the game files
 	static bool isPrint; // Default true

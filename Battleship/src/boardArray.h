@@ -28,7 +28,8 @@ public:
 		{
 			this->numOfRows = num_of_rows;
 			this->numOfCols = num_of_cols;
-			arr = new char[num_of_rows*num_of_cols];
+			arr = new char[num_of_rows*num_of_cols + 1];
+			arr[num_of_rows*num_of_cols] = '\0';
 		}
 	}
 	int num_of_cols() const
@@ -56,7 +57,8 @@ public:
 		  numOfRows(other.numOfRows),
 		  numOfCols(other.numOfCols)
 	{
-		std::swap(this->arr, other.arr);
+		this->arr = other.arr;
+		other.arr = nullptr;
 	}
 
 	boardArray& operator=(const boardArray& other)
@@ -73,7 +75,8 @@ public:
 	{
 		if (this == &other)
 			return *this;
-		arr = other.arr;
+		this->arr = other.arr;
+		other.arr = nullptr;
 		numOfRows = other.numOfRows;
 		numOfCols = other.numOfCols;
 		return *this;

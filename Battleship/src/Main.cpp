@@ -2,7 +2,7 @@
 
 //#define DEBUG
 
-Board game_board;
+Board Main::game_board;
 bool isPrint;
 int delay;
 

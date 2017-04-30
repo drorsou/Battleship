@@ -126,7 +126,7 @@ public:
 	{
 		if (this == &other)
 			return *this;
-		board = other.board;
+		board = std::move(other.board);
 		current_player_turn = other.current_player_turn;
 		playerA = other.playerA;
 		other.playerA = nullptr;

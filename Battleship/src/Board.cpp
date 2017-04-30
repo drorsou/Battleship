@@ -38,13 +38,18 @@ Board::Board(string path, int numOfRows, int numOfCols, IBattleshipGameAlgo * pl
 				scoreA = -1;
 				scoreB = -1;
 				FileReader::printError(FileReader::Error::AlGO_INIT, path); // TODO Which error?
-			};
-			if (this->playerB->init(path) == false)
+			}
+			else if (this->playerB->init(path) == false)
 			{
 				scoreA = -1;
 				scoreB = -1;
 				FileReader::printError(FileReader::Error::AlGO_INIT, path); // TODO Which error?
-			};
+			}
+			else
+			{
+				scoreA = 0;
+				scoreB = 0;
+			}
 		}
 		else
 		{
