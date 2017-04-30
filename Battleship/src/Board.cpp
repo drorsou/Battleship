@@ -8,47 +8,52 @@ Board::~Board()
 
 Board::Board(string path, int numOfRows, int numOfCols, IBattleshipGameAlgo * playerA, IBattleshipGameAlgo * playerB) : current_player_turn(0) {
 
+	this->board.setDimensions(numOfRows, numOfCols);
+	this->playerA = playerA;
+	this->playerB = playerB;
 	if (!parseBoard(path))
 	{
 		scoreA = -1;
-		scoreB = -1;
-	}
-	
-	this->playerA = playerA;
-	this->playerB = playerB;
-	if (this->checkBoard() == true)
-	{
-		totalShipsAScore = 0;
-		totalShipsBScore = 0;
-		for (int i = 0; i < SHIPS_PER_PLAYER; i++)
-		{
-			totalShipsAScore += shipsA[i].getScore();
-			totalShipsBScore += shipsB[i].getScore();
-		}
-
-		this->playerA->setBoard(0, const_cast<const char**> (board), BOARD_SIZE, BOARD_SIZE);
-		this->playerB->setBoard(1, const_cast<const char**> (board), BOARD_SIZE, BOARD_SIZE);
-		
-		if (this->playerA->init(path) == false)
-		{
-			scoreA = -1;
-			scoreB = -1;
-			FileReader::printError(FileReader::Error::AlGO_INIT, path); // TODO Which error?
-		};
-		if (this->playerB->init(path) == false)
-		{
-			scoreA = -1;
-			scoreB = -1;
-			FileReader::printError(FileReader::Error::AlGO_INIT, path); // TODO Which error?
-		};
+		scoreB = -1;		
 	}
 	else
-	{
-		// Marking for main that the board is faulty.
-		scoreA = -1;
-		scoreB = -1;
+	{		
+		if (this->checkBoard() == true)
+		{
+			totalShipsAScore = 0;
+			totalShipsBScore = 0;
+			for (int i = 0; i < SHIPS_PER_PLAYER; i++)
+			{
+				totalShipsAScore += shipsA[i].getScore();
+				totalShipsBScore += shipsB[i].getScore();
+			}
+			char ** b = prepareBoard(0);
+			this->playerA->setBoard(0, const_cast<const char **>(b), BOARD_SIZE, BOARD_SIZE);
+			delete b;
+			b = prepareBoard(1);
+			this->playerB->setBoard(1, const_cast<const char **>(b), BOARD_SIZE, BOARD_SIZE);
+			delete b;
+			if (this->playerA->init(path) == false)
+			{
+				scoreA = -1;
+				scoreB = -1;
+				FileReader::printError(FileReader::Error::AlGO_INIT, path); // TODO Which error?
+			};
+			if (this->playerB->init(path) == false)
+			{
+				scoreA = -1;
+				scoreB = -1;
+				FileReader::printError(FileReader::Error::AlGO_INIT, path); // TODO Which error?
+			};
+		}
+		else
+		{
+			// Marking for main that the board is faulty.
+			scoreA = -1;
+			scoreB = -1;
+		}
+		getCursorXY();
 	}
-	getCursorXY();	
 }
 
 
@@ -142,6 +147,26 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool ** temp, int row
 	return (res && dimensionFlag);
 }
 
+char** Board::prepareBoard(int player) const
+{
+	char ** res = new char*[board.num_of_rows()];
+	for (int i = 0; i < board.num_of_rows(); i++)
+	{
+		res[i] = new char[board.num_of_cols()];		
+	}
+	for(int row = 0; row < board.num_of_rows(); row++)
+		for(int col = 0; col < board.num_of_cols(); col++)
+		{
+			if (coordColor(row, col) == player)
+			{
+				res[row][col] = board.getPos(row, col);
+			}
+			else
+				res[row][col] = BLANK;
+		}
+	return res;
+}
+
 bool Board::checkTarget(char target) const {
 	if (this->current_player_turn == 0)
 		return target == ABOAT || target == ACRUISER || target == ASUBMARINE || target == ADESTROYER;
@@ -231,7 +256,7 @@ bool Board::checkBoard() {
 			{
 				color = this->coordColor(row, col); 
 				t = this->shipType(row, col);
-				if(color == 1)
+				if(color == 0)
 					checkRes = checkCoord(&(AsizeOShape[t]), &Adjacent, temp, row, col, this->board.getPos(row,col));
 				else
 					checkRes = checkCoord(&(BsizeOShape[t]), &Adjacent, temp, row, col, this->board.getPos(row,col));
@@ -279,7 +304,7 @@ bool Board::checkBoard() {
 						}
 					}
 					// create the new ship in the proper list, count the ships even if there are too many
-					if (color == 1)
+					if (color == 0)
 					{						
 						if (currA < SHIPS_PER_PLAYER)
 							this->shipsA[currA] = Ship(vert, horz, t);
@@ -497,7 +522,7 @@ bool Board::parseBoard(std::string& path) {
 		return false;
 	}
 
-	ifstream fin(path + "\\" + boardFileDetails.second);
+	ifstream fin(path + "\\" + boardFileDetails.first);
 	if(!fin.is_open())
 	{
 		std::cout << "Error: Cannot open the board file for parsing." << endl;
@@ -506,7 +531,7 @@ bool Board::parseBoard(std::string& path) {
 	string* temp_board = new string[board.num_of_cols()];
 	for (int i = 0; i < board.num_of_rows(); i++) {
 		std::getline(fin, temp_board[i]);
-		for (int j = 0; j < BOARD_SIZE; j++) {
+		for (int j = 0; j < board.num_of_rows(); j++) {
 			if (Board::checkChar(temp_board[i][j]))
 				board.setPos(i,j,temp_board[i][j]);
 			else

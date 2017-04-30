@@ -101,15 +101,17 @@ bool Main::init(const std::string& path)
 	IBattleshipGameAlgo* playerB;
 
 	//if (chooseAlgoA == "file")
-		playerA = new attackFromFileAlgo();
+		playerA = new attackFromFileAlgo(0);
+		playerA->init(path);
 	//else if (chooseAlgoA == "naive")
 	//	;playerA = &NaiveAlgoPlayer::NaiveAlgoPlayer();
 	//if (chooseAlgoB == "file")
-		playerB = new attackFromFileAlgo();
+		playerB = new attackFromFileAlgo(1);
+		playerB->init(path);
 	//else if (chooseAlgoB == "naive")
 	//	;playerB = &NaiveAlgoPlayer::NaiveAlgoPlayer();
 
-	game_board = Board(path, playerA, playerB);
+	game_board = Board(path, 10, 10, playerA, playerB);
 
 	// In case of wrong board init - quit, the errors are already printed on the console!
 	if (game_board.getScore(0) == -1 || game_board.getScore(1) == -1)

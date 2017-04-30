@@ -158,9 +158,9 @@ std::pair<std::string, std::string> FileReader::findFilesLexicographically(std::
 	int indexOfSuffix = std::string::npos;
 	int numFilesWithExtentionFound = 0;//counts how many files with the given extention found
 	std::pair<std::string, std::string> fileNames;
-
-	for (int i = 0; i != FileReader::filesVector.size(); i++) {
-
+	for (std::vector<std::string>::const_iterator itr = filesVector.cbegin(); itr != filesVector.cend(); itr++) {
+		
+		name = *itr;
 		indexOfSuffix = name.find_last_of(".") + 1;
 		if (indexOfSuffix != std::string::npos)
 		{
@@ -196,6 +196,7 @@ void FileReader::writeToVectorTheFilesInDir(const std::string& path)
 	//insert all the files in the dir to the vector of names of files
 	while (fgets(buffer, 4095, fp))
 	{
+		buffer[strcspn(buffer, "\n")] = 0;
 		filesVector.push_back(std::string(buffer));
 	}
 	_pclose(fp);

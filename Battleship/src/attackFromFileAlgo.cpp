@@ -1,15 +1,12 @@
 #include "attackFromFileAlgo.h"
 
 
-attackFromFileAlgo::attackFromFileAlgo() {
-}
+
 
 
 bool attackFromFileAlgo::init(const std::string& path) {
 	attack_from_file = Attack(path, player_number);
-	if (attack_from_file.init == false)
-		return false;
-	return true;
+	return attack_from_file.init;
 }
 
 

@@ -51,7 +51,7 @@ class Board {
 	*/
 	int coordColor(int row, int col) const
 	{
-		return (this->board.getPos(row,col) >= 'A' && this->board.getPos(row, col) <= 'Z') ? 1 : 2;
+		return (this->board.getPos(row,col) >= 'A' && this->board.getPos(row, col) <= 'Z') ? 0 : 1;
 	}
 
 	/*
@@ -71,6 +71,7 @@ class Board {
 	*/
 	bool checkCoord(bool*, bool*, bool**, int, int, char) const;
 
+	char ** prepareBoard(int player) const;
 public:
 	Board()
 		: playerA(nullptr),
@@ -128,12 +129,14 @@ public:
 		board = other.board;
 		current_player_turn = other.current_player_turn;
 		playerA = other.playerA;
+		other.playerA = nullptr;
 		playerB = other.playerB;
+		other.playerB = nullptr;
 		totalShipsAScore = other.totalShipsAScore;
 		totalShipsBScore = other.totalShipsBScore;
 		scoreA = other.scoreA;
 		scoreB = other.scoreB;
-		origin = std::move(other.origin);
+		origin = other.origin;
 		return *this;
 	}
 

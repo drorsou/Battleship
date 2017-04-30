@@ -22,7 +22,15 @@ public:
 	{
 		return numOfRows;
 	}
-
+	void setDimensions(int num_of_rows, int num_of_cols)
+	{
+		if (arr == nullptr)
+		{
+			this->numOfRows = num_of_rows;
+			this->numOfCols = num_of_cols;
+			arr = new char[num_of_rows*num_of_cols];
+		}
+	}
 	int num_of_cols() const
 	{
 		return numOfCols;
