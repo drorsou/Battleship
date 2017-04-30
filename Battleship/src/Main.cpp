@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
 			path = argv[1];
 			Main::replaceChar(path, '/', '\\');
 			if (argc > 2)
-			{
+			{				
 				if (std::string{ "-quiet" }.compare(argv[2]) == 0)
 				{
 					isPrint = false;

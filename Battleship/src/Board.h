@@ -3,6 +3,7 @@
 #include "NaiveAlgoPlayer.h"
 #include "FileReader.h"
 #include "boardArray.h"
+#include <array>
 #include <iostream>
 #include <windows.h>
 
@@ -26,8 +27,10 @@ class Board {
 	int current_player_turn;
 	IBattleshipGameAlgo * playerA;
 	IBattleshipGameAlgo * playerB;
-	Ship shipsA[SHIPS_PER_PLAYER];
-	Ship shipsB[SHIPS_PER_PLAYER];
+	/*Ship shipsA[SHIPS_PER_PLAYER];
+	Ship shipsB[SHIPS_PER_PLAYER];*/
+	std::array<Ship, SHIPS_PER_PLAYER> shipsA;
+	std::array<Ship, SHIPS_PER_PLAYER> shipsB;
 	int totalShipsAScore;
 	int totalShipsBScore;
 	int scoreA;
@@ -102,6 +105,8 @@ public:
 		  scoreB(other.scoreB),
 		  origin(std::move(other.origin))
 	{
+		shipsA = other.shipsA;
+		shipsB = other.shipsB;
 		std::swap(this->playerA, other.playerA);
 		std::swap(this->playerB, other.playerB);
 	}
@@ -116,6 +121,8 @@ public:
 		playerB = other.playerB;
 		totalShipsAScore = other.totalShipsAScore;
 		totalShipsBScore = other.totalShipsBScore;
+		shipsA = other.shipsA;
+		shipsB = other.shipsB;
 		scoreA = other.scoreA;
 		scoreB = other.scoreB;
 		origin = other.origin;
@@ -132,6 +139,8 @@ public:
 		other.playerA = nullptr;
 		playerB = other.playerB;
 		other.playerB = nullptr;
+		shipsA = other.shipsA;
+		shipsB = other.shipsB;
 		totalShipsAScore = other.totalShipsAScore;
 		totalShipsBScore = other.totalShipsBScore;
 		scoreA = other.scoreA;

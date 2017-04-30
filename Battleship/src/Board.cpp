@@ -24,8 +24,8 @@ Board::Board(string path, int numOfRows, int numOfCols, IBattleshipGameAlgo * pl
 			totalShipsBScore = 0;
 			for (int i = 0; i < SHIPS_PER_PLAYER; i++)
 			{
-				totalShipsAScore += shipsA[i].getScore();
-				totalShipsBScore += shipsB[i].getScore();
+				totalShipsAScore += shipsA.at(i).getScore();
+				totalShipsBScore += shipsB.at(i).getScore();
 			}
 			char ** b = prepareBoard(0);
 			this->playerA->setBoard(0, const_cast<const char **>(b), BOARD_SIZE, BOARD_SIZE);
@@ -191,9 +191,9 @@ bool Board::hitShip(int row, int col, char type) {
 	// Check if the ship is sunk
 	for (int i = 0; i < SHIPS_PER_PLAYER; i++)
 	{
-		if (shipsA[i].isInThisShip(row, col))
+		if (shipsA.at(i).isInThisShip(row, col))
 		{
-			if (shipsA[i].hit())
+			if (shipsA.at(i).hit())
 			{
 				scoreB += shipsA[i].getScore();
 				return true;
@@ -206,11 +206,11 @@ bool Board::hitShip(int row, int col, char type) {
 	}
 	for (int i = 0; i < SHIPS_PER_PLAYER; i++)
 	{
-		if (shipsB[i].isInThisShip(row, col))
+		if (shipsB.at(i).isInThisShip(row, col))
 		{
-			if (shipsB[i].hit())
+			if (shipsB.at(i).hit())
 			{
-				scoreA += shipsB[i].getScore();
+				scoreA += shipsB.at(i).getScore();
 				return true;
 			}
 			else
@@ -312,13 +312,13 @@ bool Board::checkBoard() {
 					if (color == 0)
 					{						
 						if (currA < SHIPS_PER_PLAYER)
-							this->shipsA[currA] = Ship(vert, horz, t);
+							this->shipsA.at(currA) = Ship(vert, horz, t);
 						currA++;
 					}
 					else
 					{						
 						if (currB < SHIPS_PER_PLAYER)
-							this->shipsB[currB] = Ship(vert, horz, t);
+							this->shipsB.at(currB) = Ship(vert, horz, t);
 						currB++;
 					}
 				}				

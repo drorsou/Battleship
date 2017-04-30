@@ -73,5 +73,39 @@ public:
 	*/
 	bool hit() {
 		return (--this->size) == 0 ? true : false;
+	}	
+
+	Ship(Ship&& other) noexcept
+		: 
+		  type(other.type),
+		  size(other.size),
+		  score(other.score)
+	{
+		vert = make_pair(other.vert.first,other.vert.second);
+		horz = make_pair(other.horz.first, other.horz.second);
+	}
+
+	Ship& operator=(const Ship& other)
+	{
+		if (this == &other)
+			return *this;
+		vert = make_pair(other.vert.first, other.vert.second);
+		horz = make_pair(other.horz.first, other.horz.second);
+		type = other.type;
+		size = other.size;
+		score = other.score;
+		return *this;
+	}
+
+	Ship& operator=(Ship&& other) noexcept
+	{
+		if (this == &other)
+			return *this;
+		vert = make_pair(other.vert.first, other.vert.second);
+		horz = make_pair(other.horz.first, other.horz.second);
+		type = other.type;
+		size = other.size;
+		score = other.score;
+		return *this;
 	}
 };
