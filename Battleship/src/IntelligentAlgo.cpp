@@ -27,4 +27,69 @@ void IntelligentAlgo::setBoard(int color, const char** board, int numRows, int n
 				}				
 			}			
 		}
-};
+}
+
+bool IntelligentAlgo::init(const std::string& path)
+{
+	return true;
+}
+
+std::pair<int, int> IntelligentAlgo::attack()
+{
+	std::pair<int, int> res;
+	if(!possibleAttacks.empty())
+	{
+		res = possibleAttacks.top();
+		possibleAttacks.pop();
+		return res;
+	}	
+	while(nextAttack.first < numOfRows - 1 && nextAttack.second < numOfCols - 1) // not suppose to happen
+	{
+		if (shadow_board[nextAttack.first][nextAttack.second] == Attack)
+		{
+			res = nextAttack;
+			addOne();
+			return res;
+		}
+		// If marked Don't Attack or Attacked, keep looking for a target
+		addOne();
+	}
+	/*
+	 *  We get here only if there are no more targets (and the last target is 10,10)
+	 *  We should get here only once - and win in this turn 
+	 *  (otherwise we have passed all the possible tiles and we haven't sank all of the enemy ships)
+	*/
+	return nextAttack;
+}
+
+void IntelligentAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult result)
+{
+	if(result == AttackResult::Miss)
+	{
+		board[row][col] = MISS_SYM;		
+	}
+	else
+	{
+		if (!checkColor(row, col))
+		{
+			if(row > 0 && shadow_board[row - 1][col] == tileMarks::Attack)
+			{
+				possibleAttacks.emplace(row - 1, col);
+			}
+			if(col > 0 && shadow_board[row][col - 1] == tileMarks::Attack)
+			{
+				possibleAttacks.emplace(row, col - 1);
+			}
+			if (row < numOfRows - 1 && shadow_board[row + 1][col] == tileMarks::Attack)
+			{
+				possibleAttacks.emplace(row + 1, col);
+			}
+			if (col < numOfCols && shadow_board[row][col + 1] == tileMarks::Attack)
+			{
+				possibleAttacks.emplace(row, col + 1);
+			}
+		}
+	}
+	shadow_board[row][col] = tileMarks::Attacked;
+}
+
