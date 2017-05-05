@@ -27,7 +27,6 @@ bool Attack::loadFromAttackFile(const std::string& path, int player_num)
 	else
 		attackFiles = FileReader::findFilesLexicographically("attack");*/
 	
-	std::cout << attackFiles.first << " , " << attackFiles.second << std::endl;
 	// Creating an ifstream object and opening file in path attackPath
 	if (player_num == 0)
 	{

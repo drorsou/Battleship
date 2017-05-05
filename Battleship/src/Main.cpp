@@ -28,7 +28,6 @@ int main(int argc, char* argv[])
 		if (std::string{ "-quiet" }.compare(argv[1]) == 0)
 		{
 			isPrint = false;
-			path = "";
 		}
 		else if(std::string{"-delay"}.compare(argv[1]) == 0) 
 		{
@@ -44,14 +43,13 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
-			path = argv[1];
+			path.append(argv[1]);
 			Main::replaceChar(path, '/', '\\');
 			if (argc > 2)
 			{				
 				if (std::string{ "-quiet" }.compare(argv[2]) == 0)
 				{
 					isPrint = false;
-					path = ".";
 				}
 				else if (std::string{ "-delay" }.compare(argv[2]) == 0)
 				{
