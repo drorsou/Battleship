@@ -21,21 +21,22 @@ bool Attack::loadFromAttackFile(const std::string& path, int player_num)
 	std::string line, pathToFile;
 	std::pair<int, int> singleAttack;
 	std::pair<std::string, std::string> attackFiles;
-	if(player_num == 0)
-		attackFiles = FileReader::findFilesLexicographically("attack-a");
+	attackFiles = FileReader::findFilesLexicographically("attack");
+	/*if(player_num == 0)
+		attackFiles = FileReader::findFilesLexicographically("attack");
 	else
-		attackFiles = FileReader::findFilesLexicographically("attack-b");
+		attackFiles = FileReader::findFilesLexicographically("attack");*/
 	
-
+	std::cout << attackFiles.first << " , " << attackFiles.second << std::endl;
 	// Creating an ifstream object and opening file in path attackPath
-	/*if (player_num == 0)
-	{*/
+	if (player_num == 0)
+	{
 		if (attackFiles.first.empty())
 			FileReader::printError(FileReader::Error::AlGO_INIT, path); // TODO - Which error?
 		else
 			pathToFile = path + "\\" + attackFiles.first;
-	//}
-	/*else if (player_num == 1)
+	}
+	else if (player_num == 1)
 	{
 		if (attackFiles.second.empty())
 		{
@@ -46,7 +47,7 @@ bool Attack::loadFromAttackFile(const std::string& path, int player_num)
 		}
 		else
 			pathToFile = path + "\\" + attackFiles.second;
-	}*/
+	}
 
 	std::ifstream fin(pathToFile);
 

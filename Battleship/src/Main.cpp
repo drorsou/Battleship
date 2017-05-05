@@ -75,7 +75,6 @@ int main(int argc, char* argv[])
 
 	Main::play();
 
-	std::getchar(); // TODO - Remove!!!
 	return 0;
 };
 
@@ -94,8 +93,8 @@ bool Main::init(const std::string& path)
 		FileReader::writeToVectorTheFilesInDir(path);
 
 	
-	string chooseAlgoA = "file"; // Temporary until we have DLLs - "naive" or "file"
-	string chooseAlgoB = "file"; // Temporary until we have DLLs - "naive" or "file"
+	//string chooseAlgoA = "file"; // Temporary until we have DLLs - "naive" or "file"
+	//string chooseAlgoB = "file"; // Temporary until we have DLLs - "naive" or "file"
 
 	IBattleshipGameAlgo* playerA;
 	IBattleshipGameAlgo* playerB;
@@ -183,16 +182,16 @@ void Main::play()
 				}
 			}
 
-		}
 
-		// Notify players on results
-		game_board.notifyResult(attack_coord.first, attack_coord.second, result);
+			// Notify players on results
+			game_board.notifyResult(attack_coord.first, attack_coord.second, result);
 
-		// Update the board print
-		if (isPrint == true && attack_coord.first != -1 && attack_coord.second != -1)
-		{
-			game_board.updateBoard(attack_coord.first, attack_coord.second);
-			Sleep(delay);
+			// Update the board print
+			if (isPrint == true)
+			{
+				game_board.updateBoard(attack_coord.first, attack_coord.second);
+				Sleep(delay);
+			}
 		}
 	}
 
@@ -212,7 +211,7 @@ void Main::play()
 
 
 void Main::replaceChar(std::string& str, char ch1, char ch2) {
-	for (int i = 0; i < str.length(); i++)
+	for (unsigned int i = 0; i < str.length(); i++)
 	{
 		if (str[i] == ch1)
 			str[i] = ch2;

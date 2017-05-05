@@ -26,20 +26,22 @@ void FileReader::printError(const FileReader::Error& errorType, const std::strin
 		}
 	case FileReader::Error::BOARD:
 		{
-		error = "Missing board file(*.sboard) looking in path : ";
+		error = "Missing board file (*.sboard) looking in path: ";
 		error.append(pathForError);
 		}
 	case FileReader::Error::DLL:
 		{
-		error = "Missing an algorithm(dll) file looking in path : ";
+		error = "Missing an algorithm (dll) file looking in path: ";
 		}
 	case FileReader::Error::LOAD_DLL:
 		{
-		error = "Cannot load dll:" + pathForError;
+		error = "Cannot load dll: ";
+		error.append(pathForError);
 		}
 	case FileReader::Error::AlGO_INIT:
 		{
-		error = "Algorithm initialization failed for dll:" + pathForError;
+		error = "Algorithm initialization failed for dll: ";
+		error.append(pathForError);
 		}
 	}
 
@@ -153,11 +155,11 @@ bool FileReader::checkIsValidDir(const std::string& pathName) {
 
 std::pair<std::string, std::string> FileReader::findFilesLexicographically(std::string requiredExtention)
 {
-
 	std::string name = "";
 	int indexOfSuffix = std::string::npos;
 	int numFilesWithExtentionFound = 0;//counts how many files with the given extention found
 	std::pair<std::string, std::string> fileNames;
+	std::sort(filesVector.begin(), filesVector.end());
 	for (std::vector<std::string>::const_iterator itr = filesVector.cbegin(); itr != filesVector.cend(); itr++) {
 		
 		name = *itr;
