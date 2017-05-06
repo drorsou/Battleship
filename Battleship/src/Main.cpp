@@ -1,10 +1,11 @@
 #include "Main.h"
 
-//#define DEBUG
 
+// Static variables
 Board Main::game_board;
 bool isPrint;
 int delay;
+
 
 Main::Main() {
 
@@ -44,7 +45,7 @@ int main(int argc, char* argv[])
 		else
 		{
 			path.append(argv[1]);
-			Main::replaceChar(path, '/', '\\');
+			FileReader::replaceChar(path, '/', '\\');
 			if (argc > 2)
 			{				
 				if (std::string{ "-quiet" }.compare(argv[2]) == 0)
@@ -81,7 +82,6 @@ int main(int argc, char* argv[])
 bool Main::init(const std::string& path)
 {
 	// Check if directory exists and list all its files
-	//FileReader::setDirFileName("dirFiles.txt");
 	if (!FileReader::checkIsValidDir(path))
 	{
 		FileReader::printError(FileReader::Error::PATH, path);
@@ -90,23 +90,19 @@ bool Main::init(const std::string& path)
 	else
 		FileReader::writeToVectorTheFilesInDir(path);
 
-	
-	//string chooseAlgoA = "file"; // Temporary until we have DLLs - "naive" or "file"
-	//string chooseAlgoB = "file"; // Temporary until we have DLLs - "naive" or "file"
 
 	IBattleshipGameAlgo* playerA;
 	IBattleshipGameAlgo* playerB;
 
-	//if (chooseAlgoA == "file")
-		playerA = new attackFromFileAlgo(0);
-		playerA->init(path);
-	//else if (chooseAlgoA == "naive")
-	//	;playerA = &NaiveAlgoPlayer::NaiveAlgoPlayer();
-	//if (chooseAlgoB == "file")
-		playerB = new attackFromFileAlgo(1);
-		playerB->init(path);
-	//else if (chooseAlgoB == "naive")
-	//	;playerB = &NaiveAlgoPlayer::NaiveAlgoPlayer();
+	//
+	// Replace later with DLLs
+	//
+	playerA = new attackFromFileAlgo(0);
+	playerB = new attackFromFileAlgo(1);
+	//
+	
+	playerA->init(path);
+	playerB->init(path);
 
 	game_board = Board(path, 10, 10, playerA, playerB);
 
@@ -208,16 +204,10 @@ void Main::play()
 }
 
 
-void Main::replaceChar(std::string& str, char ch1, char ch2) {
-	for (unsigned int i = 0; i < str.length(); i++)
-	{
-		if (str[i] == ch1)
-			str[i] = ch2;
-	}
-}
 
 
-int Main::ArgPos(char *str, int argc, char **argv) {
+
+/*int Main::ArgPos(char *str, int argc, char **argv) {
 	int a;
 	for (a = 1; a < argc; a++)
 	{
@@ -225,4 +215,4 @@ int Main::ArgPos(char *str, int argc, char **argv) {
 			return a;
 	}
 	return -1;
-}
+}*/

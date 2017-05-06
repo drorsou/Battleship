@@ -11,16 +11,18 @@
 class Attack {
 	std::queue<std::pair<int, int>> list;	
 	
-	/*
-		private methods
-	*/
-	bool processLine(const std::string& line, std::pair<int, int> * res);
-	bool is_number(const std::string &s);
-	std::vector<std::string> split(const std::string &s, char delim);
-	void removeCharFromString(std::string &str, char charToRemove);
+
+	//takes a string and splits it by the delimeter ','. creates a pair of ints of this row 
+	bool processLine(const std::string& line, std::pair<int, int> * res) const;
+	static bool is_number(const std::string &s);
+
+	//splits string s to a vector by delimeter
+	std::vector<std::string> split(const std::string &s, char delim) const;
+	static void removeCharFromString(std::string &str, char charToRemove);
+
 public:
 	bool init;
-	Attack() {};
+	Attack() : init(false) {};
 	Attack(const std::string & path, int player_num);
 	
 	/*
@@ -29,7 +31,7 @@ public:
 	*/
 	std::pair<int, int> getNextAttack();
 	
-	bool hasAttacks() { return !list.empty(); }
+	bool hasAttacks() const { return !list.empty(); }
 
 	/*
 		Pre: gets a valid path to the attack file.
@@ -37,5 +39,4 @@ public:
 				save it into the queue.
 	*/
 	bool loadFromAttackFile(const std::string& attackPath, int player_num);
-	
 };

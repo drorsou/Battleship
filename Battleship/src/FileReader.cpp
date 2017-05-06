@@ -203,3 +203,12 @@ void FileReader::writeToVectorTheFilesInDir(const std::string& path)
 	}
 	_pclose(fp);
 }
+
+
+void FileReader::replaceChar(std::string& str, char ch1, char ch2) {
+	for (unsigned int i = 0; i < str.length(); i++)
+	{
+		if (str[i] == ch1)
+			str[i] = ch2;
+	}
+}

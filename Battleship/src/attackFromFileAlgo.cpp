@@ -1,9 +1,6 @@
 #include "attackFromFileAlgo.h"
 
 
-
-
-
 bool attackFromFileAlgo::init(const std::string& path) {
 	attack_from_file = Attack(path, player_number);
 	return attack_from_file.init;
@@ -16,11 +13,6 @@ pair<int, int> attackFromFileAlgo::attack() {
 	else
 		return make_pair(-1, -1);
 };
-
-
-void attackFromFileAlgo::setAttackFromFile(Attack attack) {
-	attack_from_file = attack;
-}
 
 
 void attackFromFileAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult result) {
