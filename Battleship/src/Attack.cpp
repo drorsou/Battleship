@@ -9,8 +9,7 @@ Attack::Attack(const std::string& path, int player_num)
 
 std::pair<int, int> Attack::getNextAttack()
 {
-	std::pair<int, int> temp;
-	temp = list.front();
+	std::pair<int, int> temp = list.front();
 	list.pop();
 	return temp;
 }
@@ -20,22 +19,17 @@ bool Attack::loadFromAttackFile(const std::string& path, int player_num)
 {
 	std::string line, pathToFile;
 	std::pair<int, int> singleAttack;
-	std::pair<std::string, std::string> attackFiles;
-	if(player_num == 0)
-		attackFiles = FileReader::findFilesLexicographically("attack-a");
-	else
-		attackFiles = FileReader::findFilesLexicographically("attack-b");
+	std::pair<std::string, std::string> attackFiles = FileReader::findFilesLexicographically("attack");
 	
-
 	// Creating an ifstream object and opening file in path attackPath
-	/*if (player_num == 0)
-	{*/
+	if (player_num == 0)
+	{
 		if (attackFiles.first.empty())
 			FileReader::printError(FileReader::Error::AlGO_INIT, path); // TODO - Which error?
 		else
 			pathToFile = path + "\\" + attackFiles.first;
-	//}
-	/*else if (player_num == 1)
+	}
+	else if (player_num == 1)
 	{
 		if (attackFiles.second.empty())
 		{
@@ -46,13 +40,14 @@ bool Attack::loadFromAttackFile(const std::string& path, int player_num)
 		}
 		else
 			pathToFile = path + "\\" + attackFiles.second;
-	}*/
+	}
 
 	std::ifstream fin(pathToFile);
 
 	if (fin.fail()) //error openning file
 	{
-		std::cout << "Error Occured opening file of attack" << std::endl;		
+		std::cout << "Error Occured opening file of attack" << std::endl;
+		fin.close();
 		return false;
 	}
 	while (getline(fin, line)) //getline returns null if we get to end of file.
@@ -71,14 +66,18 @@ bool Attack::loadFromAttackFile(const std::string& path, int player_num)
 			continue;
 		}
 		else
+		{
+			fin.close();
 			return false;
+		}
 	}
+	fin.close();
 	return true;
 }
 
 
-//takes a string and splits it by the delimeter ','. creates a pair of ints of this row 
-bool Attack::processLine(const std::string& line, std::pair<int, int> * res) {
+
+bool Attack::processLine(const std::string& line, std::pair<int, int> * res) const {
 	std::vector<std::string> tokens = Attack::split(line, ',');
 	int row;
 	int col;
@@ -124,8 +123,7 @@ bool Attack::is_number(const std::string &s) {
 }
 
 
-//splits string s to a vector by delimeter
-std::vector<std::string> Attack::split(const std::string &s, char delim)
+std::vector<std::string> Attack::split(const std::string &s, char delim) const
 {
 	std::vector<std::string> elems;
 	std::stringstream strSt(s);

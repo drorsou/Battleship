@@ -64,5 +64,10 @@ public:
 	//static std::vector<std::string>& writeToVectorTheFilesInDir(const std::string& path);
 	static void writeToVectorTheFilesInDir(const std::string& path);
 
+
+	// Replacea all 'ch1' in string 'str' with 'ch2'
+	static void replaceChar(std::string& str, char ch1, char ch2);
+
+
 	static std::vector<std::string>* getFilesVector() { return &filesVector; }
 };
