@@ -30,15 +30,17 @@ class Ship {
 	short int size;
 	int score;
 
+	void setScoreAndLength(Type t);
 public:	
-	/*
-		Pre: vertlow <= verthigh, horzlow <= horzhigh and one must be an equallity.
-				Also, the length of the ship is correct.
-		Post: Creates a new ship
-	*/
+	
 	Ship(){
 	}
 
+	/*
+	Pre: vertlow <= verthigh, horzlow <= horzhigh and one must be an equallity.
+	Also, the length of the ship is correct.
+	Post: Creates a new ship
+	*/
 	Ship(int vertlow, int verthigh, int horzlow, int horzhigh, Type t);
 
 	Ship(std::pair<int, int> v, std::pair<int, int> h, Type t);
@@ -51,11 +53,9 @@ public:
 	
 
 
-	Type getType() { 
-		return this->type;
-	}
+	Type getType() const { return this->type; }
 
-	int Ship::getScore() { return this->score; }
+	int Ship::getScore() const { return this->score; }
 
 
 	/*
@@ -68,7 +68,7 @@ public:
 		Pre: gets a valid coordinate.
 		Post: returns true iff the coordinate is part of this ship
 	*/
-	bool isInThisShip(int row, int col)	{ return (row <= vert.second && row >= vert.first) && (col <= horz.second && col >= horz.first); }
+	bool isInThisShip(int row, int col) const { return (row <= vert.second && row >= vert.first) && (col <= horz.second && col >= horz.first); }
 
 
 	/*
@@ -77,41 +77,7 @@ public:
 		Post: lowers its size by 1, 
 			and returns true iff the ship has sunk.
 	*/
-	bool hit() {
-		return (--this->size) == 0 ? true : false;
-	}	
+	bool hit() { return (--this->size) == 0 ? true : false;	}
 
-	Ship(Ship&& other) noexcept
-		: 
-		  type(other.type),
-		  size(other.size),
-		  score(other.score)
-	{
-		vert = make_pair(other.vert.first,other.vert.second);
-		horz = make_pair(other.horz.first, other.horz.second);
-	}
-
-	Ship& operator=(const Ship& other)
-	{
-		if (this == &other)
-			return *this;
-		vert = make_pair(other.vert.first, other.vert.second);
-		horz = make_pair(other.horz.first, other.horz.second);
-		type = other.type;
-		size = other.size;
-		score = other.score;
-		return *this;
-	}
-
-	Ship& operator=(Ship&& other) noexcept
-	{
-		if (this == &other)
-			return *this;
-		vert = make_pair(other.vert.first, other.vert.second);
-		horz = make_pair(other.horz.first, other.horz.second);
-		type = other.type;
-		size = other.size;
-		score = other.score;
-		return *this;
-	}
+	Ship& operator=(Ship& other);
 };

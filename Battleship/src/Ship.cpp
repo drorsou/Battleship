@@ -1,29 +1,34 @@
 #include "Ship.h"
 
 
+void Ship::setScoreAndLength(Type t)
+{
+	switch (t)
+	{
+	case Boat:
+		size = ShipLen::BoatLen;
+		score = Score::BoatScore;
+		break;
+	case Cruiser:
+		size = ShipLen::CruiserLen;
+		score = Score::CruiserScore;
+		break;
+	case Submarine:
+		size = ShipLen::SubmarineLen;
+		score = Score::SubmarineScore;
+		break;
+	case Destroyer:
+		size = ShipLen::DestroyerLen;
+		score = Score::DestroyerScore;
+		break;
+	}
+}
+
 Ship::Ship(int vertlow, int verthigh, int horzlow, int horzhigh, Type t) {
 	vert = std::make_pair(vertlow, verthigh);
 	horz = std::make_pair(horzlow, horzhigh);
 	type = t;
-	switch (t)
-	{
-	case Boat:
-		size = BOAT_LEN;
-		score = BOAT_SCORE;
-		break;
-	case Cruiser:
-		size = CRUISER_LEN;
-		score = CRUISER_SCORE;
-		break;
-	case Submarine:
-		size = SUBMARINE_LEN;
-		score = SUBMARINE_SCORE;
-		break;
-	case Destroyer:
-		size = DESTROYER_LEN;
-		score = DESTROYER_SCORE;
-		break;
-	}
+	setScoreAndLength(t);
 }
 
 
@@ -31,52 +36,46 @@ Ship::Ship(std::pair<int, int> v, std::pair<int, int> h, Type t) {
 	vert = v;
 	horz = h;
 	type = t;
-	switch (t)
-	{
-	case Boat:
-		size = BOAT_LEN;
-		score = BOAT_SCORE;
-		break;
-	case Cruiser:
-		size = CRUISER_LEN;
-		score = CRUISER_SCORE;
-		break;
-	case Submarine:
-		size = SUBMARINE_LEN;
-		score = SUBMARINE_SCORE;
-		break;
-	case Destroyer:
-		size = DESTROYER_LEN;
-		score = DESTROYER_SCORE;
-		break;
-	}
+	setScoreAndLength(t);
 }
-
-
-Ship::Ship(const Ship& ship) {
-	this->horz = make_pair(ship.horz.first, ship.horz.second);
-	this->vert = make_pair(ship.vert.first, ship.vert.second);
-	this->type = ship.type;
-	this->size = ship.size;
-}
-
 
 bool Ship::checkDimensions(int len, char t)
 {	
 	switch (t)
 	{
-	case ABOAT:	case BBOAT:
-		return len == BOAT_LEN;
+	case static_cast<char>(Symbol::ABoat):	case static_cast<char>(Symbol::BBoat):
+		return len == ShipLen::BoatLen;
 		break;
-	case ACRUISER: case BCRUISER:
-		return len == CRUISER_LEN;
+	case static_cast<char>(Symbol::ACruiser) : case static_cast<char>(Symbol::BCruiser) :
+		return len == ShipLen::CruiserLen;
 		break;
-	case ASUBMARINE: case BSUBMARINE:
-		return len == SUBMARINE_LEN;
+	case static_cast<char>(Symbol::ASubmarine) : case static_cast<char>(Symbol::BSubmarine) :
+		return len == ShipLen::SubmarineLen;
 		break;
-	case ADESTROYER: case BDESTROYER:
-		return len == DESTROYER_LEN;
+	case static_cast<char>(Symbol::ADestroyer) : case static_cast<char>(Symbol::BDestroyer) :
+		return len == ShipLen::DestroyerLen;
 		break;
 	}
 	return false;
+}
+
+Ship::Ship(const Ship& other) :
+	type(other.type),
+	size(other.size),
+	score(other.score)
+{
+	vert = make_pair(other.vert.first, other.vert.second);
+	horz = make_pair(other.horz.first, other.horz.second);
+}
+
+Ship& Ship::operator=(Ship& other)
+{
+	if (this == &other)
+		return *this;
+	vert = make_pair(other.vert.first, other.vert.second);
+	horz = make_pair(other.horz.first, other.horz.second);
+	type = other.type;
+	size = other.size;
+	score = other.score;
+	return *this;
 }
