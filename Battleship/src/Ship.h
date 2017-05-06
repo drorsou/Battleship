@@ -79,5 +79,5 @@ public:
 	*/
 	bool hit() { return (--this->size) == 0 ? true : false;	}
 
-	Ship& operator=(Ship& other);
+	Ship& operator=(Ship&& other);
 };

@@ -68,7 +68,7 @@ Ship::Ship(const Ship& other) :
 	horz = make_pair(other.horz.first, other.horz.second);
 }
 
-Ship& Ship::operator=(Ship& other)
+Ship& Ship::operator=(Ship&& other)
 {
 	if (this == &other)
 		return *this;

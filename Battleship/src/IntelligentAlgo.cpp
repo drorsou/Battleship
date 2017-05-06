@@ -151,13 +151,43 @@ void IntelligentAlgo::addAttacks(int row, int col, direction dir)
 	}
 }
 
+IntelligentAlgo::IntelligentAlgo(int player_number, int num_of_rows, int num_of_cols): player_number(player_number),
+                                                                                       numOfRows(num_of_rows),
+                                                                                       numOfCols(num_of_cols),
+                                                                                       numberOfRuns(0)
+{
+	shadow_board = new tileMarks*[numOfRows];
+	board = new char*[numOfRows];
+	for (int i = 0; i < numOfRows; i++)
+	{
+		shadow_board[i] = new tileMarks[numOfCols];
+		board[i] = new char[numOfCols];
+		for (int j = 0; j < numOfCols; j++)
+		{
+			shadow_board[i][j] = tileMarks::Attack;
+		}
+	}
+	nextAttack = make_pair(0, 0);
+}
+
+IntelligentAlgo::~IntelligentAlgo()
+{
+	for (int i = 0; i < numOfRows; i++)
+	{
+		delete[] board[i];
+		delete[] shadow_board[i];
+	}
+	delete[] board;
+	delete[] shadow_board;
+}
+
 void IntelligentAlgo::setBoard(int color, const char** board, int numRows, int numCols) {
 	player_number = color;
 	for (int row = 0; row < numRows; row++)
 		for (int col = 0; col < numCols; col++) 
 		{
 			this->board[row][col] = board[row][col];
-			if (board[row][col] != BLANK)
+			if (board[row][col] != static_cast<char>(Ship::Symbol::Blank))
 			{				
 				this->shadow_board[row][col] = DontAttack;
 				if (row > 0)
@@ -223,7 +253,7 @@ void IntelligentAlgo::notifyOnAttackResult(int player, int row, int col, AttackR
 {
 	if(result == AttackResult::Miss)
 	{
-		board[row][col] = MISS_SYM;	
+		board[row][col] = static_cast<char>(Ship::Symbol::MISS);
 	}
 	else
 	{			
@@ -239,11 +269,11 @@ void IntelligentAlgo::notifyOnAttackResult(int player, int row, int col, AttackR
 				addAttacks(row, col, std::get<2>(lastFired));
 			}
 		}
-		else if (board[row][col] == BLANK)
+		else if (board[row][col] == static_cast<char>(Ship::Symbol::Blank))
 		{
 			addAttacks(row, col, None);
 		}
-		board[row][col] = HIT_SYM;
+		board[row][col] = static_cast<char>(Ship::Symbol::Hit);
 	}
 	shadow_board[row][col] = tileMarks::Attacked;
 }

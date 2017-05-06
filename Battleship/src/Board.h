@@ -39,6 +39,8 @@ class Board {
 
 	static void printLine();
 
+	void changeColor(HANDLE& hConsole, int row, int col) const;
+
 	void gotoxy(int, int) const;
 
 	Type shipType(int row, int col) const;
@@ -57,6 +59,9 @@ class Board {
 		return (this->board.getPos(row,col) >= 'A' && this->board.getPos(row, col) <= 'Z') ? 0 : 1;
 	}
 
+	static bool printSizeOrShapeError(int player, bool arr[4]);
+
+	static bool printNumOfShipsError(int player, int count);
 	/*
 		Pre: None
 		Post: returns true iff the board is legal.

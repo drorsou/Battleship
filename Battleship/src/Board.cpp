@@ -80,16 +80,16 @@ Type Board::shipType(int row, int col) const {
 	Type t;
 	switch (this->board.getPos(row,col))
 	{
-	case ABOAT: case BBOAT:
+	case static_cast<char>(Ship::Symbol::ABoat): case static_cast<char>(Ship::Symbol::BBoat):
 		t = Boat;
 		break;
-	case ACRUISER: case BCRUISER:
+	case static_cast<char>(Ship::Symbol::ACruiser) : case static_cast<char>(Ship::Symbol::BCruiser) :
 		t = Cruiser;
 		break;
-	case ASUBMARINE: case BSUBMARINE:
+	case static_cast<char>(Ship::Symbol::ASubmarine) : case static_cast<char>(Ship::Symbol::BSubmarine) :
 		t = Submarine;
 		break;
-	case ADESTROYER: case BDESTROYER:
+	case static_cast<char>(Ship::Symbol::ADestroyer) : case static_cast<char>(Ship::Symbol::BDestroyer) :
 		t = Destroyer;
 		break;
 	}
@@ -167,7 +167,7 @@ char** Board::prepareBoard(int player) const
 				res[row][col] = board.getPos(row, col);
 			}
 			else
-				res[row][col] = BLANK;
+				res[row][col] = static_cast<char>(Ship::Symbol::Blank);
 		}
 	return res;
 }
@@ -231,6 +231,44 @@ bool Board::hasPlayerWon(int player) const {
 }
 
 
+bool Board::printSizeOrShapeError(int player, bool arr[4])
+{
+	bool res = true;
+	char sh;
+	char pl = player == 0 ? 'A' : 'B';
+	for(int i = 0; i < 4; i++)
+		if(arr[i])
+		{
+			res = false;
+			if(player == 0)
+			{
+				sh = static_cast<char>(static_cast<int>(Ship::Symbol::ABoat) + i);				
+			}
+			else
+			{
+				sh = static_cast<char>(static_cast<int>(Ship::Symbol::BBoat) + i);
+			}
+			std::cout << "Wrong size or shape for ship " << sh << " for player " << pl << std::endl;
+		}
+	return res;
+}
+
+bool Board::printNumOfShipsError(int player, int count)
+{
+	char pl = player == 0 ? 'A' : 'B';
+	if (count > SHIPS_PER_PLAYER)
+	{
+		std::cout << "Too many ships for player " << pl << std::endl;
+		return false;
+	}
+	if (count < SHIPS_PER_PLAYER)
+	{
+		std::cout << "Too few ships for player " << pl << std::endl;
+		return false;
+	}
+	return true;
+}
+
 bool Board::checkBoard() {
 	// creates a shadow board initialized to false.
 	bool ** temp = new bool*[board.num_of_rows()]; 
@@ -268,7 +306,7 @@ bool Board::checkBoard() {
 				// Create the ship
 				if (checkRes == true)
 				{					
-					if (this->board.getPos(row,col) == ABOAT || this->board.getPos(row,col) == BBOAT)
+					if (this->board.getPos(row,col) == static_cast<char>(Ship::Symbol::ABoat) || this->board.getPos(row,col) == static_cast<char>(Ship::Symbol::BBoat))
 					{
 						horz = make_pair(col + 1, col + 1);	
 						vert = make_pair(row + 1, row + 1);
@@ -281,13 +319,13 @@ bool Board::checkBoard() {
 							switch (t)
 							{
 							case Cruiser:								
-								vert = make_pair(row + 1, row + CRUISER_LEN);
+								vert = make_pair(row + 1, row + Ship::ShipLen::CruiserLen);
 								break;
 							case Submarine:								
-								vert = make_pair(row + 1, row + SUBMARINE_LEN);
+								vert = make_pair(row + 1, row + Ship::ShipLen::SubmarineLen);
 								break;
 							case Destroyer:								
-								vert = make_pair(row + 1, row + DESTROYER_LEN);
+								vert = make_pair(row + 1, row + Ship::ShipLen::DestroyerLen);
 								break;
 							}
 						}
@@ -297,13 +335,13 @@ bool Board::checkBoard() {
 							switch (t)
 							{
 							case Cruiser:
-								horz = make_pair(col + 1, col + CRUISER_LEN);
+								horz = make_pair(col + 1, col + Ship::ShipLen::CruiserLen);
 								break;
 							case Submarine:
-								horz = make_pair(col + 1, col + SUBMARINE_LEN);
+								horz = make_pair(col + 1, col + Ship::ShipLen::SubmarineLen);
 								break;
 							case Destroyer:
-								horz = make_pair(col + 1, col + DESTROYER_LEN);
+								horz = make_pair(col + 1, col + Ship::ShipLen::DestroyerLen);
 								break;
 							}
 						}
@@ -333,7 +371,7 @@ bool Board::checkBoard() {
 		Too few
 		Adjacent (not player oriented!)
 	*/
-	if (AsizeOShape[Boat])
+	/*if (AsizeOShape[Boat])
 	{
 		cout << "Wrong size or shape for ship B for player A\n";
 		result = false;
@@ -372,8 +410,8 @@ bool Board::checkBoard() {
 	{
 		cout << "Wrong size or shape for ship d for player B\n";
 		result = false;
-	}	
-	if (currA > SHIPS_PER_PLAYER)
+	}	*/
+	/*if (currA > SHIPS_PER_PLAYER)
 	{
 		cout << "Too many ships for player A\n";
 		result = false;
@@ -392,10 +430,14 @@ bool Board::checkBoard() {
 	{
 		cout << "Too few ships for player B\n";
 		result = false;
-	}
+	}*/
+	result = result && Board::printSizeOrShapeError(0, AsizeOShape);
+	result = result && Board::printSizeOrShapeError(1, BsizeOShape);
+	result = result && Board::printNumOfShipsError(0, currA);
+	result = result && Board::printNumOfShipsError(1, currB);
 	if (Adjacent)
 	{
-		cout << "Adjacent Ships on Board\n";
+		std::cout << "Adjacent Ships on Board" << std::endl;
 		result = false;
 	}
 	return result;
@@ -426,39 +468,7 @@ void Board::printBoard() const {
 			/* 
 				Color text according to player and ship type 
 			*/
-			switch (this->board.getPos(row,col))
-			{
-			case ABOAT:
-				SetConsoleTextAttribute(hConsole, COLOR_AQUA);				
-				break;
-			case BBOAT:
-				SetConsoleTextAttribute(hConsole, COLOR_LIGHT_AQUA);
-				break;
-			case ACRUISER:
-				SetConsoleTextAttribute(hConsole, COLOR_GREEN);				
-				break;
-			case BCRUISER:
-				SetConsoleTextAttribute(hConsole, COLOR_LIGHT_GREEN);				
-				break;
-			case ASUBMARINE:
-				SetConsoleTextAttribute(hConsole, COLOR_YELLOW);
-				break;
-			case BSUBMARINE:
-				SetConsoleTextAttribute(hConsole, COLOR_LIGHT_YELLOW);
-				break;
-			case ADESTROYER:
-				SetConsoleTextAttribute(hConsole, COLOR_PURPLE);
-				break;
-			case BDESTROYER:
-				SetConsoleTextAttribute(hConsole, COLOR_LIGHT_PURPLE);
-				break;
-			case HIT_SYM:
-				SetConsoleTextAttribute(hConsole, COLOR_LIGHT_RED);
-				break;
-			case MISS_SYM:
-				SetConsoleTextAttribute(hConsole, COLOR_RED);
-				break;			
-			}
+			changeColor(hConsole, row, col);
 			cout << this->board.getPos(row,col) << " ";
 			// resetting the color
 			SetConsoleTextAttribute(hConsole, COLOR_WHITE);			
@@ -484,9 +494,9 @@ void Board::updateBoard(int row, int col) const {
 	row--;
 	col--;	
 	this->gotoxy(2 * row + 2, 4 * col + 4);
-	cout << "\b";
+	std::cout << "\b";
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	if (this->board.getPos(row,col) == BLANK || this->board.getPos(row,col) == MISS_SYM)
+	if (this->board.getPos(row,col) == static_cast<char>(Ship::Symbol::Blank)|| this->board.getPos(row,col) == static_cast<char>(Ship::Symbol::MISS))
 	{
 		SetConsoleTextAttribute(hConsole, COLOR_RED);
 		cout << " " << MISS_SYM << " ";
@@ -496,7 +506,7 @@ void Board::updateBoard(int row, int col) const {
 	else
 	{
 		SetConsoleTextAttribute(hConsole, COLOR_LIGHT_RED);
-		cout << " "<< HIT_SYM << " ";
+		std::cout << " "<< static_cast<char>(Ship::Symbol::Hit) << " ";
 		// resetting the color
 		SetConsoleTextAttribute(hConsole, COLOR_WHITE);
 	}
@@ -511,6 +521,44 @@ void Board::printLine(){
 		printf("-");
 	}
 	printf("|\n");
+}
+
+void Board::changeColor(HANDLE& hConsole, int row, int col) const
+{
+	Ship::Symbol temp = (Ship::Symbol)this->board.getPos(row, col);
+	switch (temp)
+	{
+	case Ship::Symbol::ABoat:
+		SetConsoleTextAttribute(hConsole, COLOR_AQUA);
+		break;
+	case Ship::Symbol::BBoat:
+		SetConsoleTextAttribute(hConsole, COLOR_LIGHT_AQUA);
+		break;
+	case Ship::Symbol::ACruiser:
+		SetConsoleTextAttribute(hConsole, COLOR_GREEN);
+		break;
+	case Ship::Symbol::BCruiser:
+		SetConsoleTextAttribute(hConsole, COLOR_LIGHT_GREEN);
+		break;
+	case Ship::Symbol::ASubmarine:
+		SetConsoleTextAttribute(hConsole, COLOR_YELLOW);
+		break;
+	case Ship::Symbol::BSubmarine:
+		SetConsoleTextAttribute(hConsole, COLOR_LIGHT_YELLOW);
+		break;
+	case Ship::Symbol::ADestroyer:
+		SetConsoleTextAttribute(hConsole, COLOR_PURPLE);
+		break;
+	case Ship::Symbol::BDestroyer:
+		SetConsoleTextAttribute(hConsole, COLOR_LIGHT_PURPLE);
+		break;
+	case Ship::Symbol::Hit:
+		SetConsoleTextAttribute(hConsole, COLOR_LIGHT_RED);
+		break;
+	case Ship::Symbol::MISS:
+		SetConsoleTextAttribute(hConsole, COLOR_RED);
+		break;
+	}
 }
 
 
@@ -540,7 +588,7 @@ bool Board::parseBoard(std::string& path) {
 			if (Board::checkChar(temp_board[i][j]))
 				board.setPos(i,j,temp_board[i][j]);
 			else
-				board.setPos(i, j, BLANK);
+				board.setPos(i, j, static_cast<char>(Ship::Symbol::Blank));
 		}
 	}
 
@@ -548,5 +596,5 @@ bool Board::parseBoard(std::string& path) {
 }
 
 bool Board::checkChar(char c) {
-	return (c == ABOAT || c == BBOAT || c == ACRUISER || c == BCRUISER || c == ASUBMARINE || c == BSUBMARINE || c == ADESTROYER || c == BDESTROYER);
+	return (c == static_cast<char>(Ship::Symbol::ABoat) || c == static_cast<char>(Ship::Symbol::BBoat) || c == static_cast<char>(Ship::Symbol::ACruiser) || c == static_cast<char>(Ship::Symbol::BCruiser) || c == static_cast<char>(Ship::Symbol::ASubmarine) || c == static_cast<char>(Ship::Symbol::BSubmarine) || c == static_cast<char>(Ship::Symbol::ADestroyer) || c == static_cast<char>(Ship::Symbol::BDestroyer));
 }
