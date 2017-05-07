@@ -42,3 +42,8 @@ void attackFromFileAlgo::setBoard(int player, const char** board, int numRows, i
 			}
 		}
 }
+
+IBattleshipGameAlgo* GetAlgorithm()
+{
+	return new attackFromFileAlgo();
+}

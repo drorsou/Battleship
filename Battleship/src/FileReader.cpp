@@ -212,3 +212,25 @@ void FileReader::replaceChar(std::string& str, char ch1, char ch2) {
 			str[i] = ch2;
 	}
 }
+
+
+/*std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> loadDLL(const std::string& path)
+{
+	// Load dynamic library
+	HINSTANCE hDll = LoadLibraryA(path.c_str()); // Notice: Unicode compatible version of LoadLibrary
+	if (!hDll)
+	{
+		std::cout << "could not load the dynamic library" << std::endl;
+		//return std::make_tuple(NULL, NULL);
+	}
+
+	// Get function pointer
+	FileReader::GetAlgorithmFuncType getAlgoritmeFunc = (FileReader::GetAlgorithmFuncType)GetProcAddress(hDll, "GetShape");
+	if (!getAlgoritmeFunc)
+	{
+		std::cout << "could not load function GetAlgoritm()" << std::endl;
+		//return false;
+	}
+
+	return std::make_tuple(hDll, getAlgoritmeFunc);
+}*/

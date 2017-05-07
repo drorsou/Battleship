@@ -102,6 +102,15 @@ bool Main::init(const std::string& path)
 	/*playerB = new attackFromFileAlgo(1);*/
 	playerB = new IntelligentAlgo(1, 10, 10);
 	//
+
+	std::pair<std::string, std::string> dlls = FileReader::findFilesLexicographically("dll");
+	// if no files, then error ?
+
+	//std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> dll1 = FileReader::loadDLL(dlls.first);
+	//std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> dll2 = FileReader::loadDLL(dlls.first);
+	//playerA = get<0>(*dll1);
+
+	
 	/*
 	playerA->init(path);
 	playerB->init(path);
