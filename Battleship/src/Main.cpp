@@ -97,9 +97,17 @@ bool Main::init(const std::string& path)
 	//
 	// Replace later with DLLs
 	//
-	playerA = new attackFromFileAlgo(0);
-	playerB = new attackFromFileAlgo(1);
+	playerA = new attackFromFileAlgo();
+	playerB = new attackFromFileAlgo();
 	//
+
+	std::pair<std::string, std::string> dlls = FileReader::findFilesLexicographically("dll");
+	// if no files, then error ?
+
+	//std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> dll1 = FileReader::loadDLL(dlls.first);
+	//std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> dll2 = FileReader::loadDLL(dlls.first);
+	//playerA = get<0>(*dll1);
+
 	
 	playerA->init(path);
 	playerB->init(path);
