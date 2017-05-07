@@ -59,7 +59,7 @@ class Board {
 		return (this->board.getPos(row,col) >= 'A' && this->board.getPos(row, col) <= 'Z') ? 0 : 1;
 	}
 
-	static bool printSizeOrShapeError(int player, bool arr[4]);
+	static bool printSizeOrShapeError(int player, bool * arr);
 
 	static bool printNumOfShipsError(int player, int count);
 	/*
@@ -110,29 +110,13 @@ public:
 		  scoreB(other.scoreB),
 		  origin(std::move(other.origin))
 	{
-		shipsA = other.shipsA;
-		shipsB = other.shipsB;
+		shipsA = std::move(other.shipsA);
+		shipsB = std::move(other.shipsB);
 		std::swap(this->playerA, other.playerA);
 		std::swap(this->playerB, other.playerB);
 	}
 
-	Board& operator=(const Board& other)
-	{
-		if (this == &other)
-			return *this;
-		board = other.board;
-		current_player_turn = other.current_player_turn;
-		playerA = other.playerA;
-		playerB = other.playerB;
-		totalShipsAScore = other.totalShipsAScore;
-		totalShipsBScore = other.totalShipsBScore;
-		shipsA = other.shipsA;
-		shipsB = other.shipsB;
-		scoreA = other.scoreA;
-		scoreB = other.scoreB;
-		origin = other.origin;
-		return *this;
-	}
+	Board& operator=(const Board& other) = delete;
 
 	Board& operator=(Board&& other) noexcept
 	{
@@ -144,8 +128,8 @@ public:
 		other.playerA = nullptr;
 		playerB = other.playerB;
 		other.playerB = nullptr;
-		shipsA = other.shipsA;
-		shipsB = other.shipsB;
+		shipsA = std::move(other.shipsA);
+		shipsB = std::move(other.shipsB);
 		totalShipsAScore = other.totalShipsAScore;
 		totalShipsBScore = other.totalShipsBScore;
 		scoreA = other.scoreA;
@@ -188,7 +172,7 @@ public:
 	/*
 		Notify both players.
 	*/
-	void notifyResult(int row, int col, AttackResult result);
+	void notifyResult(int player, int row, int col, AttackResult result);
 
 	char getCoordValue(int row, int col) const { return board.getPos(row - 1,col - 1); }
 	void setCoordValue(int row, int col, char val) const { board.setPos(row - 1,col - 1, val); }

@@ -28,10 +28,10 @@ Board::Board(string path, int numOfRows, int numOfCols, IBattleshipGameAlgo * pl
 				totalShipsBScore += shipsB.at(i).getScore();
 			}
 			char ** b = prepareBoard(0);
-			this->playerA->setBoard(0, const_cast<const char **>(b), BOARD_SIZE, BOARD_SIZE);
+			this->playerA->setBoard(0, const_cast<const char **>(b), numOfRows, numOfCols);
 			delete b;
 			b = prepareBoard(1);
-			this->playerB->setBoard(1, const_cast<const char **>(b), BOARD_SIZE, BOARD_SIZE);
+			this->playerB->setBoard(1, const_cast<const char **>(b), numOfRows, numOfCols);
 			delete b;
 			if (this->playerA->init(path) == false)
 			{
@@ -62,10 +62,10 @@ Board::Board(string path, int numOfRows, int numOfCols, IBattleshipGameAlgo * pl
 }
 
 
-void Board::notifyResult(int row, int col, AttackResult result)
+void Board::notifyResult(int player, int row, int col, AttackResult result)
 {
-	playerA->notifyOnAttackResult(0, row, col, result);
-	playerB->notifyOnAttackResult(1, row, col, result);
+	playerA->notifyOnAttackResult(player, row, col, result);
+	playerB->notifyOnAttackResult(player, row, col, result);
 }
 
 
@@ -231,22 +231,39 @@ bool Board::hasPlayerWon(int player) const {
 }
 
 
-bool Board::printSizeOrShapeError(int player, bool arr[4])
+bool Board::printSizeOrShapeError(int player, bool * arr)
 {
 	bool res = true;
 	char sh;
+	int dif;
 	char pl = player == 0 ? 'A' : 'B';
 	for(int i = 0; i < 4; i++)
 		if(arr[i])
 		{
+			switch(i)
+			{
+			case 0:
+				dif = static_cast<int>(Ship::Symbol::ABoat);
+				break;
+			case 1:
+				dif = static_cast<int>(Ship::Symbol::ACruiser);
+				break;
+			case 2:
+				dif = static_cast<int>(Ship::Symbol::ASubmarine);
+				break;
+			case 3:
+				dif = static_cast<int>(Ship::Symbol::ADestroyer);
+				break;
+			}
+			dif -= static_cast<int>(Ship::Symbol::ABoat);
 			res = false;
 			if(player == 0)
 			{
-				sh = static_cast<char>(static_cast<int>(Ship::Symbol::ABoat) + i);				
+				sh = static_cast<char>(static_cast<int>(Ship::Symbol::ABoat) + dif);				
 			}
 			else
 			{
-				sh = static_cast<char>(static_cast<int>(Ship::Symbol::BBoat) + i);
+				sh = static_cast<char>(static_cast<int>(Ship::Symbol::BBoat) + dif);
 			}
 			std::cout << "Wrong size or shape for ship " << sh << " for player " << pl << std::endl;
 		}
@@ -431,10 +448,10 @@ bool Board::checkBoard() {
 		cout << "Too few ships for player B\n";
 		result = false;
 	}*/
-	result = result && Board::printSizeOrShapeError(0, AsizeOShape);
-	result = result && Board::printSizeOrShapeError(1, BsizeOShape);
-	result = result && Board::printNumOfShipsError(0, currA);
-	result = result && Board::printNumOfShipsError(1, currB);
+	result = result & Board::printSizeOrShapeError(0, AsizeOShape);
+	result = result & Board::printSizeOrShapeError(1, BsizeOShape);
+	result = result & Board::printNumOfShipsError(0, currA);
+	result = result & Board::printNumOfShipsError(1, currB);
 	if (Adjacent)
 	{
 		std::cout << "Adjacent Ships on Board" << std::endl;

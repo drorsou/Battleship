@@ -198,11 +198,11 @@ void IntelligentAlgo::setBoard(int color, const char** board, int numRows, int n
 				{
 					this->shadow_board[row][col - 1] = DontAttack;
 				}
-				if (row < numRows)
+				if (row < numRows - 1)
 				{
 					this->shadow_board[row + 1][col] = DontAttack;
 				}
-				if (col < numCols)
+				if (col < numCols - 1)
 				{
 					this->shadow_board[row][col + 1] = DontAttack;
 				}				
@@ -226,13 +226,15 @@ std::pair<int, int> IntelligentAlgo::attack()
 			possibleAttacks.pop();
 		} while (shadow_board[std::get<0>(temp)][std::get<1>(temp)] != Attack);
 		lastFired = temp;
-		return make_pair(std::get<0>(temp), std::get<1>(temp));
+		return make_pair(std::get<0>(temp) + 1, std::get<1>(temp) + 1);
 	}	
 	while(numberOfRuns < 2) // not suppose to happen
 	{
 		if (shadow_board[nextAttack.first][nextAttack.second] == Attack)
 		{
-			std::pair<int,int> res = nextAttack;			
+			std::pair<int,int> res = nextAttack;	
+			res.first++;
+			res.second++;
 			addTwo();
 			lastFired = make_tuple(res.first, res.second, None);
 			return res;
@@ -246,11 +248,16 @@ std::pair<int, int> IntelligentAlgo::attack()
 	 *  (otherwise we have passed all the possible tiles and we haven't sank all of the enemy ships)
 	*/
 	lastFired = make_tuple(nextAttack.first, nextAttack.second, None);
-	return nextAttack;
+	std::pair<int, int> res = nextAttack;
+	res.first++;
+	res.second++;
+	return res;
 }
 
 void IntelligentAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult result)
 {
+	row--;
+	col--;
 	if(result == AttackResult::Miss)
 	{
 		board[row][col] = static_cast<char>(Ship::Symbol::MISS);

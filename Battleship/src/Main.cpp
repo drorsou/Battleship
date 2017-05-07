@@ -1,4 +1,5 @@
 #include "Main.h"
+#include "IntelligentAlgo.h"
 
 
 // Static variables
@@ -98,12 +99,13 @@ bool Main::init(const std::string& path)
 	// Replace later with DLLs
 	//
 	playerA = new attackFromFileAlgo(0);
-	playerB = new attackFromFileAlgo(1);
+	/*playerB = new attackFromFileAlgo(1);*/
+	playerB = new IntelligentAlgo(1, 10, 10);
 	//
-	
+	/*
 	playerA->init(path);
 	playerB->init(path);
-
+	*/
 	game_board = Board(path, 10, 10, playerA, playerB);
 
 	// In case of wrong board init - quit, the errors are already printed on the console!
@@ -122,6 +124,7 @@ void Main::play()
 	bool game_in_progress = true;
 	bool playerExhausted = false; // No more attacks from file 
 	AttackResult result;
+	int currentPlayer;
 
 	if (isPrint == true)
 		game_board.printBoard();
@@ -150,6 +153,7 @@ void Main::play()
 		}
 		else
 		{
+			currentPlayer = game_board.getTurn();
 			char piece = game_board.getCoordValue(attack_coord.first, attack_coord.second);
 			if (piece != BLANK && piece != MISS_SYM && piece != HIT_SYM)
 			{
@@ -178,7 +182,7 @@ void Main::play()
 
 
 			// Notify players on results
-			game_board.notifyResult(attack_coord.first, attack_coord.second, result);
+			game_board.notifyResult(currentPlayer, attack_coord.first, attack_coord.second, result);
 
 			// Update the board print
 			if (isPrint == true)
