@@ -8,8 +8,13 @@ void IntelligentAlgo::addTwo()
 		if (nextAttack.first < numOfRows - 1)
 			numberOfRuns++;
 		nextAttack.first = (nextAttack.first + 1) % numOfRows;
+		if(numOfCols * numOfRows % 2 == 0)
+			nextAttack.second = (nextAttack.second + 3) % numOfCols; // fixing a problem with even sized boards
+		else
+			nextAttack.second = (nextAttack.second + 2) % numOfCols; // works fine if the board of odd size
 	}
-	nextAttack.second = (nextAttack.second + 2) % numOfCols;
+	else
+		nextAttack.second = (nextAttack.second + 2) % numOfCols;
 }
 
 void IntelligentAlgo::markLeft(int row, int col)
