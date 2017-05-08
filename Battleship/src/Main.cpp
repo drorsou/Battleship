@@ -98,8 +98,9 @@ bool Main::init(const std::string& path)
 	//
 	// Replace later with DLLs
 	//
-	playerA = new attackFromFileAlgo(0);
-	/*playerB = new attackFromFileAlgo(1);*/
+	//playerA = new attackFromFileAlgo(0);
+	//playerB = new attackFromFileAlgo(1);
+	playerA = new IntelligentAlgo(0, 10, 10);
 	playerB = new IntelligentAlgo(1, 10, 10);
 	//
 

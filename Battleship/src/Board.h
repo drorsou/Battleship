@@ -35,27 +35,28 @@ class Board {
 	int totalShipsBScore;
 	int scoreA;
 	int scoreB;
-	POINT origin;
+	COORD origin;
+	COORD end;
 
 	static void printLine();
 
 	void changeColor(HANDLE& hConsole, int row, int col) const;
 
 	void gotoxy(int, int) const;
+	
 
 	Type shipType(int row, int col) const;
 	/*
 		Pre: None
 		Post: sets the current cursor position as the origin.
 	*/
-	void getCursorXY();
+	void getCursorXY(bool toOrigin);
 
 	/*
 		Pre: gets a non-empty valid coordinate.
 		Post: returns the color of the piece on the board.
 	*/
-	int coordColor(int row, int col) const
-	{
+	int coordColor(int row, int col) const	{
 		return (this->board.getPos(row,col) >= 'A' && this->board.getPos(row, col) <= 'Z') ? 0 : 1;
 	}
 
@@ -81,6 +82,8 @@ class Board {
 
 	char ** prepareBoard(int player) const;
 public:
+	void gotoEnd(int, int) const;
+
 	Board()
 		: playerA(nullptr),
 		  playerB(nullptr)		  
@@ -161,7 +164,7 @@ public:
 		Pre: Gets a legal board.
 		Post: prints the board in the console.
 	*/
-	void printBoard() const;
+	void printBoard();
 	/*
 		Pre: Gets a legal board, and the attack coordinate.
 			Assuming the board is already printed in the console.

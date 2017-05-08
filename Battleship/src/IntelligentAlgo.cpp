@@ -3,18 +3,22 @@
 
 void IntelligentAlgo::addTwo()
 {
-	if (nextAttack.second >= numOfCols - 2)
+	if (nextAttack.second < numOfCols - 2) // moving right
+		nextAttack.second += 2;
+	else // moving to the next line
 	{
-		if (nextAttack.first < numOfRows - 1)
-			numberOfRuns++;
-		nextAttack.first = (nextAttack.first + 1) % numOfRows;
-		if(numOfCols * numOfRows % 2 == 0)
-			nextAttack.second = (nextAttack.second + 3) % numOfCols; // fixing a problem with even sized boards
-		else
-			nextAttack.second = (nextAttack.second + 2) % numOfCols; // works fine if the board of odd size
+		if (nextAttack.first < numOfRows - 1) // moving down
+		{
+			nextAttack.second = (nextAttack.second + 2) % numOfCols;
+			nextAttack.first++;
+		}
+		else // going back to the first line
+		{
+			numberOfRuns++;			
+			nextAttack.second = 1;
+			nextAttack.first = 0;
+		}
 	}
-	else
-		nextAttack.second = (nextAttack.second + 2) % numOfCols;
 }
 
 void IntelligentAlgo::markLeft(int row, int col)
@@ -25,7 +29,7 @@ void IntelligentAlgo::markLeft(int row, int col)
 
 void IntelligentAlgo::markRight(int row, int col)
 {
-	if (col < numOfCols)
+	if (col < numOfCols - 1)
 		shadow_board[row][col + 1] = DontAttack;
 }
 
@@ -37,32 +41,52 @@ void IntelligentAlgo::markUp(int row, int col)
 
 void IntelligentAlgo::markDown(int row, int col)
 {
-	if (row < numOfRows)
+	if (row < numOfRows - 1)
 		shadow_board[row + 1][col] = DontAttack;
 }
 
-void IntelligentAlgo::addAttackLeft(int row, int col)
+void IntelligentAlgo::addAttackLeft(int row, int col, bool atStart)
 {
 	if (col > 0 && shadow_board[row][col - 1] == Attack)
-		possibleAttacks.emplace(row, col - 1, Left);
+	{
+		if (atStart)
+			possibleAttacks.emplace_back(row, col - 1, Left);
+		else
+			possibleAttacks.emplace_front(row, col - 1, Left);
+	}
 }
 
-void IntelligentAlgo::addAttackRight(int row, int col)
+void IntelligentAlgo::addAttackRight(int row, int col, bool atStart)
 {
 	if (col < numOfCols - 1 && shadow_board[row][col + 1] == Attack)
-		possibleAttacks.emplace(row, col + 1, Right);
+	{
+		if (atStart)
+			possibleAttacks.emplace_back(row, col + 1, Right);
+		else
+			possibleAttacks.emplace_front(row, col + 1, Right);
+	}
 }
 
-void IntelligentAlgo::addAttackUp(int row, int col)
+void IntelligentAlgo::addAttackUp(int row, int col, bool atStart)
 {
 	if (row > 0 && shadow_board[row - 1][col] == Attack)
-		possibleAttacks.emplace(row - 1, col, Up);
+	{
+		if (atStart)
+			possibleAttacks.emplace_back(row - 1, col, Up);
+		else
+			possibleAttacks.emplace_front(row - 1, col, Up);
+	}
 }
 
-void IntelligentAlgo::addAttackDown(int row, int col)
+void IntelligentAlgo::addAttackDown(int row, int col, bool atStart)
 {
 	if (row < numOfRows - 1 && shadow_board[row + 1][col] == Attack)
-		possibleAttacks.emplace(row + 1, col, Down);
+	{
+		if (atStart)
+			possibleAttacks.emplace_back(row + 1, col, Down);
+		else
+			possibleAttacks.emplace_front(row + 1, col, Down);
+	}
 }
 
 void IntelligentAlgo::markSink(int row, int col, direction dir)
@@ -115,43 +139,43 @@ void IntelligentAlgo::markHit(int row, int col, direction dir)
 		markRight(row + 1, col);
 		break;
 	case Left:
-		markLeft(row, col);
-		markRight(row, col);
-		markLeft(row, col + 1);
-		markRight(row, col + 1);
+		markUp(row, col);
+		markDown(row, col);
+		markUp(row, col + 1);
+		markDown(row, col + 1);
 		break;
 	case Right:
-		markLeft(row, col);
-		markRight(row, col);
-		markLeft(row, col - 1);
-		markRight(row, col - 1);
+		markUp(row, col);
+		markDown(row, col);
+		markUp(row, col - 1);
+		markDown(row, col - 1);
 		break;
 	case None:
 		break;
 	}
 }
 
-void IntelligentAlgo::addAttacks(int row, int col, direction dir)
+void IntelligentAlgo::addAttacks(int row, int col, direction dir, bool atStart)
 {
 	switch (dir)
 	{
 	case Up:
-		addAttackUp(row, col);
+		addAttackUp(row, col, atStart);
 		break;
 	case Down:
-		addAttackDown(row, col);
+		addAttackDown(row, col, atStart);
 		break;
 	case Left:
-		addAttackLeft(row, col);
+		addAttackLeft(row, col, atStart);
 		break;
 	case Right:
-		addAttackRight(row, col);
+		addAttackRight(row, col, atStart);
 		break;
 	case None:
-		addAttackUp(row, col);
-		addAttackDown(row, col);
-		addAttackLeft(row, col);
-		addAttackRight(row, col);
+		addAttackUp(row, col, atStart);
+		addAttackDown(row, col, atStart);
+		addAttackLeft(row, col, atStart);
+		addAttackRight(row, col, atStart);
 		break;
 	}
 }
@@ -221,17 +245,20 @@ bool IntelligentAlgo::init(const std::string& path)
 }
 
 std::pair<int, int> IntelligentAlgo::attack()
-{
+{	
 	std::tuple<int,int,direction> temp;
 	if(!possibleAttacks.empty())
 	{
 		do
 		{
-			temp = possibleAttacks.top();
-			possibleAttacks.pop();
-		} while (shadow_board[std::get<0>(temp)][std::get<1>(temp)] != Attack);
-		lastFired = temp;
-		return make_pair(std::get<0>(temp) + 1, std::get<1>(temp) + 1);
+			temp = possibleAttacks.back();
+			possibleAttacks.pop_back();			
+		} while (shadow_board[std::get<0>(temp)][std::get<1>(temp)] != Attack && !possibleAttacks.empty());
+		if (shadow_board[std::get<0>(temp)][std::get<1>(temp)] == Attack)
+		{
+			lastFired = temp;
+			return make_pair(std::get<0>(temp) + 1, std::get<1>(temp) + 1);
+		} // otherwise continue looking for new attacks
 	}	
 	while(numberOfRuns < 2) // not suppose to happen
 	{
@@ -278,12 +305,12 @@ void IntelligentAlgo::notifyOnAttackResult(int player, int row, int col, AttackR
 			else
 			{
 				markHit(row, col, std::get<2>(lastFired));
-				addAttacks(row, col, std::get<2>(lastFired));
+				addAttacks(row, col, std::get<2>(lastFired), true);
 			}
 		}
 		else if (board[row][col] == static_cast<char>(Ship::Symbol::Blank))
 		{
-			addAttacks(row, col, None);
+			addAttacks(row, col, None, false);
 		}
 		board[row][col] = static_cast<char>(Ship::Symbol::Hit);
 	}

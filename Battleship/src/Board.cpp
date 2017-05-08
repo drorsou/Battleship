@@ -57,7 +57,7 @@ Board::Board(string path, int numOfRows, int numOfCols, IBattleshipGameAlgo * pl
 			scoreA = -1;
 			scoreB = -1;
 		}
-		getCursorXY();
+		getCursorXY(true);
 	}
 }
 
@@ -68,11 +68,45 @@ void Board::notifyResult(int player, int row, int col, AttackResult result)
 	playerB->notifyOnAttackResult(player, row, col, result);
 }
 
-
+void Board::getCursorXY(bool toOrigin) {
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
+		if (toOrigin)
+		{
+			this->origin.X = csbi.dwCursorPosition.X;
+			this->origin.Y = csbi.dwCursorPosition.Y;
+		}
+		else
+		{
+			this->end.X = csbi.dwCursorPosition.X;
+			this->end.Y = csbi.dwCursorPosition.Y;
+		}
+	}
+	else
+	{
+		if (toOrigin)
+		{
+			this->origin.X = 0;
+			this->origin.Y = 0;
+		}
+		else
+		{
+			this->end.X = 0;
+			this->end.Y = this->origin.Y + (2 * this->board.num_of_rows() + 2);
+		}
+	}
+}
 void Board::gotoxy(int row, int col) const {
 	COORD coord;
-	coord.X = col + this->origin.x;
-	coord.Y = row + this->origin.y;
+	coord.X = col + this->origin.X;
+	coord.Y = row + this->origin.Y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+void Board::gotoEnd(int row, int col) const
+{
+	COORD coord;
+	coord.X = col + this->end.X;
+	coord.Y = row + this->end.Y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
@@ -461,7 +495,7 @@ bool Board::checkBoard() {
 }
 
 
-void Board::printBoard() const {
+void Board::printBoard(){
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	
 	/*
@@ -492,21 +526,11 @@ void Board::printBoard() const {
 		}
 		cout << "|\n";
 		Board::printLine();
-	}	
+	}
+	getCursorXY(false);
 }
 
-void Board::getCursorXY() {
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	if(GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
-	    this->origin.x = csbi.dwCursorPosition.X;
-	    this->origin.y = csbi.dwCursorPosition.Y;
-	}
-	else
-	{
-		this->origin.x = 0;
-		this->origin.y = 0;
-	}
-}
+
 void Board::updateBoard(int row, int col) const {
 	row--;
 	col--;	
@@ -527,7 +551,7 @@ void Board::updateBoard(int row, int col) const {
 		// resetting the color
 		SetConsoleTextAttribute(hConsole, COLOR_WHITE);
 	}
-	this->gotoxy(22, 0); // moving cursor back to the bottom.
+	this->gotoEnd(0, 0); // moving cursor back to the bottom.
 }
 
 
@@ -615,3 +639,5 @@ bool Board::parseBoard(std::string& path) {
 bool Board::checkChar(char c) {
 	return (c == static_cast<char>(Ship::Symbol::ABoat) || c == static_cast<char>(Ship::Symbol::BBoat) || c == static_cast<char>(Ship::Symbol::ACruiser) || c == static_cast<char>(Ship::Symbol::BCruiser) || c == static_cast<char>(Ship::Symbol::ASubmarine) || c == static_cast<char>(Ship::Symbol::BSubmarine) || c == static_cast<char>(Ship::Symbol::ADestroyer) || c == static_cast<char>(Ship::Symbol::BDestroyer));
 }
+
+

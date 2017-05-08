@@ -2,6 +2,7 @@
 #include "IBattleshipGameAlgo.h"
 #include "Ship.h"
 #include <stack>
+#include <list>
 #include <tuple>
 #include "Board.h"
 enum tileMarks { DontAttack, Attack, Attacked };
@@ -13,7 +14,7 @@ class IntelligentAlgo : public IBattleshipGameAlgo
 	int numOfRows;
 	int numOfCols;
 	tileMarks ** shadow_board;	
-	std::stack<std::tuple<int, int, direction>> possibleAttacks;	
+	std::list<std::tuple<int, int, direction>> possibleAttacks;	
 	std::pair<int, int> nextAttack;
 	std::tuple<int,int,direction> lastFired;
 	int numberOfRuns;
@@ -30,16 +31,16 @@ class IntelligentAlgo : public IBattleshipGameAlgo
 	void markRight(int row, int col);
 	void markUp(int row, int col);
 	void markDown(int row, int col);
-	void addAttackLeft(int row, int col);
-	void addAttackRight(int row, int col);
-	void addAttackUp(int row, int col);
-	void addAttackDown(int row, int col);
+	void addAttackLeft(int row, int col, bool atStart);
+	void addAttackRight(int row, int col, bool atStart);
+	void addAttackUp(int row, int col, bool atStart);
+	void addAttackDown(int row, int col, bool atStart);
 
 	void markSink(int row, int col, direction dir);
 
 	void markHit(int row, int col, direction dir);
 
-	void addAttacks(int row, int col, direction dir);
+	void addAttacks(int row, int col, direction dir, bool atStart);
 	
 
 	/*direction adjacentShot(int row, int col) const
