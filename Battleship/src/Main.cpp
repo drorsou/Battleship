@@ -98,24 +98,32 @@ bool Main::init(const std::string& path)
 	//
 	// Replace later with DLLs
 	//
-	//playerA = new attackFromFileAlgo(0);
-	//playerB = new attackFromFileAlgo(1);
-	playerA = new IntelligentAlgo(0, 10, 10);
+	playerA = new attackFromFileAlgo(0);
+	/*playerB = new attackFromFileAlgo(1);*/
 	playerB = new IntelligentAlgo(1, 10, 10);
 	//
 
 	std::pair<std::string, std::string> dlls = FileReader::findFilesLexicographically("dll");
 	// if no files, then error ?
 
-	//std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> dll1 = FileReader::loadDLL(dlls.first);
-	//std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> dll2 = FileReader::loadDLL(dlls.first);
-	//playerA = get<0>(*dll1);
+	std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> dll1 = FileReader::loadDLL(path + "\\" + dlls.first);
+	std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> dll2 = FileReader::loadDLL(path + "\\" + dlls.first);
+	playerA = std::get<1>(dll1)();
+	playerB = std::get<1>(dll2)();
 
 	
-	/*
-	playerA->init(path);
-	playerB->init(path);
-	*/
+	
+	if (playerA->init(path) == false)
+	{
+		FileReader::printError(FileReader::Error::AlGO_INIT, dlls.first);
+		return false;
+	}
+	if (playerB->init(path) == false)
+	{
+		FileReader::printError(FileReader::Error::AlGO_INIT, dlls.first);
+		return false;
+	}
+	
 	game_board = Board(path, 10, 10, playerA, playerB);
 
 	// In case of wrong board init - quit, the errors are already printed on the console!
