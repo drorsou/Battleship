@@ -214,23 +214,24 @@ void FileReader::replaceChar(std::string& str, char ch1, char ch2) {
 }
 
 
-/*std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> loadDLL(const std::string& path)
+std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> FileReader::loadDLL(const std::string& path)
 {
 	// Load dynamic library
 	HINSTANCE hDll = LoadLibraryA(path.c_str()); // Notice: Unicode compatible version of LoadLibrary
+	//std::unique_ptr<HMODULE, GetAlgorithmFuncType> hDll(LoadLibraryA(path.c_str()));
 	if (!hDll)
 	{
-		std::cout << "could not load the dynamic library" << std::endl;
+		std::cout << "Error: could not load the dynamic library from: " << path << std::endl;
 		//return std::make_tuple(NULL, NULL);
 	}
 
 	// Get function pointer
-	FileReader::GetAlgorithmFuncType getAlgoritmeFunc = (FileReader::GetAlgorithmFuncType)GetProcAddress(hDll, "GetShape");
+	FileReader::GetAlgorithmFuncType getAlgoritmeFunc = (FileReader::GetAlgorithmFuncType)GetProcAddress(hDll, "GetAlgorithm");
 	if (!getAlgoritmeFunc)
 	{
-		std::cout << "could not load function GetAlgoritm()" << std::endl;
+		std::cout << "Error: could not load function GetAlgoritm() from: " << path << std::endl;
 		//return false;
 	}
 
 	return std::make_tuple(hDll, getAlgoritmeFunc);
-}*/
+}

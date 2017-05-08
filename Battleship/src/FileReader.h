@@ -5,8 +5,8 @@
 #include <iostream>
 //#include <bemapiset.h>
 #include "IBattleshipGameAlgo.h"
-//#include <tuple>
-//#include <windows.h>
+#include <tuple>
+#include <windows.h>
 
 class FileReader
 {
@@ -74,7 +74,7 @@ public:
 
 
 	typedef IBattleshipGameAlgo *(*GetAlgorithmFuncType)();
-	//static std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> loadDLL(const std::string& path);
+	static std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> loadDLL(const std::string& path);
 
 
 	static std::vector<std::string>* getFilesVector() { return &filesVector; }
