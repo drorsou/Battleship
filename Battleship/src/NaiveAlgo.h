@@ -1,15 +1,10 @@
 #pragma once
-#include "IBattleshipGameAlgo.h"
+#include "BaseAlgo.h"
 #include "Ship.h"
-#include "Board.h"
-enum tileMarks { DontAttack, Attack, Attacked };
-class NaiveAlgo : public IBattleshipGameAlgo
-{
-	int player_number;
-	char ** board;
-	int numOfRows;
-	int numOfCols;
-	tileMarks ** shadow_board;
+
+
+class NaiveAlgo : public BaseAlgo
+{	
 	std::pair<int, int> nextAttack;
 
 	void addOne();
@@ -17,6 +12,9 @@ class NaiveAlgo : public IBattleshipGameAlgo
 public:
 
 
-	explicit NaiveAlgo(int player_number, int num_of_rows, int num_of_cols);
-	~NaiveAlgo();
+	explicit NaiveAlgo();
+	//~NaiveAlgo();
+
+	std::pair<int, int> attack() override;
+	void notifyOnAttackResult(int player, int row, int col, AttackResult result) override;
 };

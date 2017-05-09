@@ -100,6 +100,7 @@ bool Main::init(const std::string& path)
 	if (dlls.first.empty() || dlls.second.empty())
 	{
 		FileReader::printError(FileReader::Error::DLL, path);
+		return false;
 	}
 	else
 	{

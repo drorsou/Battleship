@@ -5,19 +5,19 @@
 enum tileMarks { DontAttack, Attack, Attacked };
 
 class BaseAlgo : public IBattleshipGameAlgo
-{
+{	
+protected:
 	int player_number;
 	char ** board;
 	int numOfRows;
 	int numOfCols;
 	tileMarks ** shadow_board;
-	
-	friend class IntelligentAlgo;
-	friend class NaiveAlgo;
-protected:
+
+	void createBoards();
 
 	BaseAlgo() {}
 	~BaseAlgo();
+	
 public:
 
 

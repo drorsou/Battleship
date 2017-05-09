@@ -49,11 +49,11 @@ class IntelligentAlgo : public BaseAlgo
 public:
 
 
-	IntelligentAlgo() : BaseAlgo() { nextAttack = make_pair(0, 0); }
+	IntelligentAlgo() : BaseAlgo(), numberOfRuns(0) { nextAttack = make_pair(0, 0); }
 
 	//~IntelligentAlgo();
 	
-	bool init(const std::string& path) override;
+	
 	std::pair<int, int> attack() override;
 	void notifyOnAttackResult(int player, int row, int col, AttackResult result) override;
 

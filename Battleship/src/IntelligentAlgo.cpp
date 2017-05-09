@@ -182,11 +182,6 @@ void IntelligentAlgo::addAttacks(int row, int col, direction dir, bool atStart)
 
 
 
-bool IntelligentAlgo::init(const std::string& path)
-{
-	return true;
-}
-
 std::pair<int, int> IntelligentAlgo::attack()
 {	
 	std::tuple<int,int,direction> temp;

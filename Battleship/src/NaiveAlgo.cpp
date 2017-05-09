@@ -2,33 +2,36 @@
 
 void NaiveAlgo::addOne()
 {
+	nextAttack.first += ((nextAttack.second + 1) / numOfCols) % numOfRows; // adds one if col = numOfCols - 1
+	nextAttack.second = (nextAttack.second + 1) % numOfCols;
 }
 
-NaiveAlgo::NaiveAlgo(int player_number, int num_of_rows, int num_of_cols): player_number(player_number),
-                                                                           numOfRows(num_of_rows),
-                                                                           numOfCols(num_of_cols)
-{
-	shadow_board = new tileMarks*[numOfRows];
-	board = new char*[numOfRows];
-	for (int i = 0; i < numOfRows; i++)
-	{
-		shadow_board[i] = new tileMarks[numOfCols];
-		board[i] = new char[numOfCols];
-		for (int j = 0; j < numOfCols; j++)
-		{
-			shadow_board[i][j] = tileMarks::Attack;
-		}
-	}
+NaiveAlgo::NaiveAlgo(){	
 	nextAttack = make_pair(0, 0);
 }
 
-NaiveAlgo::~NaiveAlgo()
+std::pair<int, int> NaiveAlgo::attack()
 {
-	for (int i = 0; i < numOfRows; i++)
+	while(shadow_board[nextAttack.first][nextAttack.second] != Attack)
 	{
-		delete[] board[i];
-		delete[] shadow_board[i];
+		addOne();
 	}
-	delete[] board;
-	delete[] shadow_board;
+	auto res = nextAttack;
+	res.first++;
+	res.second++;
+	addOne();
+	return res;
 }
+
+void NaiveAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult result)
+{
+	row--;
+	col--;
+	shadow_board[row][col] = Attacked;
+}
+
+IBattleshipGameAlgo* GetAlgorithm()
+{
+	return new NaiveAlgo();
+}
+
