@@ -180,64 +180,7 @@ void IntelligentAlgo::addAttacks(int row, int col, direction dir, bool atStart)
 	}
 }
 
-IntelligentAlgo::IntelligentAlgo(int player_number, int num_of_rows, int num_of_cols): player_number(player_number),
-                                                                                       numOfRows(num_of_rows),
-                                                                                       numOfCols(num_of_cols),
-                                                                                       numberOfRuns(0)
-{
-	shadow_board = new tileMarks*[numOfRows];
-	board = new char*[numOfRows];
-	for (int i = 0; i < numOfRows; i++)
-	{
-		shadow_board[i] = new tileMarks[numOfCols];
-		board[i] = new char[numOfCols];
-		for (int j = 0; j < numOfCols; j++)
-		{
-			shadow_board[i][j] = tileMarks::Attack;
-		}
-	}
-	nextAttack = make_pair(0, 0);
-}
 
-IntelligentAlgo::~IntelligentAlgo()
-{
-	for (int i = 0; i < numOfRows; i++)
-	{
-		delete[] board[i];
-		delete[] shadow_board[i];
-	}
-	delete[] board;
-	delete[] shadow_board;
-}
-
-void IntelligentAlgo::setBoard(int color, const char** board, int numRows, int numCols) {
-	player_number = color;
-	for (int row = 0; row < numRows; row++)
-		for (int col = 0; col < numCols; col++) 
-		{
-			this->board[row][col] = board[row][col];
-			if (board[row][col] != static_cast<char>(Ship::Symbol::Blank))
-			{				
-				this->shadow_board[row][col] = DontAttack;
-				if (row > 0)
-				{
-					this->shadow_board[row - 1][col] = DontAttack;
-				}
-				if (col > 0)
-				{
-					this->shadow_board[row][col - 1] = DontAttack;
-				}
-				if (row < numRows - 1)
-				{
-					this->shadow_board[row + 1][col] = DontAttack;
-				}
-				if (col < numCols - 1)
-				{
-					this->shadow_board[row][col + 1] = DontAttack;
-				}				
-			}			
-		}
-}
 
 bool IntelligentAlgo::init(const std::string& path)
 {
@@ -317,3 +260,7 @@ void IntelligentAlgo::notifyOnAttackResult(int player, int row, int col, AttackR
 	shadow_board[row][col] = tileMarks::Attacked;
 }
 
+IBattleshipGameAlgo* GetAlgorithm()
+{
+	return new IntelligentAlgo();
+}

@@ -1,19 +1,14 @@
 #pragma once
-#include "IBattleshipGameAlgo.h"
+#include "BaseAlgo.h"
 #include "Ship.h"
 #include <stack>
 #include <list>
 #include <tuple>
-#include "Board.h"
-enum tileMarks { DontAttack, Attack, Attacked };
+
+
 enum direction { Left, Right, Up, Down, None };
-class IntelligentAlgo : public IBattleshipGameAlgo
-{
-	int player_number;
-	char ** board;
-	int numOfRows;
-	int numOfCols;
-	tileMarks ** shadow_board;	
+class IntelligentAlgo : public BaseAlgo
+{	
 	std::list<std::tuple<int, int, direction>> possibleAttacks;	
 	std::pair<int, int> nextAttack;
 	std::tuple<int,int,direction> lastFired;
@@ -54,12 +49,12 @@ class IntelligentAlgo : public IBattleshipGameAlgo
 public:
 
 
-	IntelligentAlgo(int player_number, int num_of_rows, int num_of_cols);
+	IntelligentAlgo() : BaseAlgo() { nextAttack = make_pair(0, 0); }
 
-	~IntelligentAlgo();
-
-	void setBoard(int player, const char** board, int numRows, int numCols) override;
+	//~IntelligentAlgo();
+	
 	bool init(const std::string& path) override;
 	std::pair<int, int> attack() override;
 	void notifyOnAttackResult(int player, int row, int col, AttackResult result) override;
+
 };
