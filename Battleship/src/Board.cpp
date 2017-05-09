@@ -423,67 +423,7 @@ bool Board::checkBoard() {
 		Too many
 		Too few
 		Adjacent (not player oriented!)
-	*/
-	/*if (AsizeOShape[Boat])
-	{
-		cout << "Wrong size or shape for ship B for player A\n";
-		result = false;
-	}
-	if (AsizeOShape[Cruiser])
-	{
-		cout << "Wrong size or shape for ship P for player A\n";
-		result = false;
-	}
-	if (AsizeOShape[Submarine])
-	{
-		cout << "Wrong size or shape for ship M for player A\n";
-		result = false;
-	}
-	if (AsizeOShape[Destroyer])
-	{
-		cout << "Wrong size or shape for ship D for player A\n";
-		result = false;
-	}
-	if (BsizeOShape[Boat])
-	{
-		cout << "Wrong size or shape for ship b for player B\n";
-		result = false;
-	}
-	if (BsizeOShape[Cruiser])
-	{
-		cout << "Wrong size or shape for ship p for player B\n";
-		result = false;
-	}
-	if (BsizeOShape[Submarine])
-	{
-		cout << "Wrong size or shape for ship m for player B\n";
-		result = false;
-	}
-	if (BsizeOShape[Destroyer])
-	{
-		cout << "Wrong size or shape for ship d for player B\n";
-		result = false;
-	}	*/
-	/*if (currA > SHIPS_PER_PLAYER)
-	{
-		cout << "Too many ships for player A\n";
-		result = false;
-	}
-	else if (currA < SHIPS_PER_PLAYER)
-	{
-		cout << "Too few ships for player A\n";
-		result = false;
-	}
-	if (currB > SHIPS_PER_PLAYER)
-	{
-		cout << "Too many ships for player B\n";
-		result = false;
-	}
-	else if (currB < SHIPS_PER_PLAYER)
-	{
-		cout << "Too few ships for player B\n";
-		result = false;
-	}*/
+	*/	
 	result = result & Board::printSizeOrShapeError(0, AsizeOShape);
 	result = result & Board::printSizeOrShapeError(1, BsizeOShape);
 	result = result & Board::printNumOfShipsError(0, currA);
