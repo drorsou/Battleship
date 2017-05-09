@@ -97,40 +97,33 @@ bool Main::init(const std::string& path)
 	std::pair<std::string, std::string> dlls = FileReader::findFilesLexicographically("dll");
 
 	// Check if dll files exist and give them to the players
-	if (dlls.first.empty())
+	if (dlls.first.empty() || dlls.second.empty())
 	{
 		FileReader::printError(FileReader::Error::DLL, path);
-		return false;
 	}
 	else
 	{
-		if (dlls.second.empty())
-		{
-			playerA = FileReader::loadDLL(path + "\\" + dlls.first);
-			playerB = FileReader::loadDLL(path + "\\" + dlls.first);
-		}
-		else
-		{
-			playerA = FileReader::loadDLL(path + "\\" + dlls.first);
-			playerB = FileReader::loadDLL(path + "\\" + dlls.second);
-		}
+		playerA = FileReader::loadDLL(path + "\\" + dlls.first);
+		playerB = FileReader::loadDLL(path + "\\" + dlls.second);
 	}
-	if (playerA == nullptr || playerB == nullptr)
-		return false;
 	
 	// Init board
 	game_board = Board(path, 10, 10, playerA, playerB);
 
-	// In case of wrong board init - quit, the errors are already printed on the console!
-	if (game_board.getScore(0) == -1 || game_board.getScore(1) == -1)
+	// In case of wrong board init or no dlls - quit, the errors are already printed on the console!
+	if (game_board.getScore(0) == -1 || game_board.getScore(1) == -1 || dlls.first.empty() || dlls.second.empty())
 		return false;
-	
+
 	// Init players
+	if (playerA == nullptr)
+		return false;
 	if (playerA->init(path) == false)
 	{
 		FileReader::printError(FileReader::Error::AlGO_INIT, dlls.first);
 		return false;
 	}
+	if (playerB == nullptr)
+		return false;
 	if (playerB->init(path) == false)
 	{
 		FileReader::printError(FileReader::Error::AlGO_INIT, dlls.first);
