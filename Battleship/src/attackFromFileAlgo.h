@@ -1,5 +1,4 @@
 #pragma once
-#include "BattleshipGameAlgo.h"
 #include "IBattleshipGameAlgo.h"
 #include "Ship.h"
 #include "Attack.h"

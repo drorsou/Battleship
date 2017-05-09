@@ -19,6 +19,9 @@ bool Attack::loadFromAttackFile(const std::string& path, int player_num)
 {
 	std::string line, pathToFile;
 	std::pair<int, int> singleAttack;
+
+	if (FileReader::isFilesVectorEmpty())
+		FileReader::writeToVectorTheFilesInDir(path);
 	std::pair<std::string, std::string> attackFiles = FileReader::findFilesLexicographically("attack");
 	
 	// Creating an ifstream object and opening file in path attackPath

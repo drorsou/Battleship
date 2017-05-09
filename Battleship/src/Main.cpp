@@ -1,5 +1,4 @@
 #include "Main.h"
-#include "IntelligentAlgo.h"
 
 
 // Static variables
@@ -91,28 +90,40 @@ bool Main::init(const std::string& path)
 	else
 		FileReader::writeToVectorTheFilesInDir(path);
 
-
+	// Load DLLs for playerA, playerB
 	IBattleshipGameAlgo* playerA;
 	IBattleshipGameAlgo* playerB;
 
-	//
-	// Replace later with DLLs
-	//
-	playerA = new attackFromFileAlgo(0);
-	/*playerB = new attackFromFileAlgo(1);*/
-	playerB = new IntelligentAlgo(1, 10, 10);
-	//
-
 	std::pair<std::string, std::string> dlls = FileReader::findFilesLexicographically("dll");
-	// if no files, then error ?
 
-	std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> dll1 = FileReader::loadDLL(path + "\\" + dlls.first);
-	std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> dll2 = FileReader::loadDLL(path + "\\" + dlls.first);
-	playerA = std::get<1>(dll1)();
-	playerB = std::get<1>(dll2)();
+	// Check if dll files exist and give them to the players
+	if (dlls.first.empty())
+	{
+		FileReader::printError(FileReader::Error::DLL, path);
+		return false;
+	}
+	else
+	{
+		if (dlls.second.empty())
+		{
+			playerA = FileReader::loadDLL(path + "\\" + dlls.first);
+			playerB = FileReader::loadDLL(path + "\\" + dlls.first);
+		}
+		else
+		{
+			playerA = FileReader::loadDLL(path + "\\" + dlls.first);
+			playerB = FileReader::loadDLL(path + "\\" + dlls.second);
+		}
+	}
+	
+	// Init board
+	game_board = Board(path, 10, 10, playerA, playerB);
 
+	// In case of wrong board init - quit, the errors are already printed on the console!
+	if (game_board.getScore(0) == -1 || game_board.getScore(1) == -1)
+		return false;
 	
-	
+	// Init players
 	if (playerA->init(path) == false)
 	{
 		FileReader::printError(FileReader::Error::AlGO_INIT, dlls.first);
@@ -123,12 +134,6 @@ bool Main::init(const std::string& path)
 		FileReader::printError(FileReader::Error::AlGO_INIT, dlls.first);
 		return false;
 	}
-	
-	game_board = Board(path, 10, 10, playerA, playerB);
-
-	// In case of wrong board init - quit, the errors are already printed on the console!
-	if (game_board.getScore(0) == -1 || game_board.getScore(1) == -1)
-		return false;
 
 	return true;
 }

@@ -53,7 +53,7 @@ class IntelligentAlgo : public IBattleshipGameAlgo
 	}*/
 public:
 
-
+	IntelligentAlgo() {};
 	IntelligentAlgo(int player_number, int num_of_rows, int num_of_cols);
 
 	~IntelligentAlgo();

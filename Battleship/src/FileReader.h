@@ -3,7 +3,6 @@
 #include <experimental/filesystem>
 #include <fstream>
 #include <iostream>
-//#include <bemapiset.h>
 #include "IBattleshipGameAlgo.h"
 #include <tuple>
 #include <windows.h>
@@ -69,12 +68,15 @@ public:
 	static void writeToVectorTheFilesInDir(const std::string& path);
 
 
+	static bool isFilesVectorEmpty() { return filesVector.empty(); };
+
+
 	// Replacea all 'ch1' in string 'str' with 'ch2'
 	static void replaceChar(std::string& str, char ch1, char ch2);
 
 
 	typedef IBattleshipGameAlgo *(*GetAlgorithmFuncType)();
-	static std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> loadDLL(const std::string& path);
+	static IBattleshipGameAlgo* loadDLL(const std::string& path);
 
 
 	static std::vector<std::string>* getFilesVector() { return &filesVector; }

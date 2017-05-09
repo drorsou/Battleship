@@ -317,3 +317,8 @@ void IntelligentAlgo::notifyOnAttackResult(int player, int row, int col, AttackR
 	shadow_board[row][col] = tileMarks::Attacked;
 }
 
+
+IBattleshipGameAlgo* GetAlgorithm()
+{
+	return new IntelligentAlgo();
+}
