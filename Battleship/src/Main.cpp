@@ -115,6 +115,8 @@ bool Main::init(const std::string& path)
 			playerB = FileReader::loadDLL(path + "\\" + dlls.second);
 		}
 	}
+	if (playerA == nullptr || playerB == nullptr)
+		return false;
 	
 	// Init board
 	game_board = Board(path, 10, 10, playerA, playerB);

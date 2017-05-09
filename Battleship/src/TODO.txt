@@ -1,6 +1,0 @@
-board[y][x]
-const on class method: bool getIsFailed() const {return isFailed;}
-const type& on functions
-make functions static if possible
-make vars static if possible
-check for return errors (if (!fin.is_open) ) when fin is ifstream
