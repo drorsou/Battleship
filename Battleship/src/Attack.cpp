@@ -19,13 +19,19 @@ bool Attack::loadFromAttackFile(const std::string& path, int player_num)
 {
 	std::string line, pathToFile;
 	std::pair<int, int> singleAttack;
+
+	if (FileReader::isFilesVectorEmpty())
+		FileReader::writeToVectorTheFilesInDir(path);
 	std::pair<std::string, std::string> attackFiles = FileReader::findFilesLexicographically("attack");
 	
 	// Creating an ifstream object and opening file in path attackPath
 	if (player_num == 0)
 	{
 		if (attackFiles.first.empty())
-			FileReader::printError(FileReader::Error::AlGO_INIT, path); // TODO - Which error?
+		{
+			std::cout << "Error: no attack files found" << std::endl;
+			return false;
+		}
 		else
 			pathToFile = path + "\\" + attackFiles.first;
 	}
@@ -34,7 +40,10 @@ bool Attack::loadFromAttackFile(const std::string& path, int player_num)
 		if (attackFiles.second.empty())
 		{
 			if (attackFiles.first.empty())
-				FileReader::printError(FileReader::Error::AlGO_INIT, path); // TODO - Which error?
+			{
+				std::cout << "Error: no attack files found" << std::endl;
+				return false;
+			}
 			else
 				pathToFile = path + "\\" + attackFiles.first;
 		}
@@ -46,7 +55,7 @@ bool Attack::loadFromAttackFile(const std::string& path, int player_num)
 
 	if (fin.fail()) //error openning file
 	{
-		std::cout << "Error Occured opening file of attack" << std::endl;
+		std::cout << "Error: could not open file of attack: " << pathToFile << std::endl;
 		fin.close();
 		return false;
 	}

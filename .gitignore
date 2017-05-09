@@ -47,3 +47,5 @@
 /Ex2/Ex2
 *.attack
 *.sboard
+*.tlog
+*.idb

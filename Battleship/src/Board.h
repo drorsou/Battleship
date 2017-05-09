@@ -1,8 +1,7 @@
 #pragma once
-#include "attackFromFileAlgo.h"
-#include "NaiveAlgoPlayer.h"
 #include "FileReader.h"
 #include "boardArray.h"
+#include "Ship.h"
 #include <array>
 #include <iostream>
 #include <windows.h>

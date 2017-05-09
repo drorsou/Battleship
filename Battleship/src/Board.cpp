@@ -14,7 +14,8 @@ Board::Board(string path, int numOfRows, int numOfCols, IBattleshipGameAlgo * pl
 	if (!parseBoard(path))
 	{
 		scoreA = -1;
-		scoreB = -1;		
+		scoreB = -1;
+		FileReader::printError(FileReader::Error::BOARD, path);
 	}
 	else
 	{		
@@ -33,7 +34,7 @@ Board::Board(string path, int numOfRows, int numOfCols, IBattleshipGameAlgo * pl
 			b = prepareBoard(1);
 			this->playerB->setBoard(1, const_cast<const char **>(b), numOfRows, numOfCols);
 			delete b;
-			if (this->playerA->init(path) == false)
+			/*if (this->playerA->init(path) == false)
 			{
 				scoreA = -1;
 				scoreB = -1;
@@ -46,16 +47,17 @@ Board::Board(string path, int numOfRows, int numOfCols, IBattleshipGameAlgo * pl
 				FileReader::printError(FileReader::Error::AlGO_INIT, path); // TODO Which error?
 			}
 			else
-			{
+			{*/
 				scoreA = 0;
 				scoreB = 0;
-			}
+			//}
 		}
 		else
 		{
 			// Marking for main that the board is faulty.
 			scoreA = -1;
 			scoreB = -1;
+			std::cout << "Error: The board is incorrect" << endl;
 		}
 		getCursorXY(true);
 	}

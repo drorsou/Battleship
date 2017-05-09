@@ -1,4 +1,6 @@
 #include "FileReader.h"
+
+
 std::vector<std::string> FileReader::filesVector;
 
 FileReader::FileReader()
@@ -214,23 +216,23 @@ void FileReader::replaceChar(std::string& str, char ch1, char ch2) {
 }
 
 
-/*std::tuple<HINSTANCE, FileReader::GetAlgorithmFuncType> loadDLL(const std::string& path)
+IBattleshipGameAlgo* FileReader::loadDLL(const std::string& path)
 {
 	// Load dynamic library
 	HINSTANCE hDll = LoadLibraryA(path.c_str()); // Notice: Unicode compatible version of LoadLibrary
 	if (!hDll)
 	{
-		std::cout << "could not load the dynamic library" << std::endl;
-		//return std::make_tuple(NULL, NULL);
+		std::cout << "Error: could not load the dynamic library from: " << path << std::endl;
+		return nullptr;
 	}
 
 	// Get function pointer
-	FileReader::GetAlgorithmFuncType getAlgoritmeFunc = (FileReader::GetAlgorithmFuncType)GetProcAddress(hDll, "GetShape");
+	FileReader::GetAlgorithmFuncType getAlgoritmeFunc = (FileReader::GetAlgorithmFuncType)GetProcAddress(hDll, "GetAlgorithm");
 	if (!getAlgoritmeFunc)
 	{
-		std::cout << "could not load function GetAlgoritm()" << std::endl;
-		//return false;
+		std::cout << "Error: could not load function GetAlgoritm() from: " << path << std::endl;
+		return nullptr;
 	}
 
-	return std::make_tuple(hDll, getAlgoritmeFunc);
-}*/
+	return getAlgoritmeFunc();
+}
