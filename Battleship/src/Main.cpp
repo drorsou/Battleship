@@ -113,8 +113,7 @@ bool Main::init(const std::string& path)
 	// In case of wrong board init or no dlls - quit, the errors are already printed on the console!
 	if (game_board.getScore(0) == -1 || game_board.getScore(1) == -1 || dlls.first.empty() || dlls.second.empty())
 		return false;
-
-	game_board.setPlayersBoard(10, 10);
+	
 
 	// Init players
 	if (playerA == nullptr)

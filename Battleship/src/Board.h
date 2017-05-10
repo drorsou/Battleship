@@ -174,7 +174,7 @@ public:
 	/*
 		Notify both players.
 	*/
-	void notifyResult(int player, int row, int col, AttackResult result) const;
+	void notifyResult(int player, int row, int col, AttackResult result);
 
 	char getCoordValue(int row, int col) const { return board.getPos(row - 1,col - 1); }
 	void setCoordValue(int row, int col, char val) const { board.setPos(row - 1,col - 1, val); }
