@@ -174,7 +174,7 @@ public:
 	/*
 		Notify both players.
 	*/
-	void notifyResult(int player, int row, int col, AttackResult result);
+	void notifyResult(int player, int row, int col, AttackResult result) const;
 
 	char getCoordValue(int row, int col) const { return board.getPos(row - 1,col - 1); }
 	void setCoordValue(int row, int col, char val) const { board.setPos(row - 1,col - 1, val); }
@@ -191,7 +191,7 @@ public:
 	bool checkTarget(char target) const;
 
 
-
+	void Board::setPlayersBoard(int numOfRows, int numOfCols) const;
 
 
 	bool parseBoard(std::string& path);
