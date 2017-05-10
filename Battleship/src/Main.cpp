@@ -91,8 +91,8 @@ bool Main::init(const std::string& path)
 		FileReader::writeToVectorTheFilesInDir(path);
 
 	// Load DLLs for playerA, playerB
-	IBattleshipGameAlgo* playerA;
-	IBattleshipGameAlgo* playerB;
+	IBattleshipGameAlgo* playerA = nullptr;
+	IBattleshipGameAlgo* playerB = nullptr;
 
 	std::pair<std::string, std::string> dlls = FileReader::findFilesLexicographically("dll");
 
@@ -100,7 +100,6 @@ bool Main::init(const std::string& path)
 	if (dlls.first.empty() || dlls.second.empty())
 	{
 		FileReader::printError(FileReader::Error::DLL, path);
-		return false;
 	}
 	else
 	{
@@ -114,6 +113,8 @@ bool Main::init(const std::string& path)
 	// In case of wrong board init or no dlls - quit, the errors are already printed on the console!
 	if (game_board.getScore(0) == -1 || game_board.getScore(1) == -1 || dlls.first.empty() || dlls.second.empty())
 		return false;
+
+	game_board.setPlayersBoard(10, 10);
 
 	// Init players
 	if (playerA == nullptr)

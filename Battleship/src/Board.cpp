@@ -6,11 +6,9 @@ Board::~Board()
 	delete playerB;
 }
 
-Board::Board(string path, int numOfRows, int numOfCols, IBattleshipGameAlgo * playerA, IBattleshipGameAlgo * playerB) : current_player_turn(0) {
+Board::Board(string path, int numOfRows, int numOfCols, IBattleshipGameAlgo * playerA, IBattleshipGameAlgo * playerB) : current_player_turn(0), playerA(playerA), playerB(playerB) {
 
 	this->board.setDimensions(numOfRows, numOfCols);
-	this->playerA = playerA;
-	this->playerB = playerB;
 	if (!parseBoard(path))
 	{
 		scoreA = -1;
@@ -28,12 +26,12 @@ Board::Board(string path, int numOfRows, int numOfCols, IBattleshipGameAlgo * pl
 				totalShipsAScore += shipsA.at(i).getScore();
 				totalShipsBScore += shipsB.at(i).getScore();
 			}
-			char ** b = prepareBoard(0);
+			/*char ** b = prepareBoard(0);
 			this->playerA->setBoard(0, const_cast<const char **>(b), numOfRows, numOfCols);
 			delete b;
 			b = prepareBoard(1);
 			this->playerB->setBoard(1, const_cast<const char **>(b), numOfRows, numOfCols);
-			delete b;
+			delete b;*/
 			/*if (this->playerA->init(path) == false)
 			{
 				scoreA = -1;
@@ -48,8 +46,8 @@ Board::Board(string path, int numOfRows, int numOfCols, IBattleshipGameAlgo * pl
 			}
 			else
 			{*/
-				scoreA = 0;
-				scoreB = 0;
+			scoreA = 0;
+			scoreB = 0;
 			//}
 		}
 		else
@@ -64,7 +62,18 @@ Board::Board(string path, int numOfRows, int numOfCols, IBattleshipGameAlgo * pl
 }
 
 
-void Board::notifyResult(int player, int row, int col, AttackResult result)
+void Board::setPlayersBoard(int numOfRows, int numOfCols) const
+{
+	char ** b = prepareBoard(0);
+	this->playerA->setBoard(0, const_cast<const char **>(b), numOfRows, numOfCols);
+	delete b;
+	b = prepareBoard(1);
+	this->playerB->setBoard(1, const_cast<const char **>(b), numOfRows, numOfCols);
+	delete b;
+}
+
+
+void Board::notifyResult(int player, int row, int col, AttackResult result) const
 {
 	playerA->notifyOnAttackResult(player, row, col, result);
 	playerB->notifyOnAttackResult(player, row, col, result);
