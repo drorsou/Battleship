@@ -4,25 +4,6 @@
 using namespace std;
 
 enum Type { Boat, Cruiser, Submarine, Destroyer };
-#define BOAT_LEN 1
-#define CRUISER_LEN 2
-#define SUBMARINE_LEN 3
-#define DESTROYER_LEN 4
-#define BOAT_SCORE 2
-#define CRUISER_SCORE 3
-#define SUBMARINE_SCORE 7
-#define DESTROYER_SCORE 8
-#define ABOAT 'B'
-#define BBOAT 'b'
-#define ACRUISER 'P'
-#define BCRUISER 'p'
-#define ASUBMARINE 'M'
-#define BSUBMARINE 'm'
-#define ADESTROYER 'D'
-#define BDESTROYER 'd'
-#define BLANK ' '
-#define HIT_SYM '*'
-#define MISS_SYM '@'
 class Ship {
 	std::pair<int, int> vert;
 	std::pair<int, int> horz;

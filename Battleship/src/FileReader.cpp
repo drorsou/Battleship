@@ -158,7 +158,7 @@ bool FileReader::checkIsValidDir(const std::string& pathName) {
 std::pair<std::string, std::string> FileReader::findFilesLexicographically(std::string requiredExtention)
 {
 	std::string name = "";
-	int indexOfSuffix = std::string::npos;
+	size_t indexOfSuffix = std::string::npos;
 	int numFilesWithExtentionFound = 0;//counts how many files with the given extention found
 	std::pair<std::string, std::string> fileNames;
 	std::sort(filesVector.begin(), filesVector.end());

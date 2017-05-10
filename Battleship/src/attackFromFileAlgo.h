@@ -6,8 +6,9 @@
 
 class attackFromFileAlgo: public IBattleshipGameAlgo {
 	Attack attack_from_file;
-
-	char player_board[10][10];
+	int numOfRows;
+	int numOfCols;
+	char ** board;
 	int player_number; // 0 for A and 1 for B
 
 public:

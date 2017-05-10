@@ -109,7 +109,7 @@ bool Main::init(const std::string& path)
 	}
 	
 	// Init board
-	game_board = Board(path, 10, 10, playerA, playerB);
+	game_board = Board(path, 10, 10);
 
 	// In case of wrong board init or no dlls - quit, the errors are already printed on the console!
 	if (game_board.getScore(0) == -1 || game_board.getScore(1) == -1 || dlls.first.empty() || dlls.second.empty())
@@ -123,6 +123,8 @@ bool Main::init(const std::string& path)
 		FileReader::printError(FileReader::Error::AlGO_INIT, dlls.first);
 		return false;
 	}
+	else
+		game_board.setPlayer(0, playerA);
 	if (playerB == nullptr)
 		return false;
 	if (playerB->init(path) == false)
@@ -130,6 +132,8 @@ bool Main::init(const std::string& path)
 		FileReader::printError(FileReader::Error::AlGO_INIT, dlls.first);
 		return false;
 	}
+	else
+		game_board.setPlayer(1, playerB);
 
 	return true;
 }
@@ -174,7 +178,7 @@ void Main::play()
 		{
 			currentPlayer = game_board.getTurn();
 			char piece = game_board.getCoordValue(attack_coord.first, attack_coord.second);
-			if (piece != BLANK && piece != MISS_SYM && piece != HIT_SYM)
+			if (piece != static_cast<char>(Ship::Symbol::Blank) && piece != static_cast<char>(Ship::Symbol::MISS) && piece != static_cast<char>(Ship::Symbol::Hit))
 			{
 				result = game_board.hitShip(attack_coord.first, attack_coord.second, piece) ? AttackResult::Sink : AttackResult::Hit;
 				if (game_board.checkTarget(piece) == true && playerExhausted == false)
@@ -190,11 +194,11 @@ void Main::play()
 			{
 				if (playerExhausted == false)
 					game_board.changeTurn();
-				if (piece == HIT_SYM)
+				if (piece == static_cast<char>(Ship::Symbol::Hit))
 					result = AttackResult::Hit;
 				else
 				{
-					game_board.setCoordValue(attack_coord.first, attack_coord.second, MISS_SYM);
+					game_board.setCoordValue(attack_coord.first, attack_coord.second, static_cast<char>(Ship::Symbol::MISS));
 					result = AttackResult::Miss;
 				}
 			}
@@ -225,17 +229,3 @@ void Main::play()
 	std::cout << "Player A: " << game_board.getScore(0) << endl;
 	std::cout << "Player B: " << game_board.getScore(1) << endl;
 }
-
-
-
-
-
-/*int Main::ArgPos(char *str, int argc, char **argv) {
-	int a;
-	for (a = 1; a < argc; a++)
-	{
-		if (!strcmp(str, argv[a]))
-			return a;
-	}
-	return -1;
-}*/

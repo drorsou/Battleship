@@ -37,7 +37,7 @@ class Board {
 	COORD origin;
 	COORD end;
 
-	static void printLine();
+	void printLine() const;
 
 	void changeColor(HANDLE& hConsole, int row, int col) const;
 
@@ -88,7 +88,7 @@ public:
 		  playerB(nullptr)		  
 	{
 	}
-	Board(string path, int numOfRows, int numOfCols, IBattleshipGameAlgo * playerA, IBattleshipGameAlgo * playerB);
+	Board(string path, int numOfRows, int numOfCols);
 
 	Board(const Board& other)
 		: board(other.board),
@@ -182,6 +182,7 @@ public:
 	std::pair<int, int> attackPlayer(int color) { return color == 0 ? playerA->attack() : playerB->attack(); }	
 	int getTurn() const { return current_player_turn; }
 	void changeTurn() { current_player_turn = 1 - current_player_turn ; }
+	void setPlayer(int color, IBattleshipGameAlgo * player);
 
 	/*
 		Pre: gets a valid tile value.
