@@ -122,7 +122,6 @@ bool Attack::processLine(const std::string& line, std::pair<int, int> * res) con
 	}
 	res->first = row;
 	res->second = col;
-	//TODO- if its not a number-what to do?it's written there is an exception
 	return true;
 }
 
@@ -140,7 +139,7 @@ std::vector<std::string> Attack::split(const std::string &s, char delim) const
 
 	while (std::getline(strSt, item, delim))
 	{
-		Attack::removeCharFromString(item, ' ');//earse spaces around the comma
+		Attack::removeCharFromString(item, ' ');//erase spaces around the comma
 		elems.push_back(item);
 	}
 
