@@ -129,7 +129,7 @@ bool Main::init(const std::string& path)
 		return false;
 	if (playerB->init(path) == false)
 	{
-		FileReader::printError(FileReader::Error::AlGO_INIT, dlls.first);
+		FileReader::printError(FileReader::Error::AlGO_INIT, dlls.second);
 		return false;
 	}
 	else

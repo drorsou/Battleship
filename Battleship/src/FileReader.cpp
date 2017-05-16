@@ -16,7 +16,7 @@ FileReader::~FileReader()
 void FileReader::printError(const FileReader::Error& errorType, const std::string& path)
 {
 	std::string error;
-
+	
 	// As written in the forum in moodle
 	std::string pathForError = path == "" ? "Working Directory" : path;
 
@@ -25,25 +25,31 @@ void FileReader::printError(const FileReader::Error& errorType, const std::strin
 		{
 		error = "Wrong path: ";
 		error.append(pathForError);
+		break;
 		}
 	case FileReader::Error::BOARD:
 		{
 		error = "Missing board file (*.sboard) looking in path: ";
 		error.append(pathForError);
+		break;
 		}
 	case FileReader::Error::DLL:
 		{
 		error = "Missing an algorithm (dll) file looking in path: ";
+		error.append(pathForError);
+		break;
 		}
 	case FileReader::Error::LOAD_DLL:
 		{
 		error = "Cannot load dll: ";
 		error.append(pathForError);
+		break;
 		}
 	case FileReader::Error::AlGO_INIT:
 		{
 		error = "Algorithm initialization failed for dll: ";
 		error.append(pathForError);
+		break;
 		}
 	}
 
