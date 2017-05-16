@@ -49,3 +49,6 @@
 *.sboard
 *.tlog
 *.idb
+*.iobj
+*.exp
+*.ipdb
