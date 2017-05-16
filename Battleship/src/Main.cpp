@@ -70,9 +70,7 @@ int main(int argc, char* argv[])
 
 
 	if (Main::init(path) == false)
-	{
-		getchar(); return EXIT_FAILURE;
-	}
+		return EXIT_FAILURE;
 
 	Main::play();
 
