@@ -1,7 +1,6 @@
 #pragma once
 #include "IBattleshipGameAlgo.h"
 #include "Ship.h"
-#include "Board.h"
 enum tileMarks { DontAttack, Attack, Attacked };
 
 class BaseAlgo : public IBattleshipGameAlgo
