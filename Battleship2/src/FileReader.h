@@ -6,6 +6,7 @@
 #include "IBattleshipGameAlgo.h"
 #include <tuple>
 #include <windows.h>
+#include <algorithm>
 
 class FileReader
 {
@@ -40,6 +41,8 @@ public:
 
 	// Methods for fileVector
 	static std::vector<std::string>* getFilesVector() { return &filesVector; }
+	static std::vector<std::string>::const_iterator getFilesVectorBegin() { return filesVector.cbegin(); }
+	static std::vector<std::string>::const_iterator getFilesVectorEnd() { return filesVector.cend(); }
 	static bool isFilesVectorEmpty() { return filesVector.empty(); };
 
 
@@ -49,4 +52,15 @@ public:
 	// Load the DLL from the filepath and return a player algorithm
 	typedef IBattleshipGameAlgo *(*GetAlgorithmFuncType)();
 	static IBattleshipGameAlgo* loadDLL(const std::string& path);
+
+
+
+
+	// New functions
+
+
+	/* Pre: Empty vectors for boards and player algorithms, path to files
+	 * Post: Read all the files from 'path', add legal boards to 'boardsVector' and legel players to 'playersVector'
+	 */
+	static void importFromFilesToVectors(std::vector<std::string>& boardsVector, std::vector<std::unique_ptr<IBattleshipGameAlgo>>& playersVector, const std::string& path);
 };
