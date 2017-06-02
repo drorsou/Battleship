@@ -4,7 +4,7 @@
 bool Utils::checkArgs(int argc, char** argv)
 {
 	if (argc < 2) // No arguments
-		GameManager::emptyPath();
+		TournamentManager::emptyPath();
 	else
 	{
 		std::queue<std::string> queue;
@@ -18,7 +18,7 @@ bool Utils::checkArgs(int argc, char** argv)
 		else if (queue.size() == 1) // First argument has no '='
 		{
 			queue.pop();
-			GameManager::setPath(argv[1]);
+			TournamentManager::setPath(argv[1]);
 			if (argc > 2)
 			{
 				Utils::splitString(std::string(argv[2]), queue, '=');
@@ -52,7 +52,7 @@ bool Utils::setThreadsFromQueue(std::queue<std::string>& queue)
 	if (std::string{ "-threads=" }.compare(queue.front()) != 0)
 	{
 		queue.pop();
-		GameManager::setThreads(std::stoi(queue.front()));
+		TournamentManager::setThreads(std::stoi(queue.front()));
 		return true;
 	}
 

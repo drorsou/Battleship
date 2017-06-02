@@ -3,21 +3,21 @@
 #include <queue>
 #include <sstream>
 #include <iostream>
-#include "GameManager.h"
+#include "TournamentManager.h"
 
 class Utils
 {
 public:
 
 	/* Pre: Get number 'argc' of the program arguments and their pointers 'argv'
-	 * Post: Set the GameManager variables according to the arguments,
+	 * Post: Set the TournamentManager variables according to the arguments,
 	 * returns false if there was an error and true otherwise
 	 */
 	static bool Utils::checkArgs(int argc, char** argv);
 
 	/* Pre: Get a queue of strings
 	 * Post: If the first one equals to "-thread" then the second must be an integer,
-	 * which is set at the number of threads in GameManager
+	 * which is set at the number of threads in TournamentManager
 	 * returns false if there was an error and true otherwise
 	 */
 	static bool Utils::setThreadsFromQueue(std::queue<std::string>& queue);
