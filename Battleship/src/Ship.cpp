@@ -24,6 +24,16 @@ void Ship::setScoreAndLength(Type t)
 	}
 }
 
+bool Ship::checkChar(char c)
+{
+	return (c == static_cast<char>(Ship::Symbol::ABoat) || c == static_cast<char>(Ship::Symbol::BBoat) || c == static_cast<char>(Ship::Symbol::ACruiser) || c == static_cast<char>(Ship::Symbol::BCruiser) || c == static_cast<char>(Ship::Symbol::ASubmarine) || c == static_cast<char>(Ship::Symbol::BSubmarine) || c == static_cast<char>(Ship::Symbol::ADestroyer) || c == static_cast<char>(Ship::Symbol::BDestroyer));
+}
+
+int Ship::checkColor(char c)
+{
+	return c >= 'A' && c <= 'Z' ? 0 : 1;
+}
+
 Ship::Ship(int vertlow, int verthigh, int horzlow, int horzhigh, Type t) {
 	vert = std::make_pair(vertlow, verthigh);
 	horz = std::make_pair(horzlow, horzhigh);

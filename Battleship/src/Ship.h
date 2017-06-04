@@ -13,7 +13,10 @@ class Ship {
 
 	void setScoreAndLength(Type t);
 public:	
-	
+	static bool checkChar(char c);
+	static int checkColor(char c);
+
+
 	Ship(){
 	}
 

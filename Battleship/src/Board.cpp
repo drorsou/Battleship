@@ -471,38 +471,7 @@ void Board::printBoard(){
 }
 
 
-void Board::updateBoard(int row, int col) const {
-	row--;
-	col--;	
-	this->gotoxy(2 * row + 2, 4 * col + 4);
-	std::cout << "\b";
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	if (this->board.getPos(row,col) == static_cast<char>(Ship::Symbol::Blank)|| this->board.getPos(row,col) == static_cast<char>(Ship::Symbol::MISS))
-	{
-		SetConsoleTextAttribute(hConsole, COLOR_RED);
-		cout << " " << static_cast<char>(Ship::Symbol::MISS) << " ";
-		// resetting the color
-		SetConsoleTextAttribute(hConsole, COLOR_WHITE);
-	}
-	else
-	{
-		SetConsoleTextAttribute(hConsole, COLOR_LIGHT_RED);
-		std::cout << " "<< static_cast<char>(Ship::Symbol::Hit) << " ";
-		// resetting the color
-		SetConsoleTextAttribute(hConsole, COLOR_WHITE);
-	}
-	this->gotoEnd(0, 0); // moving cursor back to the bottom.
-}
 
-
-void Board::printLine() const
-{	
-	printf("  |");
-	for (int col = 1; col < this->board.num_of_cols() * 4; col++){
-		printf("-");
-	}
-	printf("|\n");
-}
 
 void Board::changeColor(HANDLE& hConsole, int row, int col) const
 {

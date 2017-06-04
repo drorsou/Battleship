@@ -37,12 +37,9 @@ class Board {
 	COORD origin;
 	COORD end;
 
-	void printLine() const;
+	
 
 	void changeColor(HANDLE& hConsole, int row, int col) const;
-
-	void gotoxy(int, int) const;
-	
 
 	Type shipType(int row, int col) const;
 	/*
@@ -55,8 +52,8 @@ class Board {
 		Pre: gets a non-empty valid coordinate.
 		Post: returns the color of the piece on the board.
 	*/
-	int coordColor(int row, int col) const	{
-		return (this->board.getPos(row,col) >= 'A' && this->board.getPos(row, col) <= 'Z') ? 0 : 1;
+	int coordColor(Coordinate c) const	{
+		return Ship::checkColor(this->board.charAt(c));
 	}
 
 	static bool printSizeOrShapeError(int player, bool * arr);
@@ -79,9 +76,8 @@ class Board {
 	*/
 	bool checkCoord(bool*, bool*, bool**, int, int, char) const;
 
-	char ** prepareBoard(int player) const;
 public:
-	void gotoEnd(int, int) const;
+	
 
 	Board()
 		: playerA(nullptr),
@@ -158,28 +154,16 @@ public:
 				return true iff a ship was sunk.
 	*/
 	bool hitShip(int row, int col, char type);
-
-	/*
-		Pre: Gets a legal board.
-		Post: prints the board in the console.
-	*/
-	void printBoard();
-	/*
-		Pre: Gets a legal board, and the attack coordinate.
-			Assuming the board is already printed in the console.
-		Post: updates the board to show the attack according to the appropriate attack result.
-	*/
-	void updateBoard(int, int) const;
-
+		
 	/*
 		Notify both players.
 	*/
 	void notifyResult(int player, int row, int col, AttackResult result);
 
-	char getCoordValue(int row, int col) const { return board.getPos(row - 1,col - 1); }
-	void setCoordValue(int row, int col, char val) const { board.setPos(row - 1,col - 1, val); }
+	char getCoordValue(Coordinate c) const { return board.charAt(c); }
+	void setCoordValue(Coordinate c, Ship::Symbol val) { board.setCharAt(c, val); }
 	int getScore(int color) const { return color == 0? scoreA: scoreB; }	
-	std::pair<int, int> attackPlayer(int color) { return color == 0 ? playerA->attack() : playerB->attack(); }	
+	Coordinate attackPlayer(int color) { return color == 0 ? playerA->attack() : playerB->attack(); }	
 	int getTurn() const { return current_player_turn; }
 	void changeTurn() { current_player_turn = 1 - current_player_turn ; }
 	void setPlayer(int color, IBattleshipGameAlgo * player);

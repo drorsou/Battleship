@@ -1,73 +1,76 @@
 #pragma once
+#include "IBattleshipGameAlgo.h"
+#include "Ship.h"
 #include <utility>
+#include <memory>
+
+
 class boardArray
 {
-	char * arr;
-	int numOfRows;
-	int numOfCols;
+private:
+	int _rows;
+	int _cols;
+	int _depth;
+	std::unique_ptr<Ship::Symbol> arr = nullptr;
+
+	void copyArr(const std::unique_ptr<Ship::Symbol>& otherArr);
+
+	int position(int row, int col, int depth) const
+	{
+		return (col-1) + (row-1) * _cols + (depth-1) * _rows * _cols;
+	}
 public:
-	boardArray()
-		: arr(nullptr),
-		  numOfRows(-1), 
-		  numOfCols(-1)
-	{}
-	boardArray(int num_of_rows, int num_of_cols)
-		: numOfRows(num_of_rows),
-		  numOfCols(num_of_cols)
+	int rows() const
 	{
-		arr = new char[num_of_rows*num_of_cols];
-	}
-	~boardArray() { delete[] arr; }
-	int num_of_rows() const
-	{
-		return numOfRows;
-	}
-	void setDimensions(int num_of_rows, int num_of_cols)
-	{
-		if (arr == nullptr)
-		{
-			this->numOfRows = num_of_rows;
-			this->numOfCols = num_of_cols;
-			arr = new char[num_of_rows*num_of_cols + 1];
-			arr[num_of_rows*num_of_cols] = '\0';
-		}
-	}
-	int num_of_cols() const
-	{
-		return numOfCols;
-	}
-	char getPos(int row, int col) const
-	{
-		return arr[row*numOfCols + col];
-	}
-	void setPos(int row, int col, char c) const
-	{
-		 arr[row*numOfCols + col] = c;
+		return _rows;
 	}
 
-	boardArray(const boardArray& other)
-		: arr(other.arr),
-		  numOfRows(other.numOfRows),
-		  numOfCols(other.numOfCols)
+	int cols() const
 	{
+		return _cols;
 	}
 
-	boardArray(boardArray&& other)
-		: 
-		  numOfRows(other.numOfRows),
-		  numOfCols(other.numOfCols)
+	int depth() const
 	{
-		this->arr = other.arr;
-		other.arr = nullptr;
+		return _depth;
+	}
+	boardArray(){}
+	
+	~boardArray() {}
+
+	boardArray(int rows, int cols, int depth);
+
+	//void setDimensions(int rows, int cols, int depth);
+
+	char charAt(Coordinate c) const;
+	
+	void setCharAt(Coordinate c, Ship::Symbol s);
+
+
+	boardArray(const boardArray& other)			
+	{
+		_rows = other.rows();
+		_cols = other.cols();
+		_depth = other.depth();
+		copyArr(other.arr);
+	}
+
+	boardArray(boardArray&& other) noexcept
+		: arr(std::move(other.arr))
+	{
+		_rows = other.rows();
+		_cols = other.cols();
+		_depth = other.depth();
 	}
 
 	boardArray& operator=(const boardArray& other)
 	{
 		if (this == &other)
 			return *this;
-		arr = other.arr;
-		numOfRows = other.numOfRows;
-		numOfCols = other.numOfCols;
+		_rows = other.rows();
+		_cols = other.cols();
+		_depth = other.depth();
+		copyArr(other.arr);
 		return *this;
 	}
 
@@ -75,10 +78,10 @@ public:
 	{
 		if (this == &other)
 			return *this;
-		this->arr = other.arr;
-		other.arr = nullptr;
-		numOfRows = other.numOfRows;
-		numOfCols = other.numOfCols;
+		_rows = other.rows();
+		_cols = other.cols();
+		_depth = other.depth();
+		arr = std::move(other.arr);
 		return *this;
 	}
 };
