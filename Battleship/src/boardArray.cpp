@@ -2,7 +2,7 @@
 
 void boardArray::copyArr(const std::unique_ptr<Ship::Symbol>& otherArr)
 {
-	if (arr.get() == nullptr)
+	if (otherArr.get() == nullptr)
 		arr = unique_ptr<Ship::Symbol>(new Ship::Symbol[_rows * _cols * _depth]);	
 	for (int pos = 0; pos < _rows*_cols*_depth; pos++)
 	{		

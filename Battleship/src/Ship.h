@@ -1,12 +1,14 @@
 #pragma once
 #include <utility>
+#include "IBattleshipGameAlgo.h"
 
 using namespace std;
 
-enum Type { Boat, Cruiser, Submarine, Destroyer };
+enum Type { None, Boat, Cruiser, Submarine, Destroyer };
 class Ship {
 	std::pair<int, int> vert;
 	std::pair<int, int> horz;
+	std::pair<int, int> depth;
 	Type type;
 	short int size;
 	int score;
@@ -25,9 +27,9 @@ public:
 	Also, the length of the ship is correct.
 	Post: Creates a new ship
 	*/
-	Ship(int vertlow, int verthigh, int horzlow, int horzhigh, Type t);
+	Ship(int vertlow, int verthigh, int horzlow, int horzhigh, int depthlow, int depthhigh, Type t);
 
-	Ship(std::pair<int, int> v, std::pair<int, int> h, Type t);
+	Ship(std::pair<int, int> v, std::pair<int, int> h, std::pair<int,int> d, Type t);
 
 	Ship(const Ship& ship);
 
@@ -52,7 +54,7 @@ public:
 		Pre: gets a valid coordinate.
 		Post: returns true iff the coordinate is part of this ship
 	*/
-	bool isInThisShip(int row, int col) const { return (row <= vert.second && row >= vert.first) && (col <= horz.second && col >= horz.first); }
+	bool isInThisShip(Coordinate c) const { return (c.row <= vert.second && c.row >= vert.first) && (c.col <= horz.second && c.col >= horz.first) && (c.depth <= depth.second && c.depth >= depth.first); }
 
 
 	/*
@@ -63,5 +65,4 @@ public:
 	*/
 	bool hit() { return (--this->size) == 0 ? true : false;	}
 
-	Ship& operator=(Ship&& other);
 };

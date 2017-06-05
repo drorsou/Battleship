@@ -34,17 +34,20 @@ int Ship::checkColor(char c)
 	return c >= 'A' && c <= 'Z' ? 0 : 1;
 }
 
-Ship::Ship(int vertlow, int verthigh, int horzlow, int horzhigh, Type t) {
+Ship::Ship(int vertlow, int verthigh, int horzlow, int horzhigh, int depthlow, int depthhigh, Type t) {
 	vert = std::make_pair(vertlow, verthigh);
 	horz = std::make_pair(horzlow, horzhigh);
+	depth = std::make_pair(depthlow, depthhigh);
 	type = t;
 	setScoreAndLength(t);
 }
 
 
-Ship::Ship(std::pair<int, int> v, std::pair<int, int> h, Type t) {
+Ship::Ship(std::pair<int, int> v, std::pair<int, int> h, std::pair<int,int> d, Type t) 
+{
 	vert = v;
 	horz = h;
+	depth = d;
 	type = t;
 	setScoreAndLength(t);
 }
@@ -76,16 +79,5 @@ Ship::Ship(const Ship& other) :
 {
 	vert = make_pair(other.vert.first, other.vert.second);
 	horz = make_pair(other.horz.first, other.horz.second);
-}
-
-Ship& Ship::operator=(Ship&& other)
-{
-	if (this == &other)
-		return *this;
-	vert = make_pair(other.vert.first, other.vert.second);
-	horz = make_pair(other.horz.first, other.horz.second);
-	type = other.type;
-	size = other.size;
-	score = other.score;
-	return *this;
+	depth = make_pair(other.depth.first, other.depth.second);
 }

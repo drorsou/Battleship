@@ -1,4 +1,5 @@
 #include "Board.h"
+#include <sstream>
 
 Board::~Board()
 {
@@ -9,9 +10,7 @@ Board::~Board()
 Board::Board(string path) : current_player_turn(0), 
 						    playerA(nullptr),
 							playerB(nullptr)
-{
-
-	this->board.setDimensions(numOfRows, numOfCols);	
+{	
 	if (!parseBoard(path))
 	{
 		scoreA = -1;
@@ -38,63 +37,23 @@ Board::Board(string path) : current_player_turn(0),
 			scoreA = -1;
 			scoreB = -1;
 			std::cout << "Error: The board is incorrect" << endl;
-		}
-		getCursorXY(true);
+		}		
 	}
 }
 
 
 void Board::notifyResult(int player, int row, int col, AttackResult result)
 {
+#ifdef IMPL
 	playerA->notifyOnAttackResult(player, row, col, result);
 	playerB->notifyOnAttackResult(player, row, col, result);
+#endif
 }
 
-void Board::getCursorXY(bool toOrigin) {
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
-		if (toOrigin)
-		{
-			this->origin.X = csbi.dwCursorPosition.X;
-			this->origin.Y = csbi.dwCursorPosition.Y;
-		}
-		else
-		{
-			this->end.X = csbi.dwCursorPosition.X;
-			this->end.Y = csbi.dwCursorPosition.Y;
-		}
-	}
-	else
-	{
-		if (toOrigin)
-		{
-			this->origin.X = 0;
-			this->origin.Y = 0;
-		}
-		else
-		{
-			this->end.X = 0;
-			this->end.Y = this->origin.Y + (2 * this->board.num_of_rows() + 2);
-		}
-	}
-}
-void Board::gotoxy(int row, int col) const {
-	COORD coord;
-	coord.X = col + this->origin.X;
-	coord.Y = row + this->origin.Y;
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-}
-void Board::gotoEnd(int row, int col) const
-{
-	COORD coord;
-	coord.X = col + this->end.X;
-	coord.Y = row + this->end.Y;
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-}
 
-Type Board::shipType(int row, int col) const {
+Type Board::shipType(Coordinate c) const {
 	Type t;
-	switch (this->board.getPos(row,col))
+	switch (this->board.charAt(c))
 	{
 	case static_cast<char>(Ship::Symbol::ABoat): case static_cast<char>(Ship::Symbol::BBoat):
 		t = Boat;
@@ -108,11 +67,15 @@ Type Board::shipType(int row, int col) const {
 	case static_cast<char>(Ship::Symbol::ADestroyer) : case static_cast<char>(Ship::Symbol::BDestroyer) :
 		t = Destroyer;
 		break;
+	default:
+		t = None;
+		break;
 	}
 	return t;
 }
 
 bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool ** temp, int row, int col, char t) const {
+#ifdef IMPL
 	int len = 0;
 	bool res = true;
 	if ((row < board.num_of_rows() - 1 && this->board.getPos(row + 1,col) == t) && (col < board.num_of_cols() - 1 && this->board.getPos(row,col + 1) == t))
@@ -166,30 +129,13 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool ** temp, int row
 	if (dimensionFlag == false)
 		*sizeOShape = true; // happens if the ship is shorter or longer than the legal size
 	return (res && dimensionFlag);
+#endif
 }
 
-char** Board::prepareBoard(int player) const
-{
-	char ** res = new char*[board.num_of_rows()];
-	for (int i = 0; i < board.num_of_rows(); i++)
-	{
-		res[i] = new char[board.num_of_cols()];		
-	}
-	for(int row = 0; row < board.num_of_rows(); row++)
-		for(int col = 0; col < board.num_of_cols(); col++)
-		{
-			if (coordColor(row, col) == player)
-			{
-				res[row][col] = board.getPos(row, col);
-			}
-			else
-				res[row][col] = static_cast<char>(Ship::Symbol::Blank);
-		}
-	return res;
-}
 
 void Board::setPlayer(int color, IBattleshipGameAlgo* player)
 {
+#ifdef IMPL
 	char ** b;
 	if (color == 0)
 	{
@@ -204,6 +150,7 @@ void Board::setPlayer(int color, IBattleshipGameAlgo* player)
 		this->playerB->setBoard(1, const_cast<const char **>(b), this->board.num_of_rows(), this->board.num_of_cols());
 	}
 	delete b;	
+#endif
 }
 
 bool Board::checkTarget(char target) const {	
@@ -218,14 +165,14 @@ bool Board::checkTarget(char target) const {
  * Update the board accordingly
  * Return true if the ship is sunk, otherwise false
  */
-bool Board::hitShip(int row, int col, char type) {
+bool Board::hitShip(Coordinate c, char type) {
 	// Update the board
-	setCoordValue(row, col, static_cast<char>(Ship::Symbol::Hit));
+	setCoordValue(c, Ship::Symbol::Hit);
 
 	// Check if the ship is sunk
 	for (int i = 0; i < SHIPS_PER_PLAYER; i++)
 	{
-		if (shipsA.at(i).isInThisShip(row, col))
+		if (shipsA.at(i).isInThisShip(c))
 		{
 			if (shipsA.at(i).hit())
 			{
@@ -240,7 +187,7 @@ bool Board::hitShip(int row, int col, char type) {
 	}
 	for (int i = 0; i < SHIPS_PER_PLAYER; i++)
 	{
-		if (shipsB.at(i).isInThisShip(row, col))
+		if (shipsB.at(i).isInThisShip(c))
 		{
 			if (shipsB.at(i).hit())
 			{
@@ -321,6 +268,8 @@ bool Board::printNumOfShipsError(int player, int count)
 }
 
 bool Board::checkBoard() {
+	return false;
+#ifdef IMPL
 	// creates a shadow board initialized to false.
 	bool ** temp = new bool*[board.num_of_rows()]; 
 	for(int i = 0; i < board.num_of_rows(); i++)
@@ -432,92 +381,80 @@ bool Board::checkBoard() {
 		result = false;
 	}
 	return result;
-}
-
-
-void Board::printBoard(){
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	
-	/*
-		Printing the first line with the column numbers.
-		First box is empty
-	*/	
-	for (int col = 0; col < this->board.num_of_cols(); col++)
-	{
-		printf((col == 0 ? "  | %d |" : (col < 9 ? " %d |" : " %d|")), col + 1);
-	}
-	printf("\n");
-	Board::printLine();
-	/*
-		Printing the rest of the board.
-	*/
-	for (int row = 0; row <= this->board.num_of_rows() -1; row++)
-	{
-		printf((row < 9 ? "%d " : "%d"), row + 1);
-		for (int col = 0; col <= this->board.num_of_cols() -1; col++){
-			cout << "| ";
-			/* 
-				Color text according to player and ship type 
-			*/
-			changeColor(hConsole, row, col);
-			cout << this->board.getPos(row,col) << " ";
-			// resetting the color
-			SetConsoleTextAttribute(hConsole, COLOR_WHITE);			
-		}
-		cout << "|\n";
-		Board::printLine();
-	}
-	getCursorXY(false);
+#endif
 }
 
 
 
 
-void Board::changeColor(HANDLE& hConsole, int row, int col) const
+
+
+std::vector<std::string> Board::split(const std::string &s, char delim)
 {
-	Ship::Symbol temp = static_cast<Ship::Symbol>(this->board.getPos(row, col));
-	switch (temp)
+	std::vector<std::string> elems;
+	std::stringstream strSt(s);
+	std::string item;
+
+	while (std::getline(strSt, item, delim))
 	{
-	case Ship::Symbol::ABoat:
-		SetConsoleTextAttribute(hConsole, COLOR_AQUA);
-		break;
-	case Ship::Symbol::BBoat:
-		SetConsoleTextAttribute(hConsole, COLOR_LIGHT_AQUA);
-		break;
-	case Ship::Symbol::ACruiser:
-		SetConsoleTextAttribute(hConsole, COLOR_GREEN);
-		break;
-	case Ship::Symbol::BCruiser:
-		SetConsoleTextAttribute(hConsole, COLOR_LIGHT_GREEN);
-		break;
-	case Ship::Symbol::ASubmarine:
-		SetConsoleTextAttribute(hConsole, COLOR_YELLOW);
-		break;
-	case Ship::Symbol::BSubmarine:
-		SetConsoleTextAttribute(hConsole, COLOR_LIGHT_YELLOW);
-		break;
-	case Ship::Symbol::ADestroyer:
-		SetConsoleTextAttribute(hConsole, COLOR_PURPLE);
-		break;
-	case Ship::Symbol::BDestroyer:
-		SetConsoleTextAttribute(hConsole, COLOR_LIGHT_PURPLE);
-		break;
-	case Ship::Symbol::Hit:
-		SetConsoleTextAttribute(hConsole, COLOR_LIGHT_RED);
-		break;
-	case Ship::Symbol::MISS:
-		SetConsoleTextAttribute(hConsole, COLOR_RED);
-		break;
+		Board::removeCharFromString(item, ' ');//erase spaces around the comma
+		elems.push_back(item);
 	}
+
+	return elems;
+}
+void Board::removeCharFromString(std::string &str, char charToRemove)
+{
+	str.erase(remove(str.begin(), str.end(), charToRemove), str.end());
 }
 
+bool Board::is_number(const std::string &s) {
+	return !s.empty() && std::all_of(s.begin(), s.end(), ::isdigit);
+}
 
+std::tuple<int, int, int> Board::ParseBoardShape(const std::string& line) 
+{
+	std::tuple<int, int, int> res = make_tuple(-1, -1, -1);
+	std::vector<std::string> tokens = Board::split(line, 'x');
+	int row;
+	int col;
+	int depth;
+	if (tokens.size() != 3)
+	{		
+		return res; // invalid line format
+	}
+	if (!Board::is_number(tokens[0]) || !Board::is_number(tokens[1]) || !Board::is_number(tokens[2]))
+	{		
+		return  res; // ignore this line
+	}
+	try
+	{
+		row = stoi(tokens[0]);
+		col = stoi(tokens[1]);
+		depth = stoi(tokens[2]);
+	}
+	catch (const std::exception&)
+	{		
+		return res;
+	}
+	if (row < 1 || col < 1 || depth < 1)
+	{		
+		return res; // ignore this line
+	}
+	std::get<0>(res) = row;
+	std::get<1>(res) = col;
+	std::get<2>(res) = depth;
+	return res;
+}
 /*
 * Parse Board into field 'board' from 'path'
 * Return true if no error, otherwise false
 */
 bool Board::parseBoard(std::string& path) {
-	
+
+	int _rows;
+	int _cols;
+	int _depth;
 	std::pair<std::string, string> boardFileDetails = FileReader::findFilesLexicographically("sboard");
 	if (boardFileDetails.first.empty())
 	{
@@ -531,14 +468,27 @@ bool Board::parseBoard(std::string& path) {
 		std::cout << "Error: Cannot open the board file for parsing." << endl;
 		return false;
 	}
-	string* temp_board = new string[board.num_of_cols()];
-	for (int i = 0; i < board.num_of_rows(); i++) {
-		std::getline(fin, temp_board[i]);
-		for (int j = 0; j < board.num_of_cols(); j++) {
-			if (Board::checkChar(temp_board[i][j]))
-				board.setPos(i,j,temp_board[i][j]);
-			else
-				board.setPos(i, j, static_cast<char>(Ship::Symbol::Blank));
+	string sizes;
+	std::getline(fin, sizes);	
+	std::tie(_rows, _cols, _depth) = ParseBoardShape(sizes);
+	if (_rows < 0 || _cols < 0 || _depth < 0)
+		return false;
+	board = boardArray{ _rows, _cols, _depth };
+	string tempLine;
+	Ship::Symbol sym;
+	for (int depth = 0; depth < _depth; depth++)
+	{
+		std::getline(fin, tempLine); // skip a line
+		for (int row = 0; row < _rows; row++) 
+		{
+			std::getline(fin, tempLine);
+			for (int col = 0; col < _cols; col++) 
+			{
+				sym = Board::checkChar(tempLine[col]) 
+					? static_cast<Ship::Symbol>(tempLine[col]) 
+					: Ship::Symbol::Blank;
+				board.setCharAt(Coordinate(row + 1, col + 1, depth + 1), sym);
+			}
 		}
 	}
 

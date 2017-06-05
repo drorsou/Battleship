@@ -32,18 +32,12 @@ class Board {
 	int totalShipsBScore;
 	int scoreA;
 	int scoreB;	
-
 	
+	enum TileStatus { Checked, UnChecked, Occupied };
+		
 
-	void changeColor(HANDLE& hConsole, int row, int col) const;
-
-	Type shipType(int row, int col) const;
-	/*
-		Pre: None
-		Post: sets the current cursor position as the origin.
-	*/
-	void getCursorXY(bool toOrigin);
-
+	Type shipType(Coordinate c) const;
+	
 	/*
 		Pre: gets a non-empty valid coordinate.
 		Post: returns the color of the piece on the board.
@@ -72,6 +66,10 @@ class Board {
 	*/
 	bool checkCoord(bool*, bool*, bool**, int, int, char) const;
 
+	static std::vector<std::string> split(const std::string &s, char delim);
+	static void removeCharFromString(std::string &str, char charToRemove);
+	static bool Board::is_number(const std::string &s);
+	static std::tuple<int, int, int> Board::ParseBoardShape(const std::string& line);
 public:
 	
 
@@ -90,8 +88,7 @@ public:
 		  totalShipsAScore(other.totalShipsAScore),
 		  totalShipsBScore(other.totalShipsBScore),
 		  scoreA(other.scoreA),
-		  scoreB(other.scoreB),
-		  origin(other.origin)
+		  scoreB(other.scoreB)
 	{
 	}
 
@@ -101,8 +98,7 @@ public:
 		  totalShipsAScore(other.totalShipsAScore),
 		  totalShipsBScore(other.totalShipsBScore),
 		  scoreA(other.scoreA),
-		  scoreB(other.scoreB),
-		  origin(std::move(other.origin))
+		  scoreB(other.scoreB)
 	{
 		shipsA = std::move(other.shipsA);
 		shipsB = std::move(other.shipsB);
@@ -128,7 +124,6 @@ public:
 		totalShipsBScore = other.totalShipsBScore;
 		scoreA = other.scoreA;
 		scoreB = other.scoreB;
-		origin = other.origin;
 		return *this;
 	}
 
@@ -149,7 +144,7 @@ public:
 				if a ship was sunk, update the score,
 				return true iff a ship was sunk.
 	*/
-	bool hitShip(int row, int col, char type);
+	bool hitShip(Coordinate c, char type);
 		
 	/*
 		Notify both players.
