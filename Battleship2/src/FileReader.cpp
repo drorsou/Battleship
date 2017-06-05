@@ -29,23 +29,24 @@ void FileReader::printError(const FileReader::Error& errorType, const std::strin
 		}
 	case FileReader::Error::BOARD:
 		{
-		error = "Missing board file (*.sboard) looking in path: ";
+		error = "No board files (*.sboard) looking in path: ";
 		error.append(pathForError);
 		break;
 		}
 	case FileReader::Error::DLL:
 		{
-		error = "Missing an algorithm (dll) file looking in path: ";
+		error = "Missing algorithm (dll) files looking in path: ";
 		error.append(pathForError);
+		error.append(" (needs at least two)");
 		break;
 		}
-	case FileReader::Error::LOAD_DLL:
+	case FileReader::Error::LOAD_DLL: // Unused
 		{
 		error = "Cannot load dll: ";
 		error.append(pathForError);
 		break;
 		}
-	case FileReader::Error::AlGO_INIT:
+	case FileReader::Error::AlGO_INIT: // Unused
 		{
 		error = "Algorithm initialization failed for dll: ";
 		error.append(pathForError);
@@ -150,4 +151,30 @@ IBattleshipGameAlgo* FileReader::loadDLL(const std::string& path)
 	}
 
 	return getAlgoritmeFunc();
+}
+
+
+void FileReader::importFromFilesToVectors(std::vector<std::string>& boardsVector, std::vector<std::unique_ptr<IBattleshipGameAlgo>>& playersVector, const std::string& path)
+{
+	for (std::vector<std::string>::const_iterator itr = FileReader::getFilesVectorBegin(); itr != FileReader::getFilesVectorEnd(); itr++) {
+		std::string name = *itr;
+		size_t indexOfSuffix = name.find_last_of(".") + 1;
+		if (indexOfSuffix != std::string::npos)
+		{
+			std::string currSuffixOfFile = name.substr(indexOfSuffix);
+
+			if (currSuffixOfFile.compare("sboard") == 0)
+			{
+				// Need to change - create the board instead of just returning its name
+				boardsVector.push_back(path + "\\" + name);
+			}
+
+			if (currSuffixOfFile.compare("dll") == 0)
+			{
+				IBattleshipGameAlgo* dll = FileReader::loadDLL(path + "\\" + name);
+				if (dll != nullptr)
+					playersVector.push_back(std::unique_ptr<IBattleshipGameAlgo>(dll));
+			}
+		}
+	}
 }
