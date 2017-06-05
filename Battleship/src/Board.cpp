@@ -6,9 +6,9 @@ Board::~Board()
 	delete playerB;
 }
 
-Board::Board(string path, int numOfRows, int numOfCols) : current_player_turn(0), 
-														  playerA(nullptr),
-														  playerB(nullptr)
+Board::Board(string path) : current_player_turn(0), 
+						    playerA(nullptr),
+							playerB(nullptr)
 {
 
 	this->board.setDimensions(numOfRows, numOfCols);	

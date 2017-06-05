@@ -26,16 +26,12 @@ class Board {
 	int current_player_turn;
 	IBattleshipGameAlgo * playerA;
 	IBattleshipGameAlgo * playerB;
-	/*Ship shipsA[SHIPS_PER_PLAYER];
-	Ship shipsB[SHIPS_PER_PLAYER];*/
 	std::array<Ship, SHIPS_PER_PLAYER> shipsA;
 	std::array<Ship, SHIPS_PER_PLAYER> shipsB;
 	int totalShipsAScore;
 	int totalShipsBScore;
 	int scoreA;
-	int scoreB;
-	COORD origin;
-	COORD end;
+	int scoreB;	
 
 	
 
@@ -84,7 +80,7 @@ public:
 		  playerB(nullptr)		  
 	{
 	}
-	Board(string path, int numOfRows, int numOfCols);
+	Board(string path);
 
 	Board(const Board& other)
 		: board(other.board),
