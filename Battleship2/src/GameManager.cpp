@@ -3,7 +3,20 @@
 
 void GameManager::play()
 {
-	/*playerA->setPlayer(0);
+	if (playerAIndex < playerBIndex)
+	{
+		// Lock playerA mutex
+		// Lock playerB mutex
+	}
+	else
+	{
+		// Lock playerB mutex
+		// Lock playerA mutex
+	}
+
+
+	/*
+	playerA->setPlayer(0);
 	playerB->setPlayer(1);
 
 	// Set boards for both players
@@ -16,7 +29,8 @@ void GameManager::play()
 	{
 		//currentPlayer = board.getTurn();
 
-	}*/
+	}
+	*/
 
 	std::cout << "Came here " << board << std::endl;
 }

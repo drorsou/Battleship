@@ -52,6 +52,7 @@ public:
 	// Load the DLL from the filepath and return a player algorithm
 	typedef IBattleshipGameAlgo *(*GetAlgorithmFuncType)();
 	static IBattleshipGameAlgo* loadDLL(const std::string& path);
+	//static FileReader::GetAlgorithmFuncType loadDLL(const std::string& path);
 
 
 
