@@ -74,11 +74,11 @@ Type Board::shipType(Coordinate c) const {
 	return t;
 }
 
-bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool ** temp, int row, int col, char t) const {
-#ifdef IMPL
+bool Board::checkCoord(bool * sizeOShape, bool * adjacent, TestingBoard<TileStatus>& temp, Coordinate c, char t) const {
+
 	int len = 0;
 	bool res = true;
-	if ((row < board.num_of_rows() - 1 && this->board.getPos(row + 1,col) == t) && (col < board.num_of_cols() - 1 && this->board.getPos(row,col + 1) == t))
+	if (checkShapeAtCoord(c, t) == false)
 		*sizeOShape = true; // illegal ship size.
 	// check top to down ships
 	for (int i = row + 1; i < board.num_of_rows() && this->board.getPos(i,col) != static_cast<char>(Ship::Symbol::Blank); i++)
@@ -129,7 +129,18 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, bool ** temp, int row
 	if (dimensionFlag == false)
 		*sizeOShape = true; // happens if the ship is shorter or longer than the legal size
 	return (res && dimensionFlag);
-#endif
+}
+
+bool Board::checkShapeAtCoord(Coordinate c, char t) const
+{
+	int count = 0;
+	if ((c.row < board.rows() - 1 && this->board.charAt(Coordinate(c.row + 1, c.col, c.depth)) == t))
+		count++;
+	if ((c.col < board.cols() - 1 && this->board.charAt(Coordinate(c.row, c.col + 1, c.depth)) == t))
+		count++;
+	if ((c.depth < board.depth() - 1 && this->board.charAt(Coordinate(c.row, c.col, c.depth + 1)) == t))
+		count++;
+	return (count <= 1);
 }
 
 
@@ -268,21 +279,14 @@ bool Board::printNumOfShipsError(int player, int count)
 }
 
 bool Board::checkBoard() {
-	return false;
-#ifdef IMPL
 	// creates a shadow board initialized to false.
-	bool ** temp = new bool*[board.num_of_rows()]; 
-	for(int i = 0; i < board.num_of_rows(); i++)
-	{
-		temp[i] = new bool[board.num_of_cols()];
-		for(int j = 0; j < board.num_of_cols(); j++)
-		{
-			temp[i][j] = false;
-		}
-	}
+	TestingBoard<TileStatus> temp = TestingBoard<TileStatus>(board.rows(), board.cols(), board.depth());
+	temp.initVal(UnChecked);
 	Type t;
 	pair<int, int> vert;
 	pair<int, int> horz;
+	pair<int, int> depth;
+	Coordinate curr(-1,-1,-1);
 	int color;
 	int currA = 0;
 	int currB = 0;
@@ -291,78 +295,43 @@ bool Board::checkBoard() {
 	bool Adjacent = false;
 	bool result = true;
 	bool checkRes;
-	for(int row = 0; row < board.num_of_rows(); row++)
-		for (int col = 0; col < board.num_of_cols(); col++)
-		{
-			// check all unmarked (i.e not visited) non-blank tiles
-			if (temp[row][col] == false && this->board.getPos(row,col) != static_cast<char>(Ship::Symbol::Blank))
+	for (int d = 0; d < board.depth(); d++)
+	{
+		for (int row = 0; row < board.rows(); row++)
+			for (int col = 0; col < board.cols(); col++)
 			{
-				color = this->coordColor(row, col); 
-				t = this->shipType(row, col);
-				if(color == 0)
-					checkRes = checkCoord(&(AsizeOShape[t]), &Adjacent, temp, row, col, this->board.getPos(row,col));
-				else
-					checkRes = checkCoord(&(BsizeOShape[t]), &Adjacent, temp, row, col, this->board.getPos(row,col));
-				// Create the ship
-				if (checkRes == true)
-				{					
-					if (this->board.getPos(row,col) == static_cast<char>(Ship::Symbol::ABoat) || this->board.getPos(row,col) == static_cast<char>(Ship::Symbol::BBoat))
-					{
-						horz = make_pair(col + 1, col + 1);	
-						vert = make_pair(row + 1, row + 1);
-					}
+				curr = Coordinate{ row, col, d };
+				// check all unmarked (i.e not visited) non-blank tiles
+				if (temp[curr] == UnChecked && this->board.charAt(curr) != static_cast<char>(Ship::Symbol::Blank))
+				{
+					color = this->coordColor(curr);
+					t = this->shipType(curr);
+					if (color == 0)
+						checkRes = checkCoord(&(AsizeOShape[t]), &Adjacent, temp, row, col, this->board.charAt(curr));
 					else
+						checkRes = checkCoord(&(BsizeOShape[t]), &Adjacent, temp, row, col, this->board.charAt(curr));
+					// Create the ship
+					if (checkRes == true)
 					{
-						if (row < board.num_of_rows() - 1 && this->board.getPos(row + 1,col) != static_cast<char>(Ship::Symbol::Blank))
+						fillDimensionsOfShip(curr, t, vert, horz, depth);
+						// create the new ship in the proper list, count the ships even if there are too many
+						if (color == 0)
 						{
-							horz = make_pair(col + 1, col + 1);
-							switch (t)
-							{
-							case Cruiser:								
-								vert = make_pair(row + 1, row + Ship::ShipLen::CruiserLen);
-								break;
-							case Submarine:								
-								vert = make_pair(row + 1, row + Ship::ShipLen::SubmarineLen);
-								break;
-							case Destroyer:								
-								vert = make_pair(row + 1, row + Ship::ShipLen::DestroyerLen);
-								break;
-							}
+							if (currA < SHIPS_PER_PLAYER)
+								this->shipsA.at(currA) = Ship(vert, horz, depth, t);
+							currA++;
 						}
 						else
 						{
-							vert = make_pair(row + 1, row + 1);
-							switch (t)
-							{
-							case Cruiser:
-								horz = make_pair(col + 1, col + Ship::ShipLen::CruiserLen);
-								break;
-							case Submarine:
-								horz = make_pair(col + 1, col + Ship::ShipLen::SubmarineLen);
-								break;
-							case Destroyer:
-								horz = make_pair(col + 1, col + Ship::ShipLen::DestroyerLen);
-								break;
-							}
+							if (currB < SHIPS_PER_PLAYER)
+								this->shipsB.at(currB) = Ship(vert, horz, depth, t);
+							currB++;
 						}
 					}
-					// create the new ship in the proper list, count the ships even if there are too many
-					if (color == 0)
-					{						
-						if (currA < SHIPS_PER_PLAYER)
-							this->shipsA.at(currA) = Ship(vert, horz, t);
-						currA++;
-					}
-					else
-					{						
-						if (currB < SHIPS_PER_PLAYER)
-							this->shipsB.at(currB) = Ship(vert, horz, t);
-						currB++;
-					}
-				}				
+				}
+
 			}
-					
-		}
+	}
 
 	/*
 		Printing the error messages according to the following order - first player A then B:
@@ -381,7 +350,7 @@ bool Board::checkBoard() {
 		result = false;
 	}
 	return result;
-#endif
+
 }
 
 
@@ -410,6 +379,37 @@ void Board::removeCharFromString(std::string &str, char charToRemove)
 
 bool Board::is_number(const std::string &s) {
 	return !s.empty() && std::all_of(s.begin(), s.end(), ::isdigit);
+}
+
+void Board::fillDimensionsOfShip(Coordinate c, Type t, std::pair<int, int>& vert, std::pair<int, int>& horz, std::pair<int, int>& depth) const
+{
+	if (this->board.charAt(c) == static_cast<char>(Ship::Symbol::ABoat) || this->board.charAt(c) == static_cast<char>(Ship::Symbol::BBoat))
+	{
+		horz = make_pair(c.col + 1, c.col + 1);
+		vert = make_pair(c.row + 1, c.row + 1);
+		depth = make_pair(c.depth + 1, c.depth + 1);
+	}
+	else
+	{
+		switch (getShipDirectionAt(c))
+		{
+		case Down:
+			depth = make_pair(c.depth + 1, c.depth + 1);
+			horz = make_pair(c.col + 1, c.col + 1);
+			vert = makePairByLength(t, c.row);
+			break;
+		case Right:
+			depth = make_pair(c.depth + 1, c.depth + 1);
+			vert = make_pair(c.row + 1, c.row + 1);
+			horz = makePairByLength(t, c.col);
+			break;
+		case Forward:
+			horz = make_pair(c.col + 1, c.col + 1);
+			vert = make_pair(c.row + 1, c.row + 1);
+			depth = makePairByLength(t, c.depth);
+			break;
+		}
+	}
 }
 
 std::tuple<int, int, int> Board::ParseBoardShape(const std::string& line) 
@@ -446,6 +446,36 @@ std::tuple<int, int, int> Board::ParseBoardShape(const std::string& line)
 	std::get<2>(res) = depth;
 	return res;
 }
+
+Board::ShipDirection Board::getShipDirectionAt(const Coordinate c) const
+{
+	if (c.row < board.rows() - 1 && this->board.charAt(Coordinate(c.row + 1, c.col, c.depth)) != static_cast<char>(Ship::Symbol::Blank))
+		return Down;
+	if (c.col < board.cols() - 1 && this->board.charAt(Coordinate(c.row, c.col + 1, c.depth)) != static_cast<char>(Ship::Symbol::Blank))
+		return Right;
+	return Forward;
+}
+
+std::pair<int, int> Board::makePairByLength(const Type t, int pos)
+{
+	int len = 1;
+	switch (t)
+	{
+	case Cruiser:
+		len = Ship::ShipLen::CruiserLen;
+		break;
+	case Submarine:
+		len = Ship::ShipLen::SubmarineLen;
+		break;
+	case Destroyer:
+		len = Ship::ShipLen::DestroyerLen;		
+		break;
+	}
+	return make_pair(pos + 1, pos + len);
+}
+
+
+
 /*
 * Parse Board into field 'board' from 'path'
 * Return true if no error, otherwise false

@@ -3,6 +3,7 @@
 #include "boardArray.h"
 #include "Ship.h"
 #include <array>
+#include "TestingBoard.h"
 #include <iostream>
 #include <windows.h>
 
@@ -34,7 +35,7 @@ class Board {
 	int scoreB;	
 	
 	enum TileStatus { Checked, UnChecked, Occupied };
-		
+	enum ShipDirection { Right, Down, Forward };
 
 	Type shipType(Coordinate c) const;
 	
@@ -64,12 +65,15 @@ class Board {
 			if the size or shape aren't okay, update the flag,
 			and if there is an adajacent ship, update the flag.
 	*/
-	bool checkCoord(bool*, bool*, bool**, int, int, char) const;
-
+	bool checkCoord(bool*, bool*, TestingBoard<TileStatus>&, Coordinate c, char) const;
+	bool checkShapeAtCoord(Coordinate c, char t) const;
 	static std::vector<std::string> split(const std::string &s, char delim);
 	static void removeCharFromString(std::string &str, char charToRemove);
 	static bool Board::is_number(const std::string &s);
 	static std::tuple<int, int, int> Board::ParseBoardShape(const std::string& line);
+	ShipDirection getShipDirectionAt(const Coordinate c) const;
+	static std::pair<int, int> makePairByLength(const Type t, int pos);
+	void fillDimensionsOfShip(Coordinate c, Type t, std::pair<int,int> & vert, std::pair<int, int> & horz, std::pair<int, int> & depth) const;
 public:
 	
 
