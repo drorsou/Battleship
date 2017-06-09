@@ -81,17 +81,18 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, TestingBoard<TileStat
 	if (checkShapeAtCoord(c, t) == false)
 		*sizeOShape = true; // illegal ship size.
 	// check top to down ships
-	for (int i = row + 1; i < board.num_of_rows() && this->board.getPos(i,col) != static_cast<char>(Ship::Symbol::Blank); i++)
+	for (int i = c.row + 1; i < board.rows() && this->board.charAt(Coordinate(i,c.col,c.depth)) != static_cast<char>(Ship::Symbol::Blank); i++)
 	{
+		char currTile = this->board.charAt(Coordinate(i, c.col, c.depth));
 		// Check for adjacent with the same type or if this tile was used in a different ship of this type.
-		if ((this->board.getPos(i,col) == t && temp[i][col] == true) || (col > 0 && this->board.getPos(i,col - 1) == t) || (col < BOARD_SIZE - 1 && this->board.getPos(i,col+1) == t))
+		if ((currTile == t && temp[Coordinate(i,c.col,c.depth)] == Checked) || checkColumnForAShip(Coordinate(i, c.col, c.depth),t) || checkDepthForAShip(Coordinate(i, c.col, c.depth), t))
 		{
 			*sizeOShape = true;
-			temp[i][col] = true;
+			temp[Coordinate(i, c.col, c.depth)] = Checked;
 			res = false;
 		}
 		// check if we already checked this tile (maybe a part of different ship)
-		if (this->board.getPos(i,col) != t)
+		if (currTile != t)
 		{
 			*adjacent = true;// adjacent ships!			
 			break;
@@ -99,21 +100,22 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, TestingBoard<TileStat
 		else
 		{
 			len++;
-			temp[i][col] = true;
+			temp[Coordinate(i, c.col, c.depth)] = Checked;
 		}
 	}	
 	// check left to right ships - marks seen parts even if this is illegal ship size or shape!
-	for (int j = col + 1; j < board.num_of_cols() && this->board.getPos(row,j) != static_cast<char>(Ship::Symbol::Blank); j++)
+	for (int j = c.col + 1; j < board.cols() && this->board.charAt(Coordinate(c.row,j,c.depth)) != static_cast<char>(Ship::Symbol::Blank); j++)
 	{
+		char currTile = this->board.charAt(Coordinate(c.row, j, c.depth));
 		// Check for adjacent with the same type or if this tile was used in a different ship of this type.
-		if ((this->board.getPos(row,j) == t && temp[row][j] == true) || (row > 0 && this->board.getPos(row - 1,j) == t) || (row < board.num_of_rows() - 1 && this->board.getPos(row + 1,j) == t))
+		if ((currTile == t && temp[Coordinate(c.row,j,c.depth)] == Checked) || checkRowForAShip(Coordinate(c.row,j,c.depth),t) || checkDepthForAShip(Coordinate(c.row, j, c.depth), t))
 		{
 			*sizeOShape = true;
-			temp[row][j] = true;
+			temp[Coordinate(c.row, j, c.depth)] = Checked;
 			res = false;
 		}
 		// check if we already checked this tile (maybe a part of different ship)
-		if (this->board.getPos(row,j) != t)
+		if (currTile != t)
 		{
 			*adjacent = true;// adjacent ships!			
 			break;
@@ -121,7 +123,29 @@ bool Board::checkCoord(bool * sizeOShape, bool * adjacent, TestingBoard<TileStat
 		else
 		{
 			len++;
-			temp[row][j] = true;
+			temp[Coordinate(c.row, j, c.depth)] = Checked;
+		}
+	}
+	for (int k = c.depth + 1; k < board.depth() && this->board.charAt(Coordinate(c.row, c.col, k)) != static_cast<char>(Ship::Symbol::Blank); k++)
+	{
+		char currTile = this->board.charAt(Coordinate(c.row, c.col, k));
+		// Check for adjacent with the same type or if this tile was used in a different ship of this type.
+		if ((currTile == t && temp[Coordinate(c.row, c.col, k)] == Checked) || checkRowForAShip(Coordinate(c.row, c.col, k), t) || checkColumnForAShip(Coordinate(c.row, c.col, k), t))
+		{
+			*sizeOShape = true;
+			temp[Coordinate(c.row, c.col, k)] = Checked;
+			res = false;
+		}
+		// check if we already checked this tile (maybe a part of different ship)
+		if (currTile != t)
+		{
+			*adjacent = true;// adjacent ships!			
+			break;
+		} // No problems found
+		else
+		{
+			len++;
+			temp[Coordinate(c.row, c.col, k)] = Checked;
 		}
 	}
 	len++; // for the original point.
@@ -307,9 +331,9 @@ bool Board::checkBoard() {
 					color = this->coordColor(curr);
 					t = this->shipType(curr);
 					if (color == 0)
-						checkRes = checkCoord(&(AsizeOShape[t]), &Adjacent, temp, row, col, this->board.charAt(curr));
+						checkRes = checkCoord(&(AsizeOShape[t]), &Adjacent, temp, curr, this->board.charAt(curr));
 					else
-						checkRes = checkCoord(&(BsizeOShape[t]), &Adjacent, temp, row, col, this->board.charAt(curr));
+						checkRes = checkCoord(&(BsizeOShape[t]), &Adjacent, temp, curr, this->board.charAt(curr));
 					// Create the ship
 					if (checkRes == true)
 					{
@@ -352,8 +376,6 @@ bool Board::checkBoard() {
 	return result;
 
 }
-
-
 
 
 

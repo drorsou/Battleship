@@ -56,6 +56,21 @@ class Board {
 	*/
 	bool checkBoard();
 
+	bool Board::checkColumnForAShip(Coordinate c, char type) const
+	{
+		return (c.col > 0 && this->board.charAt(Coordinate(c.row, c.col - 1, c.depth)) == type) || (c.col < this->board.cols() - 1 && this->board.charAt(Coordinate(c.row, c.col + 1, c.depth)) == type);
+	}
+
+	bool Board::checkRowForAShip(Coordinate c, char type) const
+	{
+		return (c.row > 0 && this->board.charAt(Coordinate(c.row - 1, c.col, c.depth)) == type) || (c.col < this->board.rows() - 1 && this->board.charAt(Coordinate(c.row + 1, c.col, c.depth)) == type);
+	}
+
+	bool Board::checkDepthForAShip(Coordinate c, char type) const
+	{
+		return (c.depth > 0 && this->board.charAt(Coordinate(c.row, c.col, c.depth - 1)) == type) || (c.col < this->board.depth() - 1 && this->board.charAt(Coordinate(c.row, c.col, c.depth + 1)) == type);
+	}
+
 	/*
 	Pre: gets a pointer to the size or shape flag,
 			to the adjacent flag,
