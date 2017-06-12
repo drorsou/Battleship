@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include "IBattleshipGameAlgo.h"
+#include "Scores.h"
 #include <tuple>
 #include <windows.h>
 #include <algorithm>

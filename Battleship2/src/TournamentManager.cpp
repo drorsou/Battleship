@@ -1,7 +1,7 @@
 #include "TournamentManager.h"
 
 
-int TournamentManager::threads = 4;
+int TournamentManager::threads = DEFAULT_THREADS;
 std::string TournamentManager::path;
 
 std::vector<std::string> TournamentManager::boardsVector;
@@ -57,12 +57,9 @@ bool TournamentManager::init(int argc, char* argv[])
 	// Initialize the game and results variables
 	for (int i = 0; i < playersVector.size(); i++)
 	{
-		//TournamentManager::mutexVector.push_back(std::mutex());
-		Scores::winsVector.push_back(0);
-		Scores::lossesVector.push_back(0);
-		Scores::pointsForVector.push_back(0);
-		Scores::pointsAgainstVector.push_back(0);
+		//mutexVector.push_back(std::mutex);
 	}
+	Scores::initScores(playersVector.size());
 
 	std::cout << "Number of legal players: " << playersVector.size() << std::endl;
 	std::cout << "Number of legal boards: " << boardsVector.size() << std::endl;
@@ -75,56 +72,70 @@ void TournamentManager::tournament()
 {
 	std::vector<std::thread> threadsVector;
 	std::vector<GameManager> gamesVector;
-	volatile int activeThreads = 0;
 	int gamesPlayed = 0;
-	int round = 0;
 	bool tournamentOn = true;
 
 	TournamentManager::addGamesToVector(gamesVector);
 
 	while (tournamentOn)
 	{
+		if (Scores::activeThreads == 0 && gamesPlayed == gamesVector.size())
+			tournamentOn = false;
+		if (Scores::activeThreads < threads && gamesPlayed < gamesVector.size())
+		{
+			threadsVector.push_back(std::thread(&GameManager::play, &gamesVector[gamesPlayed]));
+			threadsVector.back().join();
+			Scores::activeThreads++;
+			gamesPlayed++;
+		}
 
 
-		//threadsVector.push_back(std::thread([&](GameManager* game) {game->play(); }, &gamesVector[activeThreads]));
+		// Check if a round is over and print scores
+
+
+		/*
+		threadsVector.push_back(std::thread([&](GameManager* game) {game->play(); }, &gamesVector[activeThreads]));
 		threadsVector.push_back(std::thread(&GameManager::play, &gamesVector[activeThreads]));
 		threadsVector[activeThreads].join();
 		activeThreads++;
 		if (activeThreads == 5)
 			tournamentOn = false;
-		
-
-
-		//Scores::updateScores(playerAIndex, playerBIndex, winner, pointsA, pointsB);
+		*/
 	}
 }
 
 
 void TournamentManager::addGamesToVector(std::vector<GameManager>& gamesVector)
 {
-	int lastPlayerIndex = playersVector.size() - 1;
+	int lastPlayerIndex;
 
-	// If number of players is uneven
-	//
-	//
+	if (playersVector.size() % 2 == 1)
+		lastPlayerIndex = playersVector.size();
+	else
+		lastPlayerIndex = playersVector.size() - 1;
 
 
-	// If number of players is even
 	for (int boardRound = 0; boardRound < boardsVector.size(); boardRound++)
 	{
 		for (int i = 0; i < lastPlayerIndex; i++)
 		{
 			int playerAIndex = 0;
 			int playerBIndex = lastPlayerIndex - i;
-			gamesVector.push_back(GameManager(boardRound, &playersVector[playerAIndex], &playersVector[playerBIndex], playerAIndex, playerBIndex));
-			gamesVector.push_back(GameManager(boardRound, &playersVector[playerBIndex], &playersVector[playerAIndex], playerBIndex, playerAIndex));
+			if (playerBIndex != playersVector.size())
+			{
+				gamesVector.push_back(GameManager(boardRound, &playersVector[playerAIndex], &playersVector[playerBIndex], playerAIndex, playerBIndex));
+				gamesVector.push_back(GameManager(boardRound, &playersVector[playerBIndex], &playersVector[playerAIndex], playerBIndex, playerAIndex));
+			}
 
-			for (int j = 0; j < (playersVector.size() / 2) - 1; j++)
+			for (int j = 0; j < (playersVector.size() / 2) + (playersVector.size() % 2) - 1; j++)
 			{
 				playerAIndex = ((2 * lastPlayerIndex - i + j) % lastPlayerIndex) + 1;
 				playerBIndex = ((2 * lastPlayerIndex - 2 - i - j) % lastPlayerIndex) + 1;
-				gamesVector.push_back(GameManager(boardRound, &playersVector[playerAIndex], &playersVector[playerBIndex], playerAIndex, playerBIndex));
-				gamesVector.push_back(GameManager(boardRound, &playersVector[playerBIndex], &playersVector[playerAIndex], playerBIndex, playerAIndex));
+				if (playerAIndex != playersVector.size() && playerBIndex != playersVector.size())
+				{
+					gamesVector.push_back(GameManager(boardRound, &playersVector[playerAIndex], &playersVector[playerBIndex], playerAIndex, playerBIndex));
+					gamesVector.push_back(GameManager(boardRound, &playersVector[playerBIndex], &playersVector[playerAIndex], playerBIndex, playerAIndex));
+				}
 			}
 		}
 	}

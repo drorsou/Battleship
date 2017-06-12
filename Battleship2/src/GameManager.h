@@ -1,5 +1,6 @@
 #pragma once
 #include "IBattleshipGameAlgo.h"
+#include "Scores.h"
 #include <memory>
 
 

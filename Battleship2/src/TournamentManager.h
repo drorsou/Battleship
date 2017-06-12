@@ -9,6 +9,9 @@
 #include "Scores.h"
 
 
+#define DEFAULT_THREADS 4
+
+
 class TournamentManager
 {
 	static int threads;
