@@ -25,7 +25,7 @@ public:
 	void initVal(T val)
 	{
 		for (int i = 0; i < _rows*_cols*_depth; i++)
-			(board.get())(i) = val;
+			(board.get())[i] = val;
 	}
 	int rows() const
 	{
@@ -43,6 +43,10 @@ public:
 	}
 	T& operator[](Coordinate c)
 	{
-		return (board.get())(position(c));
+		return (board.get())[position(c)];
+	}
+	void setAt(Coordinate c, T val)
+	{
+		(board.get())[position(c)] = val;
 	}
 };
