@@ -133,6 +133,7 @@ void FileReader::replaceChar(std::string& str, char ch1, char ch2) {
 
 
 IBattleshipGameAlgo* FileReader::loadDLL(const std::string& path)
+//FileReader::GetAlgorithmFuncType FileReader::loadDLL(const std::string& path)
 {
 	// Load dynamic library
 	HINSTANCE hDll = LoadLibraryA(path.c_str()); // Notice: Unicode compatible version of LoadLibrary
@@ -151,6 +152,7 @@ IBattleshipGameAlgo* FileReader::loadDLL(const std::string& path)
 	}
 
 	return getAlgoritmeFunc();
+	//return getAlgoritmeFunc;
 }
 
 
@@ -172,8 +174,15 @@ void FileReader::importFromFilesToVectors(std::vector<std::string>& boardsVector
 			if (currSuffixOfFile.compare("dll") == 0)
 			{
 				IBattleshipGameAlgo* dll = FileReader::loadDLL(path + "\\" + name);
+				//FileReader::GetAlgorithmFuncType dll = FileReader::loadDLL(path + "\\" + name);
 				if (dll != nullptr)
+				{
 					playersVector.push_back(std::unique_ptr<IBattleshipGameAlgo>(dll));
+					//playersVector.push_back(std::unique_ptr<FileReader::GetAlgorithmFuncType>(dll));
+					
+					// Save the player's name for scores
+					Scores::playerNamesVector.push_back(name.substr(0, indexOfSuffix));
+				}
 			}
 		}
 	}

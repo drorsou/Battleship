@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include "IBattleshipGameAlgo.h"
+#include "Scores.h"
 #include <tuple>
 #include <windows.h>
 #include <algorithm>
@@ -52,6 +53,7 @@ public:
 	// Load the DLL from the filepath and return a player algorithm
 	typedef IBattleshipGameAlgo *(*GetAlgorithmFuncType)();
 	static IBattleshipGameAlgo* loadDLL(const std::string& path);
+	//static FileReader::GetAlgorithmFuncType loadDLL(const std::string& path);
 
 
 
