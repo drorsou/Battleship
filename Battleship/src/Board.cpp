@@ -1,5 +1,6 @@
 #include "Board.h"
 #include <sstream>
+#include "BoardDataAccess.h"
 
 Board::~Board()
 {
@@ -131,23 +132,16 @@ bool Board::checkShapeAtCoord(Coordinate c, char t) const
 }
 
 void Board::setPlayer(int color, IBattleshipGameAlgo* player)
-{
-#ifdef IMPL
-	char ** b;
+{	
 	if (color == 0)
 	{
-		this->playerA = player;
-		b = prepareBoard(0);
-		this->playerA->setBoard(0, const_cast<const char **>(b), this->board.num_of_rows(), this->board.num_of_cols());
+		this->playerA = player;	
 	}
 	else
 	{
-		this->playerB = player;
-		b = prepareBoard(1);
-		this->playerB->setBoard(1, const_cast<const char **>(b), this->board.num_of_rows(), this->board.num_of_cols());
+		this->playerB = player;		
 	}
-	delete b;	
-#endif
+	this->playerA->setBoard(BoardDataAccess{ &this->board, color });	
 }
 
 bool Board::checkTarget(char target) const {	
@@ -558,15 +552,9 @@ bool Board::parseBoard(std::string& path) {
 
 	int _rows;
 	int _cols;
-	int _depth;
-	std::pair<std::string, string> boardFileDetails = FileReader::findFilesLexicographically("sboard");
-	if (boardFileDetails.first.empty())
-	{
-		FileReader::printError(FileReader::Error::BOARD, path);
-		return false;
-	}
+	int _depth;	
 
-	ifstream fin(path + "\\" + boardFileDetails.first);
+	ifstream fin(path);
 	if(!fin.is_open())
 	{
 		std::cout << "Error: Cannot open the board file for parsing." << endl;
