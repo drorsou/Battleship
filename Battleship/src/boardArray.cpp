@@ -28,5 +28,5 @@ char boardArray::charAt(Coordinate c) const
 
 void boardArray::setCharAt(Coordinate c, Ship::Symbol s)
 {
-	(arr.get())[position(c.row, c.col, c.depth)] = s;	
+	(arr.get())[position(c.row, c.col, c.depth)] = s;
 }

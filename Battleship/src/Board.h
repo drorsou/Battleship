@@ -50,51 +50,37 @@ class Board {
 	static bool printSizeOrShapeError(int player, bool * arr);
 
 	static bool printNumOfShipsError(int player, int count);
-
-	static Coordinate generateCoord(const Coordinate c, ShipDirection dir, int val);
-
-	bool checkDirection(int * len, bool * sizeOShape, bool * adjacent, TestingBoard<TileStatus>& temp, Coordinate c, char t, ShipDirection dir) const;
-
-	/*
-	Pre: gets a pointer to the size or shape flag,
-	to the adjacent flag,
-	The shadow board (which it changes),
-	a non-empty valid coordinate and the char in it.
-	Post: returns true if this coord makes a valid ship,
-	if the size or shape aren't okay, update the flag,
-	and if there is an adajacent ship, update the flag.
-	*/
-	bool checkCoord(bool*, bool*, TestingBoard<TileStatus>&, Coordinate c, char) const;
-
 	/*
 		Pre: None
 		Post: returns true iff the board is legal.
 	*/
 	bool checkBoard();
 
-	bool checkRowForAShip(Coordinate c, char type) const
+	bool Board::checkColumnForAShip(Coordinate c, char type) const
 	{
-		return (c.col > 1 && this->board.charAt(Coordinate(c.row, c.col - 1, c.depth)) == type) || (c.col < this->board.cols() && this->board.charAt(Coordinate(c.row, c.col + 1, c.depth)) == type);
+		return (c.col > 0 && this->board.charAt(Coordinate(c.row, c.col - 1, c.depth)) == type) || (c.col < this->board.cols() - 1 && this->board.charAt(Coordinate(c.row, c.col + 1, c.depth)) == type);
 	}
 
-	bool checkColumnForAShip(Coordinate c, char type) const
+	bool Board::checkRowForAShip(Coordinate c, char type) const
 	{
-		return (c.row > 1 && this->board.charAt(Coordinate(c.row - 1, c.col, c.depth)) == type) || (c.col < this->board.rows() && this->board.charAt(Coordinate(c.row + 1, c.col, c.depth)) == type);
+		return (c.row > 0 && this->board.charAt(Coordinate(c.row - 1, c.col, c.depth)) == type) || (c.col < this->board.rows() - 1 && this->board.charAt(Coordinate(c.row + 1, c.col, c.depth)) == type);
 	}
 
-	bool checkDepthForAShip(Coordinate c, char type) const
+	bool Board::checkDepthForAShip(Coordinate c, char type) const
 	{
-		return (c.depth > 1 && this->board.charAt(Coordinate(c.row, c.col, c.depth - 1)) == type) || (c.col < this->board.depth() && this->board.charAt(Coordinate(c.row, c.col, c.depth + 1)) == type);
+		return (c.depth > 0 && this->board.charAt(Coordinate(c.row, c.col, c.depth - 1)) == type) || (c.col < this->board.depth() - 1 && this->board.charAt(Coordinate(c.row, c.col, c.depth + 1)) == type);
 	}
 
 	/*
-	 * Pre: gets the coordinate in question, the direction we want to check, and the type we have in c.
-	 * Post: returns true if there is an adjacent ship of a different type.
-	 */
-	bool checkAdjacent(Coordinate c, ShipDirection dir, char type) const;
-	
-
-	
+	Pre: gets a pointer to the size or shape flag,
+			to the adjacent flag,
+			The shadow board (which it changes),
+			a non-empty valid coordinate and the char in it.
+	Post: returns true if this coord makes a valid ship,
+			if the size or shape aren't okay, update the flag,
+			and if there is an adajacent ship, update the flag.
+	*/
+	bool checkCoord(bool*, bool*, TestingBoard<TileStatus>&, Coordinate c, char) const;
 	bool checkShapeAtCoord(Coordinate c, char t) const;
 	static std::vector<std::string> split(const std::string &s, char delim);
 	static void removeCharFromString(std::string &str, char charToRemove);
