@@ -8,8 +8,14 @@ std::vector<std::string> TournamentManager::boardsVector;
 std::vector<std::unique_ptr<IBattleshipGameAlgo>> TournamentManager::playersVector;
 
 
-std::vector<std::condition_variable> TournamentManager::conditionsVector;
-std::vector<std::mutex> TournamentManager::mutexVector;
+//std::vector<std::condition_variable> TournamentManager::conditionsVector;
+//std::vector<std::mutex> TournamentManager::mutexVector;
+//std::mutex* TournamentManager::mutex;
+std::mutex TournamentManager::mutex;
+std::vector<bool> TournamentManager::playersLocks;
+bool TournamentManager::tournamentOn = true;
+std::queue<GameManager> TournamentManager::gamesQueue;
+
 
 
 int main(int argc, char* argv[])
@@ -54,15 +60,28 @@ bool TournamentManager::init(int argc, char* argv[])
 		return false;
 	}
 
-	// Initialize the game and results variables
-	for (int i = 0; i < playersVector.size(); i++)
-	{
-		//mutexVector.push_back(std::mutex);
-	}
-	Scores::initScores(playersVector.size());
+
+	
+	Scores::initScores(static_cast<int>(playersVector.size()));
 
 	std::cout << "Number of legal players: " << playersVector.size() << std::endl;
 	std::cout << "Number of legal boards: " << boardsVector.size() << std::endl;
+
+	TournamentManager::addGamesToQueue();
+
+
+	// Initialize the game and results variables
+
+	for (int i = 0; i < playersVector.size() + 1; i++)
+	{
+		playersLocks.push_back(true);
+	}
+
+	for (int i = 0; i < threads; i++)
+	{
+		std::thread thread = std::thread(&waitForGames);
+		thread.detach();
+	}
 
 	return true;
 }
@@ -70,27 +89,23 @@ bool TournamentManager::init(int argc, char* argv[])
 
 void TournamentManager::tournament()
 {
-	std::vector<std::thread> threadsVector;
-	std::vector<GameManager> gamesVector;
-	int gamesPlayed = 0;
-	bool tournamentOn = true;
-
-	TournamentManager::addGamesToVector(gamesVector);
+	//std::vector<std::thread> threadsVector;
+	//int gamesPlayed = 0;
 
 	while (tournamentOn)
 	{
-		if (Scores::activeThreads == 0 && gamesPlayed == gamesVector.size())
+		if (Scores::activeThreads == 0 && gamesQueue.empty() == true)
 			tournamentOn = false;
-		if (Scores::activeThreads < threads && gamesPlayed < gamesVector.size())
+		/*if (Scores::activeThreads < threads && gamesPlayed < gamesVector.size())
 		{
 			threadsVector.push_back(std::thread(&GameManager::play, &gamesVector[gamesPlayed]));
 			threadsVector.back().join();
 			Scores::activeThreads++;
 			gamesPlayed++;
-		}
+		}*/
 
 
-		// Check if a round is over and print scores
+		
 
 
 		/*
@@ -105,14 +120,66 @@ void TournamentManager::tournament()
 }
 
 
-void TournamentManager::addGamesToVector(std::vector<GameManager>& gamesVector)
+
+void TournamentManager::waitForGames()
+{
+	while (tournamentOn)
+	{
+		GameManager game;
+		bool startPlay = false;
+		std::unique_lock<std::mutex> lock(TournamentManager::mutex, std::defer_lock);
+
+		//std::condition_variable cv;
+
+		//while (lock.try_lock() == false) {}
+		lock.lock(); // Replace with condition?
+		if (TournamentManager::gamesQueue.empty() == false)
+		{
+			Scores::activeThreads++;
+			game = gamesQueue.front();
+			gamesQueue.pop();
+
+			startPlay = true;
+		}
+		lock.unlock();
+
+		if (startPlay)
+		{
+			bool playersAreLocked = true;
+			while (playersAreLocked)
+			{
+				lock.lock(); // Replace with condition?
+				if (TournamentManager::playersLocks[game.getPlayerAIndex()] == true && TournamentManager::playersLocks[game.getPlayerBIndex()] == true)
+				{
+					TournamentManager::playersLocks[game.getPlayerAIndex()] = false;
+					TournamentManager::playersLocks[game.getPlayerBIndex()] = false;
+					playersAreLocked = false;
+					lock.unlock();
+					break;
+				}
+				lock.unlock();
+			}
+			
+			game.play();
+
+			lock.lock(); // Replace with condition?
+			TournamentManager::playersLocks[game.getPlayerAIndex()] = true;
+			TournamentManager::playersLocks[game.getPlayerBIndex()] = true;
+			Scores::activeThreads--;
+			lock.unlock();
+		}
+	}
+}
+
+
+void TournamentManager::addGamesToQueue()
 {
 	int lastPlayerIndex;
 
 	if (playersVector.size() % 2 == 1)
-		lastPlayerIndex = playersVector.size();
+		lastPlayerIndex = static_cast<int>(playersVector.size());
 	else
-		lastPlayerIndex = playersVector.size() - 1;
+		lastPlayerIndex = static_cast<int>(playersVector.size() - 1);
 
 
 	for (int boardRound = 0; boardRound < boardsVector.size(); boardRound++)
@@ -123,8 +190,8 @@ void TournamentManager::addGamesToVector(std::vector<GameManager>& gamesVector)
 			int playerBIndex = lastPlayerIndex - i;
 			if (playerBIndex != playersVector.size())
 			{
-				gamesVector.push_back(GameManager(boardRound, &playersVector[playerAIndex], &playersVector[playerBIndex], playerAIndex, playerBIndex));
-				gamesVector.push_back(GameManager(boardRound, &playersVector[playerBIndex], &playersVector[playerAIndex], playerBIndex, playerAIndex));
+				gamesQueue.push(GameManager(boardRound, &playersVector[playerAIndex], &playersVector[playerBIndex], playerAIndex, playerBIndex));
+				gamesQueue.push(GameManager(boardRound, &playersVector[playerBIndex], &playersVector[playerAIndex], playerBIndex, playerAIndex));
 			}
 
 			for (int j = 0; j < (playersVector.size() / 2) + (playersVector.size() % 2) - 1; j++)
@@ -133,12 +200,12 @@ void TournamentManager::addGamesToVector(std::vector<GameManager>& gamesVector)
 				playerBIndex = ((2 * lastPlayerIndex - 2 - i - j) % lastPlayerIndex) + 1;
 				if (playerAIndex != playersVector.size() && playerBIndex != playersVector.size())
 				{
-					gamesVector.push_back(GameManager(boardRound, &playersVector[playerAIndex], &playersVector[playerBIndex], playerAIndex, playerBIndex));
-					gamesVector.push_back(GameManager(boardRound, &playersVector[playerBIndex], &playersVector[playerAIndex], playerBIndex, playerAIndex));
+					gamesQueue.push(GameManager(boardRound, &playersVector[playerAIndex], &playersVector[playerBIndex], playerAIndex, playerBIndex));
+					gamesQueue.push(GameManager(boardRound, &playersVector[playerBIndex], &playersVector[playerAIndex], playerBIndex, playerAIndex));
 				}
 			}
 		}
 	}
 
-	std::cout << "Number of games: " << gamesVector.size() << std::endl; // Debug line
+	std::cout << "Number of games: " << gamesQueue.size() << std::endl; // Debug line
 }

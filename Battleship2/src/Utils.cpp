@@ -7,7 +7,42 @@ bool Utils::checkArgs(int argc, char** argv)
 		TournamentManager::emptyPath();
 	else
 	{
-		std::queue<std::string> queue;
+		if (std::string{ "-threads" }.compare(argv[1]) == 0)
+		{
+			if (argc < 3)
+			{
+				std::cout << "Error: missing threads parameter" << std::endl;
+				return false;
+			}
+			TournamentManager::setThreads(std::stoi(argv[2]));
+			TournamentManager::emptyPath();
+		}
+		else
+		{
+			TournamentManager::setPath(argv[1]);
+			if (argc > 2)
+			{
+				if (std::string{ "-threads" }.compare(argv[2]) == 0)
+				{
+					if (argc > 3)
+						TournamentManager::setThreads(std::stoi(argv[3]));
+					else
+					{
+						std::cout << "Error: missing threads parameter" << std::endl;
+						return false;
+					}
+				}
+				else
+				{
+					std::cout << "Error: illegal parameter" << std::endl;
+					return false;
+				}
+			
+			}
+		}
+
+		
+		/*std::queue<std::string> queue;
 		Utils::splitString(std::string(argv[1]), queue, '=');
 
 		if (queue.size() == 2) // First argument has a single '='
@@ -40,14 +75,14 @@ bool Utils::checkArgs(int argc, char** argv)
 		{
 			std::cout << "Error: illegal parameter" << std::endl;
 			return false;
-		}
+		}*/
 	}
 
 	return true;
 }
 
 
-bool Utils::setThreadsFromQueue(std::queue<std::string>& queue)
+/*bool Utils::setThreadsFromQueue(std::queue<std::string>& queue)
 {
 	if (std::string{ "-threads=" }.compare(queue.front()) != 0)
 	{
@@ -69,4 +104,4 @@ void Utils::splitString(const std::string& str, std::queue<std::string>& queue, 
 	{
 		queue.push(token);
 	}
-}
+}*/

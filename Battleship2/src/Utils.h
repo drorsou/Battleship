@@ -20,12 +20,12 @@ public:
 	 * which is set at the number of threads in TournamentManager
 	 * returns false if there was an error and true otherwise
 	 */
-	static bool setThreadsFromQueue(std::queue<std::string>& queue);
+	//static bool setThreadsFromQueue(std::queue<std::string>& queue);
 
 	/* Pre: String 'str', queue of strings 'queue', delimiter character 'delim'
 	 * Post: Split the string by the delimiter, and put the substrings in the queue
 	 *
 	 */
-	static void splitString(const std::string& str, std::queue<std::string>& queue, char delim);
+	//static void splitString(const std::string& str, std::queue<std::string>& queue, char delim);
 
 };

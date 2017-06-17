@@ -18,9 +18,13 @@ class GameManager
 
 
 public:
+	GameManager() {};
 	GameManager(int board_, std::unique_ptr<IBattleshipGameAlgo>* playerA_, std::unique_ptr<IBattleshipGameAlgo>* playerB_,
 		int playerAIndex_, int playerBIndex_) :
 		board(board_), playerA(playerA_), playerB(playerB_), playerAIndex(playerAIndex_), playerBIndex(playerBIndex_) { };
+
+	int getPlayerAIndex() const { return playerAIndex; };
+	int getPlayerBIndex() const { return playerBIndex; };
 
 	void play();
 };

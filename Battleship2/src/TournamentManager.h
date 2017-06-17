@@ -36,10 +36,14 @@ public:
 	 */
 	static void tournament();
 
+
+	static void TournamentManager::waitForGames();
+
+
 	/* Pre: GameManager vector
 	 * Post: Add all the games to the vector - for each board, all possible algorithm combinations
 	 */
-	static void addGamesToVector(std::vector<GameManager>& gamesVector);
+	static void addGamesToQueue();
 
 
 
@@ -47,6 +51,11 @@ public:
 	static std::vector<std::string> boardsVector;
 	static std::vector<std::unique_ptr<IBattleshipGameAlgo>> playersVector;
 
-	static std::vector<std::condition_variable> conditionsVector;
-	static std::vector<std::mutex> mutexVector;
+	//static std::vector<std::condition_variable> conditionsVector;
+	//static std::vector<std::mutex> mutexVector;
+	//static std::mutex* mutex;
+	static std::mutex mutex;
+	static std::vector<bool> playersLocks;
+	static bool tournamentOn;
+	static std::queue<GameManager> gamesQueue;
 };

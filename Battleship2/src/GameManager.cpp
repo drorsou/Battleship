@@ -1,20 +1,9 @@
 #include "GameManager.h"
 #include <iostream>
+#include <mutex>
 
 void GameManager::play()
 {
-	if (playerAIndex < playerBIndex)
-	{
-		// Lock playerA mutex
-		// Lock playerB mutex
-	}
-	else
-	{
-		// Lock playerB mutex
-		// Lock playerA mutex
-	}
-
-
 	/*
 	playerA->setPlayer(0);
 	playerB->setPlayer(1);
@@ -32,16 +21,15 @@ void GameManager::play()
 	}
 	*/
 
-	std::cout << "Board " << board<< " - Player " << playerAIndex << " vs. Player " << playerBIndex << std::endl;
-
-
 	winner = 0;
 	pointsA = 0;
 	pointsB = 0;
 
-	Scores::updateScores(playerAIndex, playerBIndex, winner, pointsA, pointsB);
-	
-	// Free mutex for both players
 
-	Scores::activeThreads -= 1;
+	static std::mutex mutex;
+	std::unique_lock<std::mutex> lock(mutex, std::defer_lock);
+	lock.lock(); //while (lock.try_lock() == false) {}
+	std::cout << "Board " << board<< " - Player " << playerAIndex << " vs. Player " << playerBIndex << std::endl;
+	Scores::updateScores(playerAIndex, playerBIndex, winner, pointsA, pointsB);
+	lock.unlock();
 }
