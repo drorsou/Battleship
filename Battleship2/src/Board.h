@@ -125,6 +125,7 @@ public:
 		  scoreA(other.scoreA),
 		  scoreB(other.scoreB)
 	{
+		printf("Board - Using regular copy ctor\n");
 	}
 
 	Board(Board&& other)
@@ -138,13 +139,31 @@ public:
 		  scoreB(other.scoreB)
 	{
 		shipsA = std::move(other.shipsA);
-		shipsB = std::move(other.shipsB);		
+		shipsB = std::move(other.shipsB);
+		printf("Board - Using regular move ctor\n");
 	}
 
-	Board& operator=(const Board& other) = delete;
+	Board& operator=(const Board& other)
+	{
+		printf("Board - Using = copy ctor\n");
+		if (this == &other)
+			return *this;
+		board = other.board;
+		current_player_turn = other.current_player_turn;
+		playerA = nullptr;
+		playerB = nullptr;
+		shipsA = other.shipsA;
+		shipsB = other.shipsB;
+		totalShipsAScore = other.totalShipsAScore;
+		totalShipsBScore = other.totalShipsBScore;
+		scoreA = other.scoreA;
+		scoreB = other.scoreB;
+		return *this;
+	}
 
 	Board& operator=(Board&& other) noexcept	
 	{
+		printf("Using = move ctor\n");
 		if (this == &other)
 			return *this;
 		board = std::move(other.board);

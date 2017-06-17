@@ -8,9 +8,9 @@
 class boardArray
 {
 private:
-	int _rows;
-	int _cols;
-	int _depth;
+	int _rows = 0;
+	int _cols = 0;
+	int _depth = 0;
 	std::unique_ptr<Ship::Symbol> arr = nullptr;
 
 	void copyArr(const std::unique_ptr<Ship::Symbol>& otherArr);
@@ -47,23 +47,31 @@ public:
 	void setCharAt(Coordinate c, Ship::Symbol s);
 
 
-	boardArray(const boardArray& other)			
+	boardArray(const boardArray& other)
+		: _rows(other.rows()),
+		  _cols(other.cols()),
+		  _depth(other.depth())
 	{
-		_rows = other.rows();
-		_cols = other.cols();
-		_depth = other.depth();
-		arr = unique_ptr<Ship::Symbol>(new Ship::Symbol[_rows * _cols * _depth]);
+		if (this->arr.get() != nullptr)
+		{
+			this->arr.release();
+			this->arr.reset(new Ship::Symbol[_rows * _cols * _depth]);
+		}
+		else
+			arr = unique_ptr<Ship::Symbol>(new Ship::Symbol[_rows * _cols * _depth]);
 		copyArr(other.arr);
+		printf("BoardArray - Using regular copy ctor\n");
 	}
 
-	boardArray(boardArray&& other) noexcept		
+	boardArray(boardArray&& other) noexcept
+		: _rows(other.rows()),
+		  _cols(other.cols()),
+		  _depth(other.depth())
 	{
-		_rows = other.rows();
-		_cols = other.cols();
-		_depth = other.depth();
 		auto temp = arr.release();
 		arr.reset(other.arr.release());
 		other.arr.reset(temp);
+		printf("BoardArray - Using regular move ctor\n");
 	}
 
 	boardArray& operator=(const boardArray& other)
@@ -75,6 +83,7 @@ public:
 		_depth = other.depth();
 		arr = unique_ptr<Ship::Symbol>(new Ship::Symbol[_rows * _cols * _depth]);
 		copyArr(other.arr);
+		printf("BoardArray - Using = copy ctor\n");
 		return *this;
 	}
 
@@ -88,6 +97,7 @@ public:
 		auto temp = arr.release();
 		arr.reset(other.arr.release());
 		other.arr.reset(temp);
+		printf("BoardArray - Using = move ctor\n");
 		return *this;
 	}
 };
