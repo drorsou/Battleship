@@ -1,10 +1,12 @@
 #pragma once
-#include "FileReader.h"
+#include <vector>
 #include "boardArray.h"
 #include "Ship.h"
 #include <array>
 #include "TestingBoard.h"
 #include <iostream>
+#include <sstream>
+#include <fstream>
 #include <windows.h>
 
 #define BOARD_SIZE 10
@@ -116,8 +118,8 @@ public:
 	Board(const Board& other)
 		: board(other.board),
 		  current_player_turn(other.current_player_turn),
-		  playerA(other.playerA),
-		  playerB(other.playerB),
+		  playerA(nullptr),
+		  playerB(nullptr),
 		  totalShipsAScore(other.totalShipsAScore),
 		  totalShipsBScore(other.totalShipsBScore),
 		  scoreA(other.scoreA),
@@ -127,30 +129,28 @@ public:
 
 	Board(Board&& other)
 		: board(other.board),
-		  current_player_turn(other.current_player_turn),		  
+		  current_player_turn(other.current_player_turn),
+		  playerA(nullptr),
+		  playerB(nullptr),
 		  totalShipsAScore(other.totalShipsAScore),
 		  totalShipsBScore(other.totalShipsBScore),
 		  scoreA(other.scoreA),
 		  scoreB(other.scoreB)
 	{
 		shipsA = std::move(other.shipsA);
-		shipsB = std::move(other.shipsB);
-		std::swap(this->playerA, other.playerA);
-		std::swap(this->playerB, other.playerB);
+		shipsB = std::move(other.shipsB);		
 	}
 
 	Board& operator=(const Board& other) = delete;
 
-	Board& operator=(Board&& other) noexcept
+	Board& operator=(Board&& other) noexcept	
 	{
 		if (this == &other)
 			return *this;
 		board = std::move(other.board);
 		current_player_turn = other.current_player_turn;
-		playerA = other.playerA;
-		other.playerA = nullptr;
-		playerB = other.playerB;
-		other.playerB = nullptr;
+		playerA = nullptr;		
+		playerB = nullptr;		
 		shipsA = std::move(other.shipsA);
 		shipsB = std::move(other.shipsB);
 		totalShipsAScore = other.totalShipsAScore;

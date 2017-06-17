@@ -33,6 +33,8 @@ public:
 
 	Ship(const Ship& ship);
 
+	Ship(Ship&& other) = delete;
+
 	enum ShipLen { BoatLen = 1, CruiserLen = 2, SubmarineLen = 3, DestroyerLen = 4};
 	enum Score { BoatScore = 2, CruiserScore = 3, SubmarineScore = 7, DestroyerScore = 8};
 	enum class Symbol : char { ABoat = 'B', BBoat = 'b', ACruiser = 'P', BCruiser = 'p', ASubmarine = 'M', BSubmarine = 'm', ADestroyer = 'D', BDestroyer = 'd', Blank = ' ', Hit = '*', MISS = '@' };
