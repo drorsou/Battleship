@@ -1,5 +1,5 @@
 #include "Board.h"
-#include <sstream>
+
 
 Board::~Board()
 {
@@ -14,8 +14,7 @@ Board::Board(string path) : current_player_turn(0),
 	if (!parseBoard(path))
 	{
 		scoreA = -1;
-		scoreB = -1;
-		FileReader::printError(FileReader::Error::BOARD, path);
+		scoreB = -1;		
 	}
 	else
 	{		
@@ -558,15 +557,9 @@ bool Board::parseBoard(std::string& path) {
 
 	int _rows;
 	int _cols;
-	int _depth;
-	std::pair<std::string, string> boardFileDetails = FileReader::findFilesLexicographically("sboard");
-	if (boardFileDetails.first.empty())
-	{
-		FileReader::printError(FileReader::Error::BOARD, path);
-		return false;
-	}
+	int _depth;	
 
-	ifstream fin(path + "\\" + boardFileDetails.first);
+	std::ifstream fin(path);
 	if(!fin.is_open())
 	{
 		std::cout << "Error: Cannot open the board file for parsing." << endl;

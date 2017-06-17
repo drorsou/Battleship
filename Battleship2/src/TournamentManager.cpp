@@ -4,7 +4,7 @@
 int TournamentManager::threads = DEFAULT_THREADS;
 std::string TournamentManager::path;
 
-std::vector<std::string> TournamentManager::boardsVector;
+std::vector<Board> TournamentManager::boardsVector;
 std::vector<std::unique_ptr<IBattleshipGameAlgo>> TournamentManager::playersVector;
 
 
@@ -174,7 +174,7 @@ void TournamentManager::waitForGames()
 
 void TournamentManager::addGamesToQueue()
 {
-	int lastPlayerIndex;
+	size_t lastPlayerIndex;
 
 	if (playersVector.size() % 2 == 1)
 		lastPlayerIndex = static_cast<int>(playersVector.size());

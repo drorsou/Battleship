@@ -1,6 +1,7 @@
 #include "FileReader.h"
 
 
+
 std::vector<std::string> FileReader::filesVector;
 
 FileReader::FileReader()
@@ -144,7 +145,7 @@ IBattleshipGameAlgo* FileReader::loadDLL(const std::string& path)
 	}
 
 	// Get function pointer
-	FileReader::GetAlgorithmFuncType getAlgoritmeFunc = (FileReader::GetAlgorithmFuncType)GetProcAddress(hDll, "GetAlgorithm");
+	FileReader::GetAlgorithmFuncType getAlgoritmeFunc = reinterpret_cast<FileReader::GetAlgorithmFuncType>(GetProcAddress(hDll, "GetAlgorithm"));
 	if (!getAlgoritmeFunc)
 	{
 		std::cout << "Error: could not load function GetAlgoritm() from: " << path << std::endl;
@@ -156,7 +157,7 @@ IBattleshipGameAlgo* FileReader::loadDLL(const std::string& path)
 }
 
 
-void FileReader::importFromFilesToVectors(std::vector<std::string>& boardsVector, std::vector<std::unique_ptr<IBattleshipGameAlgo>>& playersVector, const std::string& path)
+void FileReader::importFromFilesToVectors(std::vector<Board>& boardsVector, std::vector<std::unique_ptr<IBattleshipGameAlgo>>& playersVector, const std::string& path)
 {
 	for (std::vector<std::string>::const_iterator itr = FileReader::getFilesVectorBegin(); itr != FileReader::getFilesVectorEnd(); itr++) {
 		std::string name = *itr;
@@ -167,8 +168,11 @@ void FileReader::importFromFilesToVectors(std::vector<std::string>& boardsVector
 
 			if (currSuffixOfFile.compare("sboard") == 0)
 			{
-				// Need to change - create the board instead of just returning its name
-				boardsVector.push_back(path + "\\" + name);
+				std::string filePath = path + "\\" + name;
+				Board temp = Board{ filePath };
+				if (temp.getScore(0) == -1 || temp.getScore(1) == -1)
+					continue;
+				boardsVector.push_back(temp);
 			}
 
 			if (currSuffixOfFile.compare("dll") == 0)

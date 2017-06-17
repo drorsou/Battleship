@@ -3,6 +3,7 @@
 #include <experimental/filesystem>
 #include <fstream>
 #include <iostream>
+#include "Board.h"
 #include "IBattleshipGameAlgo.h"
 #include "Scores.h"
 #include <tuple>
@@ -64,5 +65,5 @@ public:
 	/* Pre: Empty vectors for boards and player algorithms, path to files
 	 * Post: Read all the files from 'path', add legal boards to 'boardsVector' and legel players to 'playersVector'
 	 */
-	static void importFromFilesToVectors(std::vector<std::string>& boardsVector, std::vector<std::unique_ptr<IBattleshipGameAlgo>>& playersVector, const std::string& path);
+	static void importFromFilesToVectors(std::vector<Board>& boardsVector, std::vector<std::unique_ptr<IBattleshipGameAlgo>>& playersVector, const std::string& path);
 };
