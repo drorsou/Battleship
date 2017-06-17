@@ -185,7 +185,7 @@ void FileReader::importFromFilesToVectors(std::vector<Board>& boardsVector, std:
 					//playersVector.push_back(std::unique_ptr<FileReader::GetAlgorithmFuncType>(dll));
 					
 					// Save the player's name for scores
-					Scores::addPlayerName(name.substr(0, indexOfSuffix));
+					Scores::addPlayerName(name.substr(0, indexOfSuffix)); // Change return value to vector!! And then remove Scores from include of FileReader
 				}
 			}
 		}
