@@ -52,15 +52,18 @@ public:
 		_rows = other.rows();
 		_cols = other.cols();
 		_depth = other.depth();
+		arr = unique_ptr<Ship::Symbol>(new Ship::Symbol[_rows * _cols * _depth]);
 		copyArr(other.arr);
 	}
 
-	boardArray(boardArray&& other) noexcept
-		: arr(std::move(other.arr))
+	boardArray(boardArray&& other) noexcept		
 	{
 		_rows = other.rows();
 		_cols = other.cols();
 		_depth = other.depth();
+		auto temp = arr.release();
+		arr.reset(other.arr.release());
+		other.arr.reset(temp);
 	}
 
 	boardArray& operator=(const boardArray& other)
@@ -70,6 +73,7 @@ public:
 		_rows = other.rows();
 		_cols = other.cols();
 		_depth = other.depth();
+		arr = unique_ptr<Ship::Symbol>(new Ship::Symbol[_rows * _cols * _depth]);
 		copyArr(other.arr);
 		return *this;
 	}
@@ -81,7 +85,9 @@ public:
 		_rows = other.rows();
 		_cols = other.cols();
 		_depth = other.depth();
-		arr = std::move(other.arr);
+		auto temp = arr.release();
+		arr.reset(other.arr.release());
+		other.arr.reset(temp);
 		return *this;
 	}
 };

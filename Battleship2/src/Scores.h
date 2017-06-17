@@ -9,7 +9,7 @@ class Scores
 
 public:
 
-	static void initScores(int numberOfPlayers);
+	static void initScores(size_t numberOfPlayers);
 
 
 	static void updateScores(int playerAIndex, int playerBIndex, int winner, int pointsA, int pointsB);
