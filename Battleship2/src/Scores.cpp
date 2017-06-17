@@ -1,9 +1,8 @@
 #include "Scores.h"
-#include "TournamentManager.h"
 
 
 std::vector<std::string> Scores::playerNamesVector;
-static std::vector<int> Scores::gamesPlayedVector;
+std::vector<int> Scores::gamesPlayedVector;
 std::vector<int> Scores::winsVector;
 std::vector<int> Scores::lossesVector;
 std::vector<int> Scores::pointsForVector;
@@ -28,7 +27,6 @@ void Scores::initScores(int numberOfPlayers)
 }
 
 
-
 void Scores::updateScores(int playerAIndex, int playerBIndex, int winner, int pointsA, int pointsB)
 {
 	// If winner == 0 then player A won, otherwise player B won
@@ -43,11 +41,13 @@ void Scores::updateScores(int playerAIndex, int playerBIndex, int winner, int po
 	pointsAgainstVector[playerBIndex] += pointsA;
 }
 
+
 void Scores::checkForResults()
 {
 	bool isRoundComplete = true;
 	for (int i = 0; i < playerNamesVector.size(); i++)
 	{
 		if (gamesPlayedVector[i] < round)
+			isRoundComplete = false;
 	}
 }
