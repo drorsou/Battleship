@@ -106,7 +106,7 @@ class Board {
 	static std::pair<int, int> makePairByLength(const Type t, int pos);
 	void fillDimensionsOfShip(Coordinate c, Type t, std::pair<int,int> & vert, std::pair<int, int> & horz, std::pair<int, int> & depth) const;
 public:
-	
+	//void printBoard() { this->board.printBoard(); }
 
 	Board()
 		: playerA(nullptr),
@@ -124,12 +124,11 @@ public:
 		  totalShipsBScore(other.totalShipsBScore),
 		  scoreA(other.scoreA),
 		  scoreB(other.scoreB)
-	{
-		printf("Board - Using regular copy ctor\n");
+	{		
 	}
 
 	Board(Board&& other)
-		: board(other.board),
+		: board(std::move(other.board)),
 		  current_player_turn(other.current_player_turn),
 		  playerA(nullptr),
 		  playerB(nullptr),
@@ -139,13 +138,11 @@ public:
 		  scoreB(other.scoreB)
 	{
 		shipsA = std::move(other.shipsA);
-		shipsB = std::move(other.shipsB);
-		printf("Board - Using regular move ctor\n");
+		shipsB = std::move(other.shipsB);		
 	}
 
 	Board& operator=(const Board& other)
-	{
-		printf("Board - Using = copy ctor\n");
+	{		
 		if (this == &other)
 			return *this;
 		board = other.board;
@@ -162,8 +159,7 @@ public:
 	}
 
 	Board& operator=(Board&& other) noexcept	
-	{
-		printf("Using = move ctor\n");
+	{		
 		if (this == &other)
 			return *this;
 		board = std::move(other.board);

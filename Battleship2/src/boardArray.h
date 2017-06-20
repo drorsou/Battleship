@@ -41,11 +41,12 @@ public:
 	boardArray(int rows, int cols, int depth);
 
 	//void setDimensions(int rows, int cols, int depth);
-
+	//void printBoard();
 	char charAt(Coordinate c) const;
 	
 	void setCharAt(Coordinate c, Ship::Symbol s);
 
+	
 
 	boardArray(const boardArray& other)
 		: _rows(other.rows()),
@@ -59,8 +60,7 @@ public:
 		}
 		else
 			arr = unique_ptr<Ship::Symbol>(new Ship::Symbol[_rows * _cols * _depth]);
-		copyArr(other.arr);
-		printf("BoardArray - Using regular copy ctor\n");
+		copyArr(other.arr);		
 	}
 
 	boardArray(boardArray&& other) noexcept
@@ -70,8 +70,7 @@ public:
 	{
 		auto temp = arr.release();
 		arr.reset(other.arr.release());
-		other.arr.reset(temp);
-		printf("BoardArray - Using regular move ctor\n");
+		other.arr.reset(temp);		
 	}
 
 	boardArray& operator=(const boardArray& other)
@@ -82,8 +81,7 @@ public:
 		_cols = other.cols();
 		_depth = other.depth();
 		arr = unique_ptr<Ship::Symbol>(new Ship::Symbol[_rows * _cols * _depth]);
-		copyArr(other.arr);
-		printf("BoardArray - Using = copy ctor\n");
+		copyArr(other.arr);		
 		return *this;
 	}
 
@@ -96,8 +94,7 @@ public:
 		_depth = other.depth();
 		auto temp = arr.release();
 		arr.reset(other.arr.release());
-		other.arr.reset(temp);
-		printf("BoardArray - Using = move ctor\n");
+		other.arr.reset(temp);		
 		return *this;
 	}
 };

@@ -22,6 +22,22 @@ boardArray::boardArray(int rows, int cols, int depth)
 		arr = unique_ptr<Ship::Symbol>(new Ship::Symbol[_rows * _cols * _depth]);
 	}
 }
+/*
+void boardArray::printBoard()
+{
+	for(int depth = 1; depth <= this->_depth; depth++)
+	{
+		for(int row = 1; row <= this->_rows; row++)
+		{
+			for (int col = 1; col <= this->_cols; col++)
+				printf("%c", this->charAt(Coordinate(row, col, depth)));
+			printf("\n");
+		}
+		for (int col = 1; col <= this->_cols; col++)
+			printf("-");
+		printf("\n");
+	}
+}*/
 
 char boardArray::charAt(Coordinate c) const
 {

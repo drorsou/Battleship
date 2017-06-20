@@ -157,7 +157,7 @@ IBattleshipGameAlgo* FileReader::loadDLL(const std::string& path)
 }
 
 
-void FileReader::importFromFilesToVectors(std::vector<Board>& boardsVector, std::vector<std::unique_ptr<IBattleshipGameAlgo>>& playersVector, const std::string& path)
+void FileReader::importFromFilesToVectors(std::list<Board>& boardsList, std::vector<std::unique_ptr<IBattleshipGameAlgo>>& playersVector, const std::string& path)
 {
 	for (std::vector<std::string>::const_iterator itr = FileReader::getFilesVectorBegin(); itr != FileReader::getFilesVectorEnd(); itr++) {
 		std::string name = *itr;
@@ -168,11 +168,11 @@ void FileReader::importFromFilesToVectors(std::vector<Board>& boardsVector, std:
 
 			if (currSuffixOfFile.compare("sboard") == 0)
 			{
-				std::string filePath = path + "\\" + name;
+				std::string filePath = path + "\\" + name;				
 				Board temp = Board{ filePath };
 				if (temp.getScore(0) == -1 || temp.getScore(1) == -1)
-					continue;
-				boardsVector.push_back(temp);
+					continue;				
+				boardsList.push_back(std::move(temp));
 			}
 
 			if (currSuffixOfFile.compare("dll") == 0)

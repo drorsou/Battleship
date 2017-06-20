@@ -94,6 +94,7 @@ bool Board::checkAdjacent(Coordinate c, ShipDirection dir, char type) const
 {
 	int end = 1;
 	int val = 1;
+	bool res = false;
 	switch (dir)
 	{
 	case Right:
@@ -109,12 +110,20 @@ bool Board::checkAdjacent(Coordinate c, ShipDirection dir, char type) const
 		val = c.depth;
 		break;
 	}
-	Coordinate prev = generateCoord(c, dir, val - 1);
-	Coordinate next = generateCoord(c, dir, val + 1);
-	char prChar = this->board.charAt(prev);
-	char nxChar = this->board.charAt(next);
-	return (val > 1 && prChar != type && prChar != static_cast<char>(Ship::Symbol::Blank))
-		|| (val < end && nxChar != type && nxChar != static_cast<char>(Ship::Symbol::Blank));
+
+	if (val > 1)
+	{
+		Coordinate prev = generateCoord(c, dir, val - 1);
+		char prChar = this->board.charAt(prev);
+		res = res || (prChar != type && prChar != static_cast<char>(Ship::Symbol::Blank));
+	}
+	if (val < end)
+	{
+		Coordinate next = generateCoord(c, dir, val + 1);
+		char nxChar = this->board.charAt(next);
+		res = res || (nxChar != type && nxChar != static_cast<char>(Ship::Symbol::Blank));
+	}
+	return res;
 }
 
 bool Board::checkShapeAtCoord(Coordinate c, char t) const

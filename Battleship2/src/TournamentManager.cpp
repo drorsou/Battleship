@@ -4,7 +4,7 @@
 int TournamentManager::threads = DEFAULT_THREADS;
 std::string TournamentManager::path;
 
-std::vector<Board> TournamentManager::boardsVector;
+std::list<Board> TournamentManager::boardsList;
 std::vector<std::unique_ptr<IBattleshipGameAlgo>> TournamentManager::playersVector;
 
 
@@ -47,9 +47,9 @@ bool TournamentManager::init(int argc, char* argv[])
 
 
 	// Read dlls and board files
-	FileReader::importFromFilesToVectors(boardsVector, playersVector, TournamentManager::getPath());
+	FileReader::importFromFilesToVectors(boardsList, playersVector, TournamentManager::getPath());
 
-	if (boardsVector.size() < 1)
+	if (boardsList.size() < 1)
 	{
 		FileReader::printError(FileReader::Error::BOARD, TournamentManager::getPath());
 		return false;
@@ -65,7 +65,7 @@ bool TournamentManager::init(int argc, char* argv[])
 	Scores::initScores(static_cast<int>(playersVector.size()));
 
 	std::cout << "Number of legal players: " << playersVector.size() << std::endl;
-	std::cout << "Number of legal boards: " << boardsVector.size() << std::endl;
+	std::cout << "Number of legal boards: " << boardsList.size() << std::endl;
 
 	TournamentManager::addGamesToQueue();
 
@@ -182,14 +182,14 @@ void TournamentManager::addGamesToQueue()
 		lastPlayerIndex = static_cast<int>(playersVector.size() - 1);
 
 
-	for (int boardRound = 0; boardRound < boardsVector.size(); boardRound++)
+	for (int boardRound = 0; boardRound < boardsList.size(); boardRound++)
 	{
 		for (int i = 0; i < lastPlayerIndex; i++)
 		{
 			int playerAIndex = 0;
 			int playerBIndex = lastPlayerIndex - i;
 			if (playerBIndex != playersVector.size())
-			{
+			{				
 				gamesQueue.push(GameManager(boardRound, &playersVector[playerAIndex], &playersVector[playerBIndex], playerAIndex, playerBIndex));
 				gamesQueue.push(GameManager(boardRound, &playersVector[playerBIndex], &playersVector[playerAIndex], playerBIndex, playerAIndex));
 			}
@@ -199,7 +199,7 @@ void TournamentManager::addGamesToQueue()
 				playerAIndex = ((2 * lastPlayerIndex - i + j) % lastPlayerIndex) + 1;
 				playerBIndex = ((2 * lastPlayerIndex - 2 - i - j) % lastPlayerIndex) + 1;
 				if (playerAIndex != playersVector.size() && playerBIndex != playersVector.size())
-				{
+				{					
 					gamesQueue.push(GameManager(boardRound, &playersVector[playerAIndex], &playersVector[playerBIndex], playerAIndex, playerBIndex));
 					gamesQueue.push(GameManager(boardRound, &playersVector[playerBIndex], &playersVector[playerAIndex], playerBIndex, playerAIndex));
 				}

@@ -14,7 +14,7 @@ int Scores::activeThreads = 0;
 
 
 
-void Scores::initScores(size_t numberOfPlayers)
+void Scores::initScores(int numberOfPlayers)
 {
 	for (int i = 0; i < numberOfPlayers; i++)
 	{

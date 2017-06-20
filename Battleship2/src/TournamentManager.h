@@ -48,7 +48,7 @@ public:
 
 
 
-	static std::vector<Board> boardsVector;
+	static std::list<Board> boardsList;
 	static std::vector<std::unique_ptr<IBattleshipGameAlgo>> playersVector;
 
 	//static std::vector<std::condition_variable> conditionsVector;
