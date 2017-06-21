@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Board.h"
 #include "IBattleshipGameAlgo.h"
-#include "Scores.h"
+#include "ScoresController.h"
 #include <tuple>
 #include <windows.h>
 #include <algorithm>

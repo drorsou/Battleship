@@ -61,14 +61,13 @@ bool TournamentManager::init(int argc, char* argv[])
 	}
 
 
-	
-	Scores::initScores(static_cast<int>(playersVector.size()));
+	TournamentManager::addGamesToQueue();
+
+	ScoresController::initScores(static_cast<int>(playersVector.size()), gamesQueue.size() / playersVector.size());
 
 	std::cout << "Number of legal players: " << playersVector.size() << std::endl;
 	std::cout << "Number of legal boards: " << boardsList.size() << std::endl;
-
-	TournamentManager::addGamesToQueue();
-
+	std::cout << "Number of games: " << gamesQueue.size() << std::endl; // Debug line
 
 	// Initialize the game and results variables
 
@@ -94,13 +93,17 @@ void TournamentManager::tournament()
 
 	while (tournamentOn)
 	{
-		if (Scores::activeThreads == 0 && gamesQueue.empty() == true)
+		if (ScoresController::activeThreads == 0 && gamesQueue.empty() == true && ScoresController::totalRounds == ScoresController::round)
 			tournamentOn = false;
-		/*if (Scores::activeThreads < threads && gamesPlayed < gamesVector.size())
+
+
+		ScoresController::checkForResults();
+
+		/*if (ScoresController::activeThreads < threads && gamesPlayed < gamesVector.size())
 		{
 			threadsVector.push_back(std::thread(&GameManager::play, &gamesVector[gamesPlayed]));
 			threadsVector.back().join();
-			Scores::activeThreads++;
+			ScoresController::activeThreads++;
 			gamesPlayed++;
 		}*/
 
@@ -135,7 +138,7 @@ void TournamentManager::waitForGames()
 		lock.lock(); // Replace with condition?
 		if (TournamentManager::gamesQueue.empty() == false)
 		{
-			Scores::activeThreads++;
+			ScoresController::activeThreads++;
 			game = gamesQueue.front();
 			gamesQueue.pop();
 
@@ -165,7 +168,7 @@ void TournamentManager::waitForGames()
 			lock.lock(); // Replace with condition?
 			TournamentManager::playersLocks[game.getPlayerAIndex()] = true;
 			TournamentManager::playersLocks[game.getPlayerBIndex()] = true;
-			Scores::activeThreads--;
+			ScoresController::activeThreads--;
 			lock.unlock();
 		}
 	}
@@ -206,6 +209,4 @@ void TournamentManager::addGamesToQueue()
 			}
 		}
 	}
-
-	std::cout << "Number of games: " << gamesQueue.size() << std::endl; // Debug line
 }

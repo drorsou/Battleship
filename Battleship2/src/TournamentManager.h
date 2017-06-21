@@ -6,7 +6,7 @@
 #include "GameManager.h"
 #include "FileReader.h"
 #include "Utils.h"
-#include "Scores.h"
+#include "ScoresController.h"
 
 
 #define DEFAULT_THREADS 4

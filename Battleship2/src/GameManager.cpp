@@ -29,7 +29,7 @@ void GameManager::play()
 	static std::mutex mutex;
 	std::unique_lock<std::mutex> lock(mutex, std::defer_lock);
 	lock.lock(); //while (lock.try_lock() == false) {}
-	std::cout << "Board " << board<< " - Player " << playerAIndex << " vs. Player " << playerBIndex << std::endl;
-	Scores::updateScores(playerAIndex, playerBIndex, winner, pointsA, pointsB);
+	//std::cout << "Board " << board<< " - Player " << playerAIndex << " vs. Player " << playerBIndex << std::endl;
+	ScoresController::updateScores(playerAIndex, playerBIndex, winner, pointsA, pointsB);
 	lock.unlock();
 }
