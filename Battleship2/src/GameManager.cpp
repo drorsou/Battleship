@@ -22,8 +22,8 @@ void GameManager::play()
 	*/
 
 	winner = 0;
-	pointsA = 0;
-	pointsB = 0;
+	pointsA = playerAIndex;
+	pointsB = playerBIndex;
 
 
 	static std::mutex mutex;

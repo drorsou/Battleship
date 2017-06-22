@@ -32,11 +32,15 @@ public:
 	 */
 	static bool init(int argc, char* argv[]);
 
+
 	/* Post: Run the tournament
 	 */
 	static void tournament();
 
 
+	/* Post: Worker threads run with this function, and wait for games to enter the games queue.
+	 *	Whenever there's a game available, one thread will run that game.
+	 */
 	static void TournamentManager::waitForGames();
 
 

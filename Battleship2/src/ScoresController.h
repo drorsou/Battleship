@@ -16,6 +16,18 @@ class ScoresController
 		Scores(int result_, int pointsFor_, int pointsAgainst_) : result(result_), pointsFor(pointsFor_), pointsAgainst(pointsAgainst_) {};
 	};
 
+
+	struct winPercent
+	{
+		int index;
+		int percent;
+
+		winPercent(int index_, int percent_) : index(index_), percent(percent_) {};
+
+		bool operator < (const winPercent& wp) const { return percent > wp.percent; }
+	};
+
+
 	static std::vector<std::string> playerNamesVector;
 	static std::vector<std::queue<ScoresController::Scores>> playerScores;
 

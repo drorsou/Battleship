@@ -1,4 +1,5 @@
 #include "ScoresController.h"
+#include <iomanip>
 
 
 std::vector<std::string> ScoresController::playerNamesVector;
@@ -63,6 +64,8 @@ void ScoresController::checkForResults()
 
 	if (isRoundComplete == true)
 	{
+		std::vector<ScoresController::winPercent> winPercents;
+
 		for (int i = 0; i < playerScores.size(); i++)
 		{
 			if (playerScores[i].front().result)
@@ -70,17 +73,24 @@ void ScoresController::checkForResults()
 			else
 				lossesVector[i] += 1;
 			pointsForVector[i] += playerScores[i].front().pointsFor;
-			pointsForVector[i] += playerScores[i].front().pointsAgainst;
+			pointsAgainstVector[i] += playerScores[i].front().pointsAgainst;
 
 			playerScores[i].pop();
+
+			winPercents.push_back(ScoresController::winPercent(i, (winsVector[i] / (static_cast<float>(winsVector[i]) + lossesVector[i])) * 100));
 		}
 
+		std::sort(winPercents.begin(), winPercents.end());
+		
 
 		std::cout << "#" << round << "\tTeam Name\t\t" << "Wins\t" << "Losses\t" << "%\t" << "Pts For\t" << "Pts Against" << std::endl;
 		for (int i = 0; i < playerScores.size(); i++)
 		{
-			int percent = 100; // Need to calc
-			std::cout << i + 1 << ".\t" << playerNamesVector[i] << "\t\t" << winsVector[i] << "\t" << lossesVector[i] << "\t" << percent << "\t" << pointsForVector[i] << "\t" << pointsAgainstVector[i] << std::endl;
+			int index = winPercents[i].index;
+			std::cout << i + 1 << ".\t" << playerNamesVector[index] << "\t\t" << winsVector[index] << "\t" << lossesVector[index] << "\t"
+				<< winPercents[i].percent
+				<< "\t" << pointsForVector[index] << "\t" << pointsAgainstVector[index] << std::endl;
+			//std::cout << winsVector[i] / (static_cast<float>(winsVector[i]) + lossesVector[i]) <<"* 100" << std::endl;
 		}
 
 		round++;
