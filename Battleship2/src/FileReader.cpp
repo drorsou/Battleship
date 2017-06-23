@@ -157,7 +157,7 @@ IBattleshipGameAlgo* FileReader::loadDLL(const std::string& path)
 }
 
 
-void FileReader::importFromFilesToVectors(std::list<Board>& boardsList, std::vector<std::unique_ptr<IBattleshipGameAlgo>>& playersVector, const std::string& path)
+void FileReader::importFromFilesToVectors(std::vector<Board>& boardsVector, std::vector<std::unique_ptr<IBattleshipGameAlgo>>& playersVector, const std::string& path)
 {
 	for (std::vector<std::string>::const_iterator itr = FileReader::getFilesVectorBegin(); itr != FileReader::getFilesVectorEnd(); itr++) {
 		std::string name = *itr;
@@ -172,7 +172,7 @@ void FileReader::importFromFilesToVectors(std::list<Board>& boardsList, std::vec
 				Board temp = Board{ filePath };
 				if (temp.getScore(0) == -1 || temp.getScore(1) == -1)
 					continue;				
-				boardsList.push_back(std::move(temp));
+				boardsVector.push_back(std::move(temp));
 			}
 
 			if (currSuffixOfFile.compare("dll") == 0)
@@ -185,7 +185,7 @@ void FileReader::importFromFilesToVectors(std::list<Board>& boardsList, std::vec
 					//playersVector.push_back(std::unique_ptr<FileReader::GetAlgorithmFuncType>(dll));
 					
 					// Save the player's name for scores
-					Scores::addPlayerName(name.substr(0, indexOfSuffix)); // Change return value to vector!! And then remove Scores from include of FileReader
+					ScoresController::addPlayerName(name.substr(0, indexOfSuffix)); // Change return value to vector!! And then remove ScoresController from include of FileReader
 				}
 			}
 		}

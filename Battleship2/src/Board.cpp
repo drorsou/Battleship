@@ -1,5 +1,53 @@
 #include "Board.h"
+#include "BoardDataAccess.h"
 
+
+Board::Board(Board&& other) noexcept: board(std::move(other.board)),
+                                      current_player_turn(other.current_player_turn),
+                                      playerA(nullptr),
+                                      playerB(nullptr),
+                                      totalShipsAScore(other.totalShipsAScore),
+                                      totalShipsBScore(other.totalShipsBScore),
+                                      scoreA(other.scoreA),
+                                      scoreB(other.scoreB)
+{
+	shipsA = std::move(other.shipsA);
+	shipsB = std::move(other.shipsB);
+}
+
+Board& Board::operator=(const Board& other)
+{
+	if (this == &other)
+		return *this;
+	board = other.board;
+	current_player_turn = other.current_player_turn;
+	playerA = nullptr;
+	playerB = nullptr;
+	shipsA = other.shipsA;
+	shipsB = other.shipsB;
+	totalShipsAScore = other.totalShipsAScore;
+	totalShipsBScore = other.totalShipsBScore;
+	scoreA = other.scoreA;
+	scoreB = other.scoreB;
+	return *this;
+}
+
+Board& Board::operator=(Board&& other) noexcept
+{
+	if (this == &other)
+		return *this;
+	board = std::move(other.board);
+	current_player_turn = other.current_player_turn;
+	playerA = nullptr;
+	playerB = nullptr;
+	shipsA = std::move(other.shipsA);
+	shipsB = std::move(other.shipsB);
+	totalShipsAScore = other.totalShipsAScore;
+	totalShipsBScore = other.totalShipsBScore;
+	scoreA = other.scoreA;
+	scoreB = other.scoreB;
+	return *this;
+}
 
 Board::~Board()
 {	
@@ -38,13 +86,22 @@ Board::Board(string path) : current_player_turn(0),
 	}
 }
 
-
-void Board::notifyResult(int player, int row, int col, AttackResult result)
+Board::Board(const Board& other): board(other.board),
+                                  current_player_turn(other.current_player_turn),
+                                  playerA(nullptr),
+                                  playerB(nullptr),
+                                  totalShipsAScore(other.totalShipsAScore),
+                                  totalShipsBScore(other.totalShipsBScore),
+                                  scoreA(other.scoreA),
+                                  scoreB(other.scoreB)
 {
-#ifdef IMPL
-	playerA->notifyOnAttackResult(player, row, col, result);
-	playerB->notifyOnAttackResult(player, row, col, result);
-#endif
+}
+
+
+void Board::notifyResult(int player, Coordinate c, AttackResult result)
+{
+	playerA->notifyOnAttackResult(player, c, result);
+	playerB->notifyOnAttackResult(player, c, result);
 }
 
 
@@ -138,22 +195,12 @@ bool Board::checkShapeAtCoord(Coordinate c, char t) const
 
 void Board::setPlayer(int color, IBattleshipGameAlgo* player)
 {
-#ifdef IMPL
-	char ** b;
 	if (color == 0)
-	{
-		this->playerA = player;
-		b = prepareBoard(0);
-		this->playerA->setBoard(0, const_cast<const char **>(b), this->board.num_of_rows(), this->board.num_of_cols());
-	}
+		playerA = player;
 	else
-	{
-		this->playerB = player;
-		b = prepareBoard(1);
-		this->playerB->setBoard(1, const_cast<const char **>(b), this->board.num_of_rows(), this->board.num_of_cols());
-	}
-	delete b;	
-#endif
+		playerB = player;
+	player->setPlayer(color);
+	player->setBoard(BoardDataAccess(&this->board, color));
 }
 
 bool Board::checkTarget(char target) const {	

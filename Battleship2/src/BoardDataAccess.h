@@ -18,14 +18,14 @@ public:
 		else
 			return static_cast<char>(Ship::Symbol::Blank);
 	}
-	BoardDataAccess(const Board& b, int player) :
+	BoardDataAccess(const boardArray * b, int player) :
 		BoardData(),
-		board(&b.board),
+		board(b),
 		player(player)		
 	{
-		_rows = b.board.rows();
-		_cols = b.board.cols();
-		_depth = b.board.depth();
+		_rows = b->rows();
+		_cols = b->cols();
+		_depth = b->depth();
 	}
 	~BoardDataAccess() { board = nullptr; }
 };

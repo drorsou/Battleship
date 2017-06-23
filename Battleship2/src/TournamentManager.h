@@ -6,7 +6,7 @@
 #include "GameManager.h"
 #include "FileReader.h"
 #include "Utils.h"
-#include "Scores.h"
+#include "ScoresController.h"
 
 
 #define DEFAULT_THREADS 4
@@ -32,11 +32,15 @@ public:
 	 */
 	static bool init(int argc, char* argv[]);
 
+
 	/* Post: Run the tournament
 	 */
 	static void tournament();
 
 
+	/* Post: Worker threads run with this function, and wait for games to enter the games queue.
+	 *	Whenever there's a game available, one thread will run that game.
+	 */
 	static void TournamentManager::waitForGames();
 
 
@@ -48,14 +52,17 @@ public:
 
 
 
-	static std::list<Board> boardsList;
+	static std::vector<Board> boardsVector;
 	static std::vector<std::unique_ptr<IBattleshipGameAlgo>> playersVector;
 
 	//static std::vector<std::condition_variable> conditionsVector;
 	//static std::vector<std::mutex> mutexVector;
 	//static std::mutex* mutex;
 	static std::mutex mutex;
+	static std::condition_variable cvGames;
 	static std::vector<bool> playersLocks;
+
+
 	static bool tournamentOn;
 	static std::queue<GameManager> gamesQueue;
 };

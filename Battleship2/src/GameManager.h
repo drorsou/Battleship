@@ -1,12 +1,15 @@
 #pragma once
 #include "IBattleshipGameAlgo.h"
-#include "Scores.h"
+#include "ScoresController.h"
 #include <memory>
+#include "Board.h"
+#include <iostream>
+#include <mutex>
 
 
 class GameManager
 {
-	int board;
+	Board board;
 	std::unique_ptr<IBattleshipGameAlgo>* playerA;
 	std::unique_ptr<IBattleshipGameAlgo>* playerB;
 	int playerAIndex;
@@ -19,12 +22,16 @@ class GameManager
 
 public:
 	GameManager() {};
-	GameManager(int board_, std::unique_ptr<IBattleshipGameAlgo>* playerA_, std::unique_ptr<IBattleshipGameAlgo>* playerB_,
+	GameManager(Board board_, std::unique_ptr<IBattleshipGameAlgo>* playerA_, std::unique_ptr<IBattleshipGameAlgo>* playerB_,
 		int playerAIndex_, int playerBIndex_) :
 		board(board_), playerA(playerA_), playerB(playerB_), playerAIndex(playerAIndex_), playerBIndex(playerBIndex_) { };
 
 	int getPlayerAIndex() const { return playerAIndex; };
 	int getPlayerBIndex() const { return playerBIndex; };
 
+
+	/* Post: Run the game with players 'playerA', 'playerB' on board 'board'
+	 *		The results will be held in the variables 'winner', 'pointsA', 'pointsB'
+	 */
 	void play();
 };
