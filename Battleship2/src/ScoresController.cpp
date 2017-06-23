@@ -103,7 +103,7 @@ void ScoresController::checkForResults()
 
 
 
-void getCursorXY(bool toOrigin) {
+/*void getCursorXY(bool toOrigin) {
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
 		if (toOrigin)
@@ -150,7 +150,7 @@ void Board::printBoard() {
 	/*
 	Printing the first line with the column numbers.
 	First box is empty
-	*/
+	//
 	for (int col = 0; col < this->board.num_of_cols(); col++)
 	{
 		printf((col == 0 ? "  | %d |" : (col < 9 ? " %d |" : " %d|")), col + 1);
@@ -159,7 +159,7 @@ void Board::printBoard() {
 	Board::printLine();
 	/*
 	Printing the rest of the board.
-	*/
+	//
 	for (int row = 0; row <= this->board.num_of_rows() - 1; row++)
 	{
 		printf((row < 9 ? "%d " : "%d"), row + 1);
@@ -167,7 +167,7 @@ void Board::printBoard() {
 			cout << "| ";
 			/*
 			Color text according to player and ship type
-			*/
+			//
 			changeColor(hConsole, row, col);
 			cout << this->board.getPos(row, col) << " ";
 			// resetting the color
@@ -201,4 +201,4 @@ void Board::updateBoard(int row, int col) const {
 		SetConsoleTextAttribute(hConsole, COLOR_WHITE);
 	}
 	this->gotoEnd(0, 0); // moving cursor back to the bottom.
-}
+}*/
