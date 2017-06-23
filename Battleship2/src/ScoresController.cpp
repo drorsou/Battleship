@@ -100,3 +100,105 @@ void ScoresController::checkForResults()
 		round++;
 	}
 }
+
+
+
+void getCursorXY(bool toOrigin) {
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
+		if (toOrigin)
+		{
+			this->origin.X = csbi.dwCursorPosition.X;
+			this->origin.Y = csbi.dwCursorPosition.Y;
+		}
+		else
+		{
+			this->end.X = csbi.dwCursorPosition.X;
+			this->end.Y = csbi.dwCursorPosition.Y;
+		}
+	}
+	else
+	{
+		if (toOrigin)
+		{
+			this->origin.X = 0;
+			this->origin.Y = 0;
+		}
+		else
+		{
+			this->end.X = 0;
+			this->end.Y = this->origin.Y + (2 * this->board.num_of_rows() + 2);
+		}
+	}
+}
+void Board::gotoxy(int row, int col) const {
+	COORD coord;
+	coord.X = col + this->origin.X;
+	coord.Y = row + this->origin.Y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+void Board::gotoEnd(int row, int col) const
+{
+	COORD coord;
+	coord.X = col + this->end.X;
+	coord.Y = row + this->end.Y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+void Board::printBoard() {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	/*
+	Printing the first line with the column numbers.
+	First box is empty
+	*/
+	for (int col = 0; col < this->board.num_of_cols(); col++)
+	{
+		printf((col == 0 ? "  | %d |" : (col < 9 ? " %d |" : " %d|")), col + 1);
+	}
+	printf("\n");
+	Board::printLine();
+	/*
+	Printing the rest of the board.
+	*/
+	for (int row = 0; row <= this->board.num_of_rows() - 1; row++)
+	{
+		printf((row < 9 ? "%d " : "%d"), row + 1);
+		for (int col = 0; col <= this->board.num_of_cols() - 1; col++) {
+			cout << "| ";
+			/*
+			Color text according to player and ship type
+			*/
+			changeColor(hConsole, row, col);
+			cout << this->board.getPos(row, col) << " ";
+			// resetting the color
+			SetConsoleTextAttribute(hConsole, COLOR_WHITE);
+		}
+		cout << "|\n";
+		Board::printLine();
+	}
+	getCursorXY(false);
+}
+
+
+void Board::updateBoard(int row, int col) const {
+	row--;
+	col--;
+	this->gotoxy(2 * row + 2, 4 * col + 4);
+	std::cout << "\b";
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (this->board.getPos(row, col) == static_cast<char>(Ship::Symbol::Blank) || this->board.getPos(row, col) == static_cast<char>(Ship::Symbol::MISS))
+	{
+		SetConsoleTextAttribute(hConsole, COLOR_RED);
+		cout << " " << static_cast<char>(Ship::Symbol::MISS) << " ";
+		// resetting the color
+		SetConsoleTextAttribute(hConsole, COLOR_WHITE);
+	}
+	else
+	{
+		SetConsoleTextAttribute(hConsole, COLOR_LIGHT_RED);
+		std::cout << " " << static_cast<char>(Ship::Symbol::Hit) << " ";
+		// resetting the color
+		SetConsoleTextAttribute(hConsole, COLOR_WHITE);
+	}
+	this->gotoEnd(0, 0); // moving cursor back to the bottom.
+}
