@@ -67,7 +67,7 @@ Type Board::shipType(Coordinate c) const {
 		t = Destroyer;
 		break;
 	default:
-		t = None;
+		t = NoType;
 		break;
 	}
 	return t;
@@ -387,7 +387,7 @@ bool Board::checkBoard() {
 				{
 					color = this->coordColor(curr);
 					t = this->shipType(curr);
-					if (t != None)
+					if (t != NoType)
 					{
 						if (color == 0)
 							checkRes = checkCoord(&(AsizeOShape[t]), &Adjacent, temp, curr, this->board.charAt(curr));
