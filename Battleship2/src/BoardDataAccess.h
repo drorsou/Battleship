@@ -1,6 +1,8 @@
 #pragma once
 #include "IBattleshipGameAlgo.h"
 #include "boardArray.h"
+#include "Board.h"
+
 class BoardDataAccess : public BoardData
 {
 	const boardArray * board;
@@ -16,14 +18,14 @@ public:
 		else
 			return static_cast<char>(Ship::Symbol::Blank);
 	}
-	BoardDataAccess(const boardArray * b, int player) :
+	BoardDataAccess(const Board& b, int player) :
 		BoardData(),
-		board(b),
+		board(&b.board),
 		player(player)		
 	{
-		_rows = b->rows();
-		_cols = b->cols();
-		_depth = b->depth();
+		_rows = b.board.rows();
+		_cols = b.board.cols();
+		_depth = b.board.depth();
 	}
 	~BoardDataAccess() { board = nullptr; }
 };

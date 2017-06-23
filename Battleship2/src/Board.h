@@ -36,6 +36,8 @@ class Board {
 	int scoreA;
 	int scoreB;	
 	
+	friend class BoardDataAccess;
+
 	enum TileStatus { Checked, UnChecked, Occupied };
 	enum ShipDirection { Right, Down, Forward };
 
@@ -176,8 +178,7 @@ public:
 	}
 
 	~Board();
-	// Set the board size
-	enum Size { ROWS = 10, COLS = 10};
+	
 	
 	
 	/*
