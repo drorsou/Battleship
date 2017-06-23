@@ -3,6 +3,8 @@
 #include <iostream>
 #include <queue>
 #include <string>
+#include <iomanip>
+#include <mutex>
 
 
 class ScoresController
@@ -56,6 +58,11 @@ public:
 
 
 	static void checkForResults();
+
+
+	static std::mutex mutexScores;
+	static std::condition_variable cvScores;
+
 
 	static int totalRounds;
 	static int round;
