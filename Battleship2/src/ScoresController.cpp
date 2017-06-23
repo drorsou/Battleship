@@ -1,5 +1,9 @@
 #include "ScoresController.h"
-#include <iomanip>
+
+
+
+std::mutex ScoresController::mutexScores;
+std::condition_variable ScoresController::cvScores;
 
 
 std::vector<std::string> ScoresController::playerNamesVector;

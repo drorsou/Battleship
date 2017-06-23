@@ -52,14 +52,17 @@ public:
 
 
 
-	static std::list<Board> boardsList;
+	static std::vector<Board> boardsVector;
 	static std::vector<std::unique_ptr<IBattleshipGameAlgo>> playersVector;
 
 	//static std::vector<std::condition_variable> conditionsVector;
 	//static std::vector<std::mutex> mutexVector;
 	//static std::mutex* mutex;
 	static std::mutex mutex;
+	static std::condition_variable cvGames;
 	static std::vector<bool> playersLocks;
+
+
 	static bool tournamentOn;
 	static std::queue<GameManager> gamesQueue;
 };
