@@ -215,7 +215,7 @@ public:
 	bool checkTarget(char target) const;
 
 
-	void Board::setPlayersBoard(int numOfRows, int numOfCols) const;
+//	void Board::setPlayersBoard(int numOfRows, int numOfCols) const;
 
 
 	bool parseBoard(std::string& path);

@@ -2,9 +2,7 @@
 
 
 Board::~Board()
-{
-	delete playerA;
-	delete playerB;
+{	
 }
 
 Board::Board(string path) : current_player_turn(0), 
