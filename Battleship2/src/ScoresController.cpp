@@ -81,7 +81,7 @@ void ScoresController::checkForResults()
 
 			playerScores[i].pop();
 
-			winPercents.push_back(ScoresController::winPercent(i, (winsVector[i] / (static_cast<float>(winsVector[i]) + lossesVector[i])) * 100));
+			winPercents.push_back(ScoresController::winPercent(i, static_cast<int>((winsVector[i] / (static_cast<float>(winsVector[i]) + lossesVector[i])) * 100)));
 		}
 
 		std::sort(winPercents.begin(), winPercents.end());

@@ -4,8 +4,8 @@
 void GameManager::play()
 {
 	// Initialize
-	board.setPlayer(0, playerA->get());
-	board.setPlayer(1, playerB->get());
+	board.setPlayer(0, playerA);
+	board.setPlayer(1, playerB);
 
 	bool gameInProgress = true;
 	AttackResult result;
@@ -16,7 +16,7 @@ void GameManager::play()
 	{
 		bool noAttack = false;
 		coord = board.attackPlayer(board.getTurn());
-		if (coord.col == -1 & coord.depth == -1 && coord.row == -1)
+		if (coord.col == -1 && coord.depth == -1 && coord.row == -1)
 		{
 			if (noAttack == true)
 			{
