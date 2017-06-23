@@ -46,55 +46,12 @@ public:
 	
 	void setCharAt(Coordinate c, Ship::Symbol s);
 
-	
 
-	boardArray(const boardArray& other)
-		: _rows(other.rows()),
-		  _cols(other.cols()),
-		  _depth(other.depth())
-	{
-		if (this->arr.get() != nullptr)
-		{
-			this->arr.release();
-			this->arr.reset(new Ship::Symbol[_rows * _cols * _depth]);
-		}
-		else
-			arr = unique_ptr<Ship::Symbol>(new Ship::Symbol[_rows * _cols * _depth]);
-		copyArr(other.arr);		
-	}
+	boardArray(const boardArray& other);
 
-	boardArray(boardArray&& other) noexcept
-		: _rows(other.rows()),
-		  _cols(other.cols()),
-		  _depth(other.depth())
-	{
-		auto temp = arr.release();
-		arr.reset(other.arr.release());
-		other.arr.reset(temp);		
-	}
+	boardArray(boardArray&& other) noexcept;
 
-	boardArray& operator=(const boardArray& other)
-	{
-		if (this == &other)
-			return *this;
-		_rows = other.rows();
-		_cols = other.cols();
-		_depth = other.depth();
-		arr = unique_ptr<Ship::Symbol>(new Ship::Symbol[_rows * _cols * _depth]);
-		copyArr(other.arr);		
-		return *this;
-	}
+	boardArray& operator=(const boardArray& other);
 
-	boardArray& operator=(boardArray&& other) noexcept
-	{
-		if (this == &other)
-			return *this;
-		_rows = other.rows();
-		_cols = other.cols();
-		_depth = other.depth();
-		auto temp = arr.release();
-		arr.reset(other.arr.release());
-		other.arr.reset(temp);		
-		return *this;
-	}
+	boardArray& operator=(boardArray&& other) noexcept;
 };

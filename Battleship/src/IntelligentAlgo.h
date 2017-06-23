@@ -1,18 +1,21 @@
 #pragma once
-#include "BaseAlgo.h"
 #include "Ship.h"
 #include <stack>
 #include <list>
 #include <tuple>
+#include "TestingBoard.h"
 
-
-enum direction { Left, Right, Up, Down, None };
-class IntelligentAlgo : public BaseAlgo
+enum tileMarks { DontAttack, Attack, Attacked };
+enum direction { Left, Right, Up, Down, None};
+class IntelligentAlgo : public IBattleshipGameAlgo
 {	
 	std::list<std::tuple<int, int, direction>> possibleAttacks;	
 	std::pair<int, int> nextAttack;
 	std::tuple<int,int,direction> lastFired;
 	int numberOfRuns;
+	int player_number;
+	BoardData& board;	
+	TestingBoard<tileMarks> shadow_board;
 	/*
 	 * Pre: nextAttack is a valid coordinate.
 	 * Invariant: All tiles up to nextAttack (from top left)
@@ -48,13 +51,18 @@ class IntelligentAlgo : public BaseAlgo
 	}*/
 public:
 
+	IntelligentAlgo()
+		: player_number(-1),
+		  shadow_board()
+	{		
+	}
 
-	IntelligentAlgo() : BaseAlgo(), numberOfRuns(0) { nextAttack = make_pair(0, 0); }
 
-	//~IntelligentAlgo();
-	
-	
-	std::pair<int, int> attack() override;
-	void notifyOnAttackResult(int player, int row, int col, AttackResult result) override;
-
+	void setPlayer(int player) override
+	{
+		this->player_number = player;
+	}
+	void setBoard(const BoardData& board) override;
+	Coordinate attack() override;
+	void notifyOnAttackResult(int player, Coordinate move, AttackResult result) override;
 };

@@ -4,7 +4,7 @@
 
 using namespace std;
 
-enum Type { None, Boat, Cruiser, Submarine, Destroyer };
+enum Type { NoType, Boat, Cruiser, Submarine, Destroyer };
 class Ship {
 	std::pair<int, int> vert;
 	std::pair<int, int> horz;

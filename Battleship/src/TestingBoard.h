@@ -2,6 +2,7 @@
 #include <memory>
 #include "IBattleshipGameAlgo.h"
 template <typename T>
+
 class TestingBoard
 {
 	std::unique_ptr<T> board;
@@ -14,6 +15,13 @@ class TestingBoard
 		return (c.col - 1) + (c.row - 1) * _cols + (c.depth - 1) * _rows * _cols;
 	}
 public:
+	TestingBoard()
+		: board(nullptr),
+		  _rows(0),
+		  _cols(0),
+		  _depth(0)
+	{		
+	}
 
 	TestingBoard(int rows, int cols, int depth)
 		: _rows(rows),
@@ -44,5 +52,13 @@ public:
 	T& operator[](Coordinate c)
 	{
 		return (board.get())(position(c));
+	}
+	TestingBoard<T>(const TestingBoard<T>& other) = delete;
+	TestingBoard<T>(TestingBoard<T>&& other)
+		: _rows(other.rows()),
+		  _cols(other.cols()),
+		  _depth(other.depth())
+	{
+		
 	}
 };

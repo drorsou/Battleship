@@ -113,7 +113,7 @@ void IntelligentAlgo::markSink(int row, int col, direction dir)
 		markLeft(row, col);
 		markUp(row, col);
 		break;
-	case None:
+	case NoType:
 		markUp(row, col);
 		markDown(row, col);
 		markLeft(row, col);
@@ -181,6 +181,11 @@ void IntelligentAlgo::addAttacks(int row, int col, direction dir, bool atStart)
 }
 
 
+void IntelligentAlgo::setBoard(const BoardData& board)
+{
+	this->board = board;
+	this->shadow_board = TestingBoard<tileMarks>(board.rows(), board.cols(), board.depth());
+}
 
 std::pair<int, int> IntelligentAlgo::attack()
 {	
@@ -206,7 +211,7 @@ std::pair<int, int> IntelligentAlgo::attack()
 			res.first++;
 			res.second++;
 			addTwo();
-			lastFired = make_tuple(res.first, res.second, None);
+			lastFired = make_tuple(res.first, res.second, NoType);
 			return res;
 		}
 		// If marked Don't Attack or Attacked, keep looking for a target
@@ -217,7 +222,7 @@ std::pair<int, int> IntelligentAlgo::attack()
 	 *  We should get here only once - and win in this turn 
 	 *  (otherwise we have passed all the possible tiles and we haven't sank all of the enemy ships)
 	*/
-	lastFired = make_tuple(nextAttack.first, nextAttack.second, None);
+	lastFired = make_tuple(nextAttack.first, nextAttack.second, NoType);
 	std::pair<int, int> res = nextAttack;
 	res.first++;
 	res.second++;
@@ -248,7 +253,7 @@ void IntelligentAlgo::notifyOnAttackResult(int player, int row, int col, AttackR
 		}
 		else if (board[row][col] == static_cast<char>(Ship::Symbol::Blank))
 		{
-			addAttacks(row, col, None, false);
+			addAttacks(row, col, NoType, false);
 		}
 		board[row][col] = static_cast<char>(Ship::Symbol::Hit);
 	}
