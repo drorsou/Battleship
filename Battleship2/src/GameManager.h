@@ -10,8 +10,8 @@
 class GameManager
 {
 	Board board;
-	std::unique_ptr<IBattleshipGameAlgo>* playerA;
-	std::unique_ptr<IBattleshipGameAlgo>* playerB;
+	IBattleshipGameAlgo* playerA;
+	IBattleshipGameAlgo* playerB;
 	int playerAIndex;
 	int playerBIndex;
 	bool finished;
@@ -22,7 +22,7 @@ class GameManager
 
 public:
 	GameManager() {};
-	GameManager(Board board_, std::unique_ptr<IBattleshipGameAlgo>* playerA_, std::unique_ptr<IBattleshipGameAlgo>* playerB_,
+	GameManager(Board board_, IBattleshipGameAlgo* playerA_, IBattleshipGameAlgo* playerB_,
 		int playerAIndex_, int playerBIndex_) :
 		board(board_), playerA(playerA_), playerB(playerB_), playerAIndex(playerAIndex_), playerBIndex(playerBIndex_) { };
 

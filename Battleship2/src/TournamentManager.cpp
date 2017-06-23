@@ -65,7 +65,7 @@ bool TournamentManager::init(int argc, char* argv[])
 
 	TournamentManager::addGamesToQueue();
 
-	ScoresController::initScores(static_cast<int>(playersVector.size()), gamesQueue.size() / playersVector.size());
+	ScoresController::initScores(static_cast<int>(playersVector.size()), static_cast<int>(gamesQueue.size() / playersVector.size()));
 
 	std::cout << "Number of legal players: " << playersVector.size() << std::endl;
 	std::cout << "Number of legal boards: " << boardsVector.size() << std::endl;
@@ -190,7 +190,7 @@ void TournamentManager::waitForGames()
 
 void TournamentManager::addGamesToQueue()
 {
-	size_t lastPlayerIndex;
+	int lastPlayerIndex;
 
 	if (playersVector.size() % 2 == 1)
 		lastPlayerIndex = static_cast<int>(playersVector.size());
@@ -206,8 +206,8 @@ void TournamentManager::addGamesToQueue()
 			int playerBIndex = lastPlayerIndex - i;
 			if (playerBIndex != playersVector.size())
 			{				
-				gamesQueue.push(GameManager(boardsVector[boardRound], &playersVector[playerAIndex], &playersVector[playerBIndex], playerAIndex, playerBIndex));
-				gamesQueue.push(GameManager(boardsVector[boardRound], &playersVector[playerBIndex], &playersVector[playerAIndex], playerBIndex, playerAIndex));
+				gamesQueue.push(GameManager(boardsVector[boardRound], playersVector[playerAIndex].get(), playersVector[playerBIndex].get(), playerAIndex, playerBIndex));
+				gamesQueue.push(GameManager(boardsVector[boardRound], playersVector[playerBIndex].get(), playersVector[playerAIndex].get(), playerBIndex, playerAIndex));
 			}
 
 			for (int j = 0; j < (playersVector.size() / 2) + (playersVector.size() % 2) - 1; j++)
