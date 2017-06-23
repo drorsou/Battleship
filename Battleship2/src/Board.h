@@ -34,9 +34,8 @@ class Board {
 	int totalShipsAScore;
 	int totalShipsBScore;
 	int scoreA;
-	int scoreB;	
+	int scoreB;		
 	
-	friend class BoardDataAccess;
 
 	enum TileStatus { Checked, UnChecked, Occupied };
 	enum ShipDirection { Right, Down, Forward };
@@ -117,65 +116,13 @@ public:
 	}
 	Board(string path);
 
-	Board(const Board& other)
-		: board(other.board),
-		  current_player_turn(other.current_player_turn),
-		  playerA(nullptr),
-		  playerB(nullptr),
-		  totalShipsAScore(other.totalShipsAScore),
-		  totalShipsBScore(other.totalShipsBScore),
-		  scoreA(other.scoreA),
-		  scoreB(other.scoreB)
-	{		
-	}
+	Board(const Board& other);
 
-	Board(Board&& other)
-		: board(std::move(other.board)),
-		  current_player_turn(other.current_player_turn),
-		  playerA(nullptr),
-		  playerB(nullptr),
-		  totalShipsAScore(other.totalShipsAScore),
-		  totalShipsBScore(other.totalShipsBScore),
-		  scoreA(other.scoreA),
-		  scoreB(other.scoreB)
-	{
-		shipsA = std::move(other.shipsA);
-		shipsB = std::move(other.shipsB);		
-	}
+	Board(Board&& other) noexcept;
 
-	Board& operator=(const Board& other)
-	{		
-		if (this == &other)
-			return *this;
-		board = other.board;
-		current_player_turn = other.current_player_turn;
-		playerA = nullptr;
-		playerB = nullptr;
-		shipsA = other.shipsA;
-		shipsB = other.shipsB;
-		totalShipsAScore = other.totalShipsAScore;
-		totalShipsBScore = other.totalShipsBScore;
-		scoreA = other.scoreA;
-		scoreB = other.scoreB;
-		return *this;
-	}
+	Board& operator=(const Board& other);
 
-	Board& operator=(Board&& other) noexcept	
-	{		
-		if (this == &other)
-			return *this;
-		board = std::move(other.board);
-		current_player_turn = other.current_player_turn;
-		playerA = nullptr;		
-		playerB = nullptr;		
-		shipsA = std::move(other.shipsA);
-		shipsB = std::move(other.shipsB);
-		totalShipsAScore = other.totalShipsAScore;
-		totalShipsBScore = other.totalShipsBScore;
-		scoreA = other.scoreA;
-		scoreB = other.scoreB;
-		return *this;
-	}
+	Board& operator=(Board&& other) noexcept;
 
 	~Board();
 	
@@ -198,7 +145,9 @@ public:
 	/*
 		Notify both players.
 	*/
-	void notifyResult(int player, int row, int col, AttackResult result);
+	void notifyResult(int player, Coordinate c, AttackResult result);
+
+	// Inline functions:
 
 	char getCoordValue(Coordinate c) const { return board.charAt(c); }
 	void setCoordValue(Coordinate c, Ship::Symbol val) { board.setCharAt(c, val); }
@@ -213,10 +162,6 @@ public:
 		Post: return true if it was a self-hit.
 	*/
 	bool checkTarget(char target) const;
-
-
-	void Board::setPlayersBoard(int numOfRows, int numOfCols) const;
-
 
 	bool parseBoard(std::string& path);
 
