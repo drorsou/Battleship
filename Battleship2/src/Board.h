@@ -8,6 +8,7 @@
 #include <sstream>
 #include <fstream>
 #include <windows.h>
+#include "BoardDataAccess.h"
 
 #define BOARD_SIZE 10
 #define SHIPS_PER_PLAYER 5
@@ -29,6 +30,8 @@ class Board {
 	int current_player_turn;
 	IBattleshipGameAlgo * playerA;
 	IBattleshipGameAlgo * playerB;
+	BoardDataAccess AAccess;
+	BoardDataAccess BAccess;
 	std::array<Ship, SHIPS_PER_PLAYER> shipsA;
 	std::array<Ship, SHIPS_PER_PLAYER> shipsB;
 	int totalShipsAScore;
