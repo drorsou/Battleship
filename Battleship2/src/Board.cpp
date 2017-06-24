@@ -200,7 +200,16 @@ void Board::setPlayer(int color, IBattleshipGameAlgo* player)
 	else
 		playerB = player;
 	player->setPlayer(color);
-	player->setBoard(BoardDataAccess(&this->board, color));
+	if (color == 0)
+	{
+		AAccess = { &this->board, color };
+		player->setBoard(AAccess);
+	}
+	else
+	{
+		BAccess = { &this->board, color };
+		player->setBoard(BAccess);		
+	}	
 }
 
 bool Board::checkTarget(char target) const {	

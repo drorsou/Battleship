@@ -1,7 +1,7 @@
 #pragma once
 #include "IBattleshipGameAlgo.h"
 #include "boardArray.h"
-#include "Board.h"
+
 
 class BoardDataAccess : public BoardData
 {
@@ -17,6 +17,15 @@ public:
 			return result;
 		else
 			return static_cast<char>(Ship::Symbol::Blank);
+	}
+	BoardDataAccess()
+		: BoardData(),
+		  board(nullptr),
+		  player(-1)
+	{
+		_rows = 0;
+		_cols = 0;
+		_depth = 0;
 	}
 	BoardDataAccess(const boardArray * b, int player) :
 		BoardData(),
