@@ -216,8 +216,8 @@ void TournamentManager::addGamesToQueue()
 				playerBIndex = ((2 * lastPlayerIndex - 2 - i - j) % lastPlayerIndex) + 1;
 				if (playerAIndex != playersVector.size() && playerBIndex != playersVector.size())
 				{					
-					gamesQueue.push(GameManager(boardsVector[boardRound], &playersVector[playerAIndex], &playersVector[playerBIndex], playerAIndex, playerBIndex));
-					gamesQueue.push(GameManager(boardsVector[boardRound], &playersVector[playerBIndex], &playersVector[playerAIndex], playerBIndex, playerAIndex));
+					gamesQueue.push(GameManager(boardsVector[boardRound], playersVector[playerAIndex].get(), playersVector[playerBIndex].get(), playerAIndex, playerBIndex));
+					gamesQueue.push(GameManager(boardsVector[boardRound], playersVector[playerBIndex].get(), playersVector[playerAIndex].get(), playerBIndex, playerAIndex));
 				}
 			}
 		}

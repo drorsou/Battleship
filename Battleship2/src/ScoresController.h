@@ -5,6 +5,7 @@
 #include <string>
 #include <iomanip>
 #include <mutex>
+#include <windows.h>
 
 
 class ScoresController
