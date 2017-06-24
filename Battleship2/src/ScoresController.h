@@ -43,6 +43,10 @@ class ScoresController
 	static std::vector<int> pointsAgainstVector;
 
 
+
+
+
+
 public:
 
 	static void addPlayerName(std::string name) { playerNamesVector.push_back(name); };
@@ -62,11 +66,17 @@ public:
 
 
 	static std::mutex mutexScores;
-	static std::condition_variable cvScores;
+	//static std::condition_variable cvScores;
 
 
 	static int totalRounds;
 	static int round;
 
 	static int activeThreads;
+
+
+
+
+	static void gotoxy(int row, int col);
+	static void getCursorXY(bool toOrigin);
 };

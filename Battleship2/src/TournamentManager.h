@@ -17,6 +17,10 @@ class TournamentManager
 	static int threads;
 	static std::string path;
 
+	static int roundsAdded;
+	static int boardRound;
+	static int roundRobinIndex;
+
 public:
 	TournamentManager() {};
 
