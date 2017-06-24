@@ -110,7 +110,7 @@ class Board {
 	static std::pair<int, int> makePairByLength(const Type t, int pos);
 	void fillDimensionsOfShip(Coordinate c, Type t, std::pair<int,int> & vert, std::pair<int, int> & horz, std::pair<int, int> & depth) const;
 public:
-	//void printBoard() { this->board.printBoard(); }
+//	void printBoard() { this->board.printBoard(); }
 
 	Board()
 		: playerA(nullptr),
