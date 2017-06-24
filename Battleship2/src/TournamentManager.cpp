@@ -1,7 +1,7 @@
 #include "TournamentManager.h"
 
 
-int TournamentManager::threads = TournamentManager::Default::threads;
+int TournamentManager::threads = TournamentManager::Default::threadsDefault;
 std::string TournamentManager::path;
 
 int TournamentManager::roundsAdded = 0;
@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 {
 	if (TournamentManager::init(argc, argv) == false)
 		return EXIT_FAILURE;
-
+	
 	TournamentManager::tournament();
 
 	return 0;
@@ -67,7 +67,7 @@ bool TournamentManager::init(int argc, char* argv[])
 	}
 
 	
-	ScoresController::initScores(static_cast<int>(playersVector.size()), 4 * boardsVector.size() * (playersVector.size() - 1));
+	ScoresController::initScores(static_cast<int>(playersVector.size()), 2 * boardsVector.size() * (playersVector.size() - 1));
 
 	std::cout << "Number of legal players: " << playersVector.size() << std::endl;
 	std::cout << "Number of legal boards: " << boardsVector.size() << std::endl;
@@ -102,7 +102,7 @@ void TournamentManager::tournament()
 
 
 		if (gamesQueue.size() < threads && boardRound < boardsVector.size())
-			TournamentManager::addGamesToQueue;
+			TournamentManager::addGamesToQueue();
 
 
 		std::unique_lock<std::mutex> lockScores(ScoresController::mutexScores, std::defer_lock);

@@ -26,7 +26,7 @@ COORD origin;
 COORD end;
 
 
-void ScoresController::initScores(int numberOfPlayers, int numberOfGames)
+void ScoresController::initScores(int numberOfPlayers, int totalRounds)
 {
 	for (int i = 0; i < numberOfPlayers; i++)
 	{
@@ -38,8 +38,8 @@ void ScoresController::initScores(int numberOfPlayers, int numberOfGames)
 		pointsForVector.push_back(0);
 		pointsAgainstVector.push_back(0);
 	}
-
-	totalRounds = numberOfGames;
+	
+	ScoresController::totalRounds = totalRounds;
 }
 
 
@@ -92,8 +92,8 @@ void ScoresController::checkForResults()
 
 		int maxNameLength = 0;
 		for (int i = 0; i < playerNamesVector.size(); i++)
-			if (playerNamesVector[i].length > maxNameLength)
-				maxNameLength = playerNamesVector[i].length;
+			if (playerNamesVector[i].length() > maxNameLength)
+				maxNameLength = playerNamesVector[i].length();
 		
 
 		std::cout << "#" << round << "\tTeam Name";
@@ -109,7 +109,7 @@ void ScoresController::checkForResults()
 			std::cout << i + 1 << ".\t" << playerNamesVector[index];
 			
 			ScoresController::getCursorXY(true);
-			ScoresController::gotoxy(0, maxNameLength + 9 - playerNamesVector[index].length);
+			ScoresController::gotoxy(0, maxNameLength + 9 - playerNamesVector[index].length());
 
 			std::cout << winsVector[index] << "\t" << lossesVector[index] << "\t" << winPercents[i].percent
 				<< "\t" << pointsForVector[index] << "\t" << pointsAgainstVector[index] << std::endl;

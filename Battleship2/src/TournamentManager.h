@@ -19,7 +19,7 @@ class TournamentManager
 	static int boardRound;
 	static int roundRobinIndex;
 
-	enum Default { threads = 4};
+	enum Default { threadsDefault = 4};
 
 
 public:

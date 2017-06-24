@@ -4,7 +4,7 @@
 void GameManager::play()
 {
 	// Initialize
-	/*board.setPlayer(0, playerA);
+	board.setPlayer(0, playerA);
 	board.setPlayer(1, playerB);
 
 	bool gameInProgress = true;
@@ -63,11 +63,12 @@ void GameManager::play()
 		winner = 1;
 	pointsA = board.getScore(0);
 	pointsB = board.getScore(1);
-	*/
-
+	
+	/*
 	winner = 0;
 	pointsA = 5;
 	pointsB = 10;
+	*/
 	
 	//std::unique_lock<std::mutex> lock(ScoresController::mutexScores, std::defer_lock);
 	//lock.lock();
@@ -78,7 +79,7 @@ void GameManager::play()
 	//while (lock.try_lock() == false) {}
 	//std::cout << "Board " << board<< " - Player " << playerAIndex << " vs. Player " << playerBIndex << std::endl;
 	ScoresController::updateScores(playerAIndex, playerBIndex, winner, pointsA, pointsB);
-	std::cout << "Updating scores" << std::endl;
+	//std::cout << "Updating scores" << std::endl;
 	lockScores.unlock();
 	//lockScores.unlock();
 	//ScoresController::cvScores.notify_one();
