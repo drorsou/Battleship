@@ -13,7 +13,7 @@ public:
 		if (c.col < 1 || c.col > _cols || c.row < 1 || c.row > _rows || c.depth < 1 || c.depth > _depth)
 			return static_cast<char>(Ship::Symbol::Blank);
 		char result = board->charAt(c);
-		if(Ship::checkColor(result) == player)
+		if(Ship::checkColor(result) == player || result == static_cast<char>(Ship::Symbol::Hit) || result == static_cast<char>(Ship::Symbol::MISS))
 			return result;
 		else
 			return static_cast<char>(Ship::Symbol::Blank);

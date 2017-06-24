@@ -54,11 +54,12 @@ public:
 		return (board.get())(position(c));
 	}
 	TestingBoard<T>(const TestingBoard<T>& other) = delete;
+
 	TestingBoard<T>(TestingBoard<T>&& other)
 		: _rows(other.rows()),
 		  _cols(other.cols()),
 		  _depth(other.depth())
 	{
-		
+		std::swap(board, other.board);
 	}
 };

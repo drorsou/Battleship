@@ -1,45 +1,56 @@
 #pragma once
 #include "Ship.h"
 #include <stack>
+#include <array>
 #include <list>
 #include <tuple>
 #include "TestingBoard.h"
+#include "BoardDataAccess.h"
 
 enum tileMarks { DontAttack, Attack, Attacked };
-enum direction { Left, Right, Up, Down, None};
+enum direction { Left, Right, Up, Down, Forward, Back, None};
 class IntelligentAlgo : public IBattleshipGameAlgo
 {	
-	std::list<std::tuple<int, int, direction>> possibleAttacks;	
-	std::pair<int, int> nextAttack;
-	std::tuple<int,int,direction> lastFired;
-	int numberOfRuns;
-	int player_number;
-	BoardData& board;	
-	TestingBoard<tileMarks> shadow_board;
-	/*
-	 * Pre: nextAttack is a valid coordinate.
-	 * Invariant: All tiles up to nextAttack (from top left)
-	 *			  were attacked or marked as Don't Attack
-	 * Post: If the tile is smaller than 10,10 move it one tile
-	 *		 to the right or to the start of the next row.
-	 */
-	void addTwo();
-
-	void markLeft(int row, int col);
-	void markRight(int row, int col);
-	void markUp(int row, int col);
-	void markDown(int row, int col);
-	void addAttackLeft(int row, int col, bool atStart);
-	void addAttackRight(int row, int col, bool atStart);
-	void addAttackUp(int row, int col, bool atStart);
-	void addAttackDown(int row, int col, bool atStart);
-
-	void markSink(int row, int col, direction dir);
-
-	void markHit(int row, int col, direction dir);
-
-	void addAttacks(int row, int col, direction dir, bool atStart);
+	static const size_t NUM_OF_SHIPS = 5;
+	//std::array<Ship, NUM_OF_SHIPS> ships;
+	std::list<std::pair<std::list<Coordinate>, int>> formerGamesAttacks;	
+	std::list<std::pair<std::list<Coordinate>, int>>::const_iterator gameAttacks;
+	std::list<Coordinate>::const_iterator nextAttack;
+	std::list<Coordinate>::const_iterator end;
+	std::list<Coordinate> currentAttacks;
+	bool memoryFlag;
+	std::list<std::pair<Coordinate, direction>> possibleAttacks;
+	Coordinate lastAttack{-1,-1,-1};
+	direction lastDirection = direction::None;
 	
+	int player_number;
+	const BoardData * board = nullptr;
+	unique_ptr<tileMarks> shadow_board = nullptr;
+	int position(Coordinate c) const {
+		return (c.col - 1) + (c.row - 1) * board->cols() + (c.depth - 1) * board->rows() * board->cols();
+	}
+	void markPosition(Coordinate c, tileMarks mark)	{
+		(shadow_board.get())[position(c)] = mark;
+	}
+	tileMarks markAt(Coordinate c) const {
+		return (shadow_board.get())[position(c)];
+	}
+
+	static int randomInt(int range);
+	Coordinate generateRandom() const;	
+
+	bool setNextAttackIterator();
+	
+	void addAttackAtDirection(Coordinate c, direction dir, bool AtStart);
+	void addMarkAtDirection(Coordinate c, direction dir);
+	
+	void markSink(Coordinate c, direction dir);
+
+	void markHit(Coordinate c, direction dir);
+
+	void addAttacks(Coordinate c, direction dir, bool atStart);
+	
+	void markBoard();
 
 	/*direction adjacentShot(int row, int col) const
 	{
@@ -54,14 +65,11 @@ public:
 	IntelligentAlgo()
 		: player_number(-1),
 		  shadow_board()
-	{		
-	}
-
-
-	void setPlayer(int player) override
 	{
-		this->player_number = player;
 	}
+
+
+	void setPlayer(int player) override;
 	void setBoard(const BoardData& board) override;
 	Coordinate attack() override;
 	void notifyOnAttackResult(int player, Coordinate move, AttackResult result) override;
