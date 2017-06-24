@@ -11,7 +11,7 @@ enum tileMarks { DontAttack, Attack, Attacked };
 enum direction { Left, Right, Up, Down, Forward, Back, None};
 class IntelligentAlgo : public IBattleshipGameAlgo
 {	
-	static const size_t NUM_OF_SHIPS = 5;
+	//static const size_t NUM_OF_SHIPS = 5;
 	//std::array<Ship, NUM_OF_SHIPS> ships;
 	std::list<std::pair<std::list<Coordinate>, int>> formerGamesAttacks;	
 	std::list<std::pair<std::list<Coordinate>, int>>::const_iterator gameAttacks;
