@@ -521,27 +521,27 @@ void Board::fillDimensionsOfShip(Coordinate c, Type t, std::pair<int, int>& vert
 {
 	if (this->board.charAt(c) == static_cast<char>(Ship::Symbol::ABoat) || this->board.charAt(c) == static_cast<char>(Ship::Symbol::BBoat))
 	{
-		horz = make_pair(c.col + 1, c.col + 1);
-		vert = make_pair(c.row + 1, c.row + 1);
-		depth = make_pair(c.depth + 1, c.depth + 1);
+		horz = make_pair(c.col, c.col);
+		vert = make_pair(c.row, c.row);
+		depth = make_pair(c.depth, c.depth);
 	}
 	else
 	{
 		switch (getShipDirectionAt(c))
 		{
 		case Down:
-			depth = make_pair(c.depth + 1, c.depth + 1);
-			horz = make_pair(c.col + 1, c.col + 1);
+			depth = make_pair(c.depth, c.depth);
+			horz = make_pair(c.col, c.col);
 			vert = makePairByLength(t, c.row);
 			break;
 		case Right:
-			depth = make_pair(c.depth + 1, c.depth + 1);
-			vert = make_pair(c.row + 1, c.row + 1);
+			depth = make_pair(c.depth, c.depth);
+			vert = make_pair(c.row, c.row);
 			horz = makePairByLength(t, c.col);
 			break;
 		case Forward:
-			horz = make_pair(c.col + 1, c.col + 1);
-			vert = make_pair(c.row + 1, c.row + 1);
+			horz = make_pair(c.col, c.col);
+			vert = make_pair(c.row, c.row);
 			depth = makePairByLength(t, c.depth);
 			break;
 		}
@@ -607,7 +607,7 @@ std::pair<int, int> Board::makePairByLength(const Type t, int pos)
 		len = Ship::ShipLen::DestroyerLen;		
 		break;
 	}
-	return make_pair(pos + 1, pos + len);
+	return make_pair(pos, pos + len - 1);
 }
 
 
