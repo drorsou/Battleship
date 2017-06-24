@@ -1,7 +1,7 @@
 #include "TournamentManager.h"
 
 
-int TournamentManager::threads = DEFAULT_THREADS;
+int TournamentManager::threads = TournamentManager::Default::threads;
 std::string TournamentManager::path;
 
 int TournamentManager::roundsAdded = 0;
@@ -16,7 +16,7 @@ std::vector<std::unique_ptr<IBattleshipGameAlgo>> TournamentManager::playersVect
 //std::vector<std::mutex> TournamentManager::mutexVector;
 //std::mutex* TournamentManager::mutex;
 std::mutex TournamentManager::mutex;
-std::condition_variable TournamentManager::cvGames;
+//std::condition_variable TournamentManager::cvGames;
 std::vector<bool> TournamentManager::playersLocks;
 
 bool TournamentManager::tournamentOn = true;

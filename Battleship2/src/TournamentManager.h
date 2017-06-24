@@ -9,8 +9,6 @@
 #include "ScoresController.h"
 
 
-#define DEFAULT_THREADS 4
-
 
 class TournamentManager
 {
@@ -20,6 +18,9 @@ class TournamentManager
 	static int roundsAdded;
 	static int boardRound;
 	static int roundRobinIndex;
+
+	enum Default { threads = 4};
+
 
 public:
 	TournamentManager() {};
@@ -63,7 +64,7 @@ public:
 	//static std::vector<std::mutex> mutexVector;
 	//static std::mutex* mutex;
 	static std::mutex mutex;
-	static std::condition_variable cvGames;
+	//static std::condition_variable cvGames;
 	static std::vector<bool> playersLocks;
 
 
