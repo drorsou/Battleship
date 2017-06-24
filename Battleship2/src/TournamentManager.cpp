@@ -1,8 +1,12 @@
 #include "TournamentManager.h"
 
 
-int TournamentManager::threads = DEFAULT_THREADS;
+int TournamentManager::threads = TournamentManager::Default::threadsDefault;
 std::string TournamentManager::path;
+
+int TournamentManager::roundsAdded = 0;
+int TournamentManager::boardRound = 0;
+int TournamentManager::roundRobinIndex = 0;
 
 std::vector<Board> TournamentManager::boardsVector;
 std::vector<std::unique_ptr<IBattleshipGameAlgo>> TournamentManager::playersVector;
@@ -12,7 +16,7 @@ std::vector<std::unique_ptr<IBattleshipGameAlgo>> TournamentManager::playersVect
 //std::vector<std::mutex> TournamentManager::mutexVector;
 //std::mutex* TournamentManager::mutex;
 std::mutex TournamentManager::mutex;
-std::condition_variable TournamentManager::cvGames;
+//std::condition_variable TournamentManager::cvGames;
 std::vector<bool> TournamentManager::playersLocks;
 
 bool TournamentManager::tournamentOn = true;
@@ -24,7 +28,7 @@ int main(int argc, char* argv[])
 {
 	if (TournamentManager::init(argc, argv) == false)
 		return EXIT_FAILURE;
-
+	
 	TournamentManager::tournament();
 
 	return 0;
@@ -62,10 +66,8 @@ bool TournamentManager::init(int argc, char* argv[])
 		return false;
 	}
 
-
-	TournamentManager::addGamesToQueue();
-
-	ScoresController::initScores(static_cast<int>(playersVector.size()), static_cast<int>(gamesQueue.size() / playersVector.size()));
+	
+	ScoresController::initScores(static_cast<int>(playersVector.size()), 2 * boardsVector.size() * (playersVector.size() - 1));
 
 	std::cout << "Number of legal players: " << playersVector.size() << std::endl;
 	std::cout << "Number of legal boards: " << boardsVector.size() << std::endl;
@@ -97,6 +99,10 @@ void TournamentManager::tournament()
 	{
 		if (ScoresController::activeThreads == 0 && gamesQueue.empty() == true && ScoresController::totalRounds == ScoresController::round)
 			tournamentOn = false;
+
+
+		if (gamesQueue.size() < threads && boardRound < boardsVector.size())
+			TournamentManager::addGamesToQueue();
 
 
 		std::unique_lock<std::mutex> lockScores(ScoresController::mutexScores, std::defer_lock);
@@ -198,7 +204,37 @@ void TournamentManager::addGamesToQueue()
 		lastPlayerIndex = static_cast<int>(playersVector.size() - 1);
 
 
-	for (int boardRound = 0; boardRound < boardsVector.size(); boardRound++)
+	
+
+	int playerAIndex = 0;
+	int playerBIndex = lastPlayerIndex - roundRobinIndex;
+	if (playerBIndex != playersVector.size())
+	{
+		gamesQueue.push(GameManager(boardsVector[boardRound], playersVector[playerAIndex].get(), playersVector[playerBIndex].get(), playerAIndex, playerBIndex));
+		gamesQueue.push(GameManager(boardsVector[boardRound], playersVector[playerBIndex].get(), playersVector[playerAIndex].get(), playerBIndex, playerAIndex));
+	}
+
+	for (int j = 0; j < (playersVector.size() / 2) + (playersVector.size() % 2) - 1; j++)
+	{
+		playerAIndex = ((2 * lastPlayerIndex - roundRobinIndex + j) % lastPlayerIndex) + 1;
+		playerBIndex = ((2 * lastPlayerIndex - 2 - roundRobinIndex - j) % lastPlayerIndex) + 1;
+		if (playerAIndex != playersVector.size() && playerBIndex != playersVector.size())
+		{
+			gamesQueue.push(GameManager(boardsVector[boardRound], playersVector[playerAIndex].get(), playersVector[playerBIndex].get(), playerAIndex, playerBIndex));
+			gamesQueue.push(GameManager(boardsVector[boardRound], playersVector[playerBIndex].get(), playersVector[playerAIndex].get(), playerBIndex, playerAIndex));
+		}
+	}
+
+
+	roundRobinIndex++;
+	if (roundRobinIndex == lastPlayerIndex)
+	{
+		boardRound++;
+		roundRobinIndex = 0;
+	}
+	
+
+	/*for (int boardRound = 0; boardRound < boardsVector.size(); boardRound++)
 	{
 		for (int i = 0; i < lastPlayerIndex; i++)
 		{
@@ -221,5 +257,5 @@ void TournamentManager::addGamesToQueue()
 				}
 			}
 		}
-	}
+	}*/
 }

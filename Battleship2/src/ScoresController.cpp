@@ -3,7 +3,7 @@
 
 
 std::mutex ScoresController::mutexScores;
-std::condition_variable ScoresController::cvScores;
+//std::condition_variable ScoresController::cvScores;
 
 
 std::vector<std::string> ScoresController::playerNamesVector;
@@ -22,7 +22,11 @@ int ScoresController::activeThreads = 0;
 
 
 
-void ScoresController::initScores(int numberOfPlayers, int numberOfGames)
+COORD origin;
+COORD end;
+
+
+void ScoresController::initScores(int numberOfPlayers, int totalRounds)
 {
 	for (int i = 0; i < numberOfPlayers; i++)
 	{
@@ -34,8 +38,8 @@ void ScoresController::initScores(int numberOfPlayers, int numberOfGames)
 		pointsForVector.push_back(0);
 		pointsAgainstVector.push_back(0);
 	}
-
-	totalRounds = numberOfGames;
+	
+	ScoresController::totalRounds = totalRounds;
 }
 
 
@@ -85,14 +89,29 @@ void ScoresController::checkForResults()
 		}
 
 		std::sort(winPercents.begin(), winPercents.end());
+
+		int maxNameLength = 0;
+		for (int i = 0; i < playerNamesVector.size(); i++)
+			if (playerNamesVector[i].length() > maxNameLength)
+				maxNameLength = playerNamesVector[i].length();
 		
 
-		std::cout << "#" << round << "\tTeam Name\t\t" << "Wins\t" << "Losses\t" << "%\t" << "Pts For\t" << "Pts Against" << std::endl;
+		std::cout << "#" << round << "\tTeam Name";
+		// Calculate cursor move
+		ScoresController::getCursorXY(true);
+		ScoresController::gotoxy(0, maxNameLength);
+
+
+		std::cout << "Wins\t" << "Losses\t" << "%\t" << "Pts For\t" << "Pts Against" << std::endl;
 		for (int i = 0; i < playerScores.size(); i++)
 		{
 			int index = winPercents[i].index;
-			std::cout << i + 1 << ".\t" << playerNamesVector[index] << "\t\t" << winsVector[index] << "\t" << lossesVector[index] << "\t"
-				<< winPercents[i].percent
+			std::cout << i + 1 << ".\t" << playerNamesVector[index];
+			
+			ScoresController::getCursorXY(true);
+			ScoresController::gotoxy(0, maxNameLength + 9 - playerNamesVector[index].length());
+
+			std::cout << winsVector[index] << "\t" << lossesVector[index] << "\t" << winPercents[i].percent
 				<< "\t" << pointsForVector[index] << "\t" << pointsAgainstVector[index] << std::endl;
 			//std::cout << winsVector[i] / (static_cast<float>(winsVector[i]) + lossesVector[i]) <<"* 100" << std::endl;
 		}
@@ -103,40 +122,46 @@ void ScoresController::checkForResults()
 
 
 
-/*void getCursorXY(bool toOrigin) {
+void ScoresController::gotoxy(int row, int col) {
+	COORD coord;
+	coord.X = col + origin.X;
+	coord.Y = row + origin.Y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+
+
+void ScoresController::getCursorXY(bool toOrigin) {
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
 		if (toOrigin)
 		{
-			this->origin.X = csbi.dwCursorPosition.X;
-			this->origin.Y = csbi.dwCursorPosition.Y;
+			origin.X = csbi.dwCursorPosition.X;
+			origin.Y = csbi.dwCursorPosition.Y;
 		}
 		else
 		{
-			this->end.X = csbi.dwCursorPosition.X;
-			this->end.Y = csbi.dwCursorPosition.Y;
+			end.X = csbi.dwCursorPosition.X;
+			end.Y = csbi.dwCursorPosition.Y;
 		}
 	}
 	else
 	{
 		if (toOrigin)
 		{
-			this->origin.X = 0;
-			this->origin.Y = 0;
+			origin.X = 0;
+			origin.Y = 0;
 		}
 		else
 		{
-			this->end.X = 0;
-			this->end.Y = this->origin.Y + (2 * this->board.num_of_rows() + 2);
+			end.X = 0;
+			end.Y = 0;
 		}
 	}
 }
-void Board::gotoxy(int row, int col) const {
-	COORD coord;
-	coord.X = col + this->origin.X;
-	coord.Y = row + this->origin.Y;
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-}
+
+
+/*
+
 void Board::gotoEnd(int row, int col) const
 {
 	COORD coord;

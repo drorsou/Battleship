@@ -1,258 +1,448 @@
 #include "IntelligentAlgo.h"
 
-
-void IntelligentAlgo::addTwo()
+int IntelligentAlgo::randomInt(int range)
 {
-	if (nextAttack.second < numOfCols - 2) // moving right
-		nextAttack.second += 2;
-	else // moving to the next line
+	/*
+	 * This code was taken from https://ericlippert.com/2013/12/16/how-much-bias-is-introduced-by-the-remainder-technique/
+	 * which lowers the bias of the reminder random techniuqe.
+	 * A limit of 10 random attempts was chosen so it always stops (this is a Las-Vegas Algorithm which might never stop).
+	 */
+	for (int i = 0; i < 10; i++)
 	{
-		if (nextAttack.first < numOfRows - 1) // moving down
+		int value = rand();
+		if (value < RAND_MAX - RAND_MAX % range)
+			return value % range;
+	}
+	return rand() % range;
+}
+
+Coordinate IntelligentAlgo::generateRandom() const
+{
+	return Coordinate(randomInt(board->rows()) + 1, randomInt(board->cols()) + 1, randomInt(board->depth()) + 1);
+}
+
+bool IntelligentAlgo::setNextAttackIterator()
+{
+	while (gameAttacks != formerGamesAttacks.cend())
+	{ // stops if there are no more lists to check!
+		if (gameAttacks->second == player_number) // we need to check only setups relevant to our color!
 		{
-			nextAttack.second = (nextAttack.second + 2) % numOfCols;
-			nextAttack.first++;
+			// set the iterator from which we pick the attacks
+			nextAttack = gameAttacks->first.cbegin();
+			end = gameAttacks->first.cend();
+			++gameAttacks;
+			return true;
 		}
-		else // going back to the first line
-		{
-			numberOfRuns++;			
-			nextAttack.second = 1;
-			nextAttack.first = 0;
-		}
+		// keep looking for a list where the color matches our color.
+		++gameAttacks;
 	}
+	memoryFlag = false;
+	return false;
 }
 
-void IntelligentAlgo::markLeft(int row, int col)
-{
-	if (col > 0)
-		shadow_board[row][col - 1] = DontAttack;
-}
-
-void IntelligentAlgo::markRight(int row, int col)
-{
-	if (col < numOfCols - 1)
-		shadow_board[row][col + 1] = DontAttack;
-}
-
-void IntelligentAlgo::markUp(int row, int col)
-{
-	if (row > 0)
-		shadow_board[row - 1][col] = DontAttack;
-}
-
-void IntelligentAlgo::markDown(int row, int col)
-{
-	if (row < numOfRows - 1)
-		shadow_board[row + 1][col] = DontAttack;
-}
-
-void IntelligentAlgo::addAttackLeft(int row, int col, bool atStart)
-{
-	if (col > 0 && shadow_board[row][col - 1] == Attack)
+void IntelligentAlgo::addAttackAtDirection(Coordinate c, direction dir, bool AtStart)
+{	
+	Coordinate target{ -1,-1,-1 };
+	switch(dir)
 	{
-		if (atStart)
-			possibleAttacks.emplace_back(row, col - 1, Left);
-		else
-			possibleAttacks.emplace_front(row, col - 1, Left);
+	case Left: 
+		if (c.col > 1)
+			target = Coordinate{ c.row, c.col - 1, c.depth };
+		break;
+
+		case Up:
+		if(c.row > 1)
+			target = Coordinate{ c.row - 1, c.col, c.depth };
+		break;
+
+		case Back:
+		if (c.depth > 1)
+			target = Coordinate{ c.row, c.col, c.depth - 1 };
+		break;
+
+		case Right:
+		if(c.col < board->cols())
+			target = Coordinate{ c.row, c.col + 1, c.depth };
+		break;
+		
+		case Down:
+		if (c.row < board->rows())
+			target = Coordinate{ c.row + 1, c.col, c.depth };
+		break;
+
+		case Forward:
+		if (c.depth < board->depth())
+			target = Coordinate{ c.row, c.col, c.depth + 1 };
+		break;
+		default:
+			return;
+			break;
 	}
+	if (AtStart && target.row != -1 && target.col != -1 && target.depth != -1)
+		possibleAttacks.emplace_back(target, dir);
+	else
+		possibleAttacks.emplace_front(target, dir);
 }
 
-void IntelligentAlgo::addAttackRight(int row, int col, bool atStart)
+void IntelligentAlgo::addMarkAtDirection(Coordinate c, direction dir)
 {
-	if (col < numOfCols - 1 && shadow_board[row][col + 1] == Attack)
+	Coordinate pos{ -1,-1,-1 };
+	switch (dir)
 	{
-		if (atStart)
-			possibleAttacks.emplace_back(row, col + 1, Right);
-		else
-			possibleAttacks.emplace_front(row, col + 1, Right);
+	case Left:
+		if (c.col > 1)
+			pos = Coordinate{ c.row, c.col - 1, c.depth };
+		break;
+
+	case Up:
+		if (c.row > 1)
+			pos = Coordinate{ c.row - 1, c.col, c.depth };
+		break;
+
+	case Back:
+		if (c.depth > 1)
+			pos = Coordinate{ c.row, c.col, c.depth - 1 };
+		break;
+
+	case Right:
+		if (c.col < board->cols())
+			pos = Coordinate{ c.row, c.col + 1, c.depth };
+		break;
+
+	case Down:
+		if (c.row < board->rows())
+			pos = Coordinate{ c.row + 1, c.col, c.depth };
+		break;
+
+	case Forward:
+		if (c.depth < board->depth())
+			pos = Coordinate{ c.row, c.col, c.depth + 1 };
+		break;
+	default:
+		return;
+		break;
 	}
+	if (pos.row != -1 && pos.col != -1 && pos.depth != -1 && markAt(pos) == Attack)
+		markPosition(pos, DontAttack);
 }
 
-void IntelligentAlgo::addAttackUp(int row, int col, bool atStart)
-{
-	if (row > 0 && shadow_board[row - 1][col] == Attack)
-	{
-		if (atStart)
-			possibleAttacks.emplace_back(row - 1, col, Up);
-		else
-			possibleAttacks.emplace_front(row - 1, col, Up);
-	}
-}
-
-void IntelligentAlgo::addAttackDown(int row, int col, bool atStart)
-{
-	if (row < numOfRows - 1 && shadow_board[row + 1][col] == Attack)
-	{
-		if (atStart)
-			possibleAttacks.emplace_back(row + 1, col, Down);
-		else
-			possibleAttacks.emplace_front(row + 1, col, Down);
-	}
-}
-
-void IntelligentAlgo::markSink(int row, int col, direction dir)
+void IntelligentAlgo::markSink(Coordinate c, direction dir)
 {
 	switch (dir)
 	{
 	case Up:
-		markUp(row, col);
-		markLeft(row, col);
-		markRight(row, col);
+		addMarkAtDirection(c, Up);
+		addMarkAtDirection(c, Forward);
+		addMarkAtDirection(c, Back);
+		addMarkAtDirection(c, Left);
+		addMarkAtDirection(c, Right);
 		break;
 	case Down:
-		markDown(row, col);
-		markLeft(row, col);
-		markRight(row, col);
+		addMarkAtDirection(c, Down);
+		addMarkAtDirection(c, Forward);
+		addMarkAtDirection(c, Back);
+		addMarkAtDirection(c, Left);
+		addMarkAtDirection(c, Right);
 		break;
 	case Right:
-		markDown(row, col);
-		markUp(row, col);
-		markRight(row, col);
+		addMarkAtDirection(c, Right);
+		addMarkAtDirection(c, Forward);
+		addMarkAtDirection(c, Back);
+		addMarkAtDirection(c, Up);
+		addMarkAtDirection(c, Down);
 		break;
 	case Left:
-		markDown(row, col);
-		markLeft(row, col);
-		markUp(row, col);
+		addMarkAtDirection(c, Left);
+		addMarkAtDirection(c, Forward);
+		addMarkAtDirection(c, Back);
+		addMarkAtDirection(c, Up);
+		addMarkAtDirection(c, Down);
+		break;
+	case Forward:
+		addMarkAtDirection(c, Forward);
+		addMarkAtDirection(c, Left);
+		addMarkAtDirection(c, Right);
+		addMarkAtDirection(c, Up);
+		addMarkAtDirection(c, Down);
+		break;
+	case Back:
+		addMarkAtDirection(c, Back);
+		addMarkAtDirection(c, Left);
+		addMarkAtDirection(c, Right);
+		addMarkAtDirection(c, Up);
+		addMarkAtDirection(c, Down);
 		break;
 	case None:
-		markUp(row, col);
-		markDown(row, col);
-		markLeft(row, col);
-		markRight(row, col);
+		addMarkAtDirection(c, Forward);
+		addMarkAtDirection(c, Back);
+		addMarkAtDirection(c, Left);
+		addMarkAtDirection(c, Right);
+		addMarkAtDirection(c, Up);
+		addMarkAtDirection(c, Down);
 		break;
 	}
 }
 
-void IntelligentAlgo::markHit(int row, int col, direction dir)
+void IntelligentAlgo::markHit(Coordinate c, direction dir)
 {
+	Coordinate previous{ -1,-1,-1 };
 	switch(dir)
 	{
 	case Up:
-		markLeft(row, col);
-		markRight(row, col);
-		markLeft(row - 1, col);
-		markRight(row - 1, col);
+		addMarkAtDirection(c, Left);
+		addMarkAtDirection(c, Right);
+		addMarkAtDirection(c, Forward);
+		addMarkAtDirection(c, Back);
+		previous = Coordinate(c.row + 1, c.col, c.depth);
+		addMarkAtDirection(previous, Left);
+		addMarkAtDirection(previous, Right);
+		addMarkAtDirection(previous, Forward);
+		addMarkAtDirection(previous, Back);
 		break;
 	case Down:
-		markLeft(row, col);
-		markRight(row, col);
-		markLeft(row + 1, col);
-		markRight(row + 1, col);
+		addMarkAtDirection(c, Left);
+		addMarkAtDirection(c, Right);
+		addMarkAtDirection(c, Forward);
+		addMarkAtDirection(c, Back);
+		previous = Coordinate(c.row - 1, c.col, c.depth);
+		addMarkAtDirection(previous, Left);
+		addMarkAtDirection(previous, Right);
+		addMarkAtDirection(previous, Forward);
+		addMarkAtDirection(previous, Back);
 		break;
 	case Left:
-		markUp(row, col);
-		markDown(row, col);
-		markUp(row, col + 1);
-		markDown(row, col + 1);
+		addMarkAtDirection(c, Up);
+		addMarkAtDirection(c, Down);
+		addMarkAtDirection(c, Forward);
+		addMarkAtDirection(c, Back);
+		previous = Coordinate(c.row, c.col + 1, c.depth);
+		addMarkAtDirection(previous, Up);
+		addMarkAtDirection(previous, Down);
+		addMarkAtDirection(previous, Forward);
+		addMarkAtDirection(previous, Back);
 		break;
 	case Right:
-		markUp(row, col);
-		markDown(row, col);
-		markUp(row, col - 1);
-		markDown(row, col - 1);
+		addMarkAtDirection(c, Up);
+		addMarkAtDirection(c, Down);
+		addMarkAtDirection(c, Forward);
+		addMarkAtDirection(c, Back);
+		previous = Coordinate(c.row, c.col - 1, c.depth);
+		addMarkAtDirection(previous, Up);
+		addMarkAtDirection(previous, Down);
+		addMarkAtDirection(previous, Forward);
+		addMarkAtDirection(previous, Back);
+		break;
+	case Forward:
+		addMarkAtDirection(c, Up);
+		addMarkAtDirection(c, Down);
+		addMarkAtDirection(c, Left);
+		addMarkAtDirection(c, Right);
+		previous = Coordinate(c.row, c.col, c.depth - 1);
+		addMarkAtDirection(previous, Up);
+		addMarkAtDirection(previous, Down);
+		addMarkAtDirection(previous, Left);
+		addMarkAtDirection(previous, Right);
+		break;
+	case Back:
+		addMarkAtDirection(c, Up);
+		addMarkAtDirection(c, Down);
+		addMarkAtDirection(c, Left);
+		addMarkAtDirection(c, Right);
+		previous = Coordinate(c.row, c.col, c.depth + 1);
+		addMarkAtDirection(previous, Up);
+		addMarkAtDirection(previous, Down);
+		addMarkAtDirection(previous, Left);
+		addMarkAtDirection(previous, Right);
 		break;
 	case None:
 		break;
 	}
 }
 
-void IntelligentAlgo::addAttacks(int row, int col, direction dir, bool atStart)
+void IntelligentAlgo::addAttacks(Coordinate c, direction dir, bool atStart)
 {
 	switch (dir)
 	{
 	case Up:
-		addAttackUp(row, col, atStart);
-		break;
 	case Down:
-		addAttackDown(row, col, atStart);
-		break;
 	case Left:
-		addAttackLeft(row, col, atStart);
-		break;
 	case Right:
-		addAttackRight(row, col, atStart);
-		break;
-	case None:
-		addAttackUp(row, col, atStart);
-		addAttackDown(row, col, atStart);
-		addAttackLeft(row, col, atStart);
-		addAttackRight(row, col, atStart);
+	case Forward:
+	case Back:
+		addAttackAtDirection(c, dir, atStart);
+		break; // adds an attack only in the appropriate direction.
+	case None: // if we don't know the direction of the ship, add attacks around
+		addAttackAtDirection(c, Up, atStart);
+		addAttackAtDirection(c, Down, atStart);
+		addAttackAtDirection(c, Left, atStart);
+		addAttackAtDirection(c, Right, atStart);
+		addAttackAtDirection(c, Forward, atStart);
+		addAttackAtDirection(c, Back, atStart);
 		break;
 	}
 }
 
+void IntelligentAlgo::markBoard()
+{
+	for (int depth = 1; depth <= board->depth(); depth++)
+		for (int row = 1; row <= board->rows(); row++)
+			for (int col = 1; col <= board->cols(); col++)
+				markPosition(Coordinate(row, col, depth), tileMarks::Attack);
+
+	for(int depth = 1; depth <= board->depth(); depth++)
+		for(int row = 1; row <= board->rows(); row++)
+			for (int col = 1; col <= board->cols(); col++)
+			{
+				Coordinate curr = Coordinate(row, col, depth);
+				if (board->charAt(curr) != static_cast<char>(Ship::Symbol::Blank))
+				{
+					markPosition(curr, tileMarks::DontAttack);
+					if (row > 1)
+					{
+						markPosition(Coordinate(row - 1, col, depth), tileMarks::DontAttack);
+					}
+					if (col > 1)
+					{
+						markPosition(Coordinate(row, col - 1, depth), tileMarks::DontAttack);
+					}
+					if(depth > 1)
+					{
+						markPosition(Coordinate(row, col, depth - 1), tileMarks::DontAttack);
+					}
+					if (row < board->rows())
+					{
+						markPosition(Coordinate(row + 1, col, depth), tileMarks::DontAttack);
+					}
+					if (col < board->cols())
+					{
+						markPosition(Coordinate(row, col + 1, depth), tileMarks::DontAttack);
+					}
+					if (depth < board->depth())
+					{
+						markPosition(Coordinate(row, col, depth + 1), tileMarks::DontAttack);
+					}
+				}
+			}
+}
 
 
-std::pair<int, int> IntelligentAlgo::attack()
+void IntelligentAlgo::setPlayer(int player)
+{
+	if (!currentAttacks.empty())
+	{
+		this->formerGamesAttacks.push_front(make_pair(currentAttacks, player_number));
+		this->currentAttacks.clear();
+	}
+	this->player_number = player;
+}
+
+void IntelligentAlgo::setBoard(const BoardData& board)
+{
+	this->board = &board;	
+	if (this->shadow_board.get() == nullptr)
+		this->shadow_board = unique_ptr<tileMarks>(new tileMarks[board.rows() * board.cols() * board.depth()]);
+	else
+	{
+		auto * temp = this->shadow_board.release();
+		delete[] temp;
+		this->shadow_board.reset(new tileMarks[board.rows() * board.cols() * board.depth()]);
+	}
+	markBoard();
+	if (!currentAttacks.empty())
+	{
+		this->formerGamesAttacks.push_front(make_pair(currentAttacks, player_number));
+		this->currentAttacks.clear();
+	}
+	gameAttacks = formerGamesAttacks.cbegin();
+	memoryFlag = setNextAttackIterator();	
+}
+
+Coordinate IntelligentAlgo::attack()
 {	
-	std::tuple<int,int,direction> temp;
-	if(!possibleAttacks.empty())
+	std::pair<Coordinate,direction> temp = make_pair(Coordinate(-1,-1,-1), None);
+	Coordinate res{-1,-1,-1};
+	while (memoryFlag)
+	{
+		if (nextAttack != end)
+		{
+			res = *nextAttack;
+			++nextAttack;
+			if(markAt(res) == Attack) // checks if the target is valid - marked as attackable.
+				return res;
+			else if(markAt(res) == DontAttack) // Wrong list - shouldn't attack this tile.
+				memoryFlag = setNextAttackIterator();
+		}
+		else
+			memoryFlag = setNextAttackIterator();
+	}
+	// If we passed all former games.
+	if (!possibleAttacks.empty()) // there are available targets in the list.
 	{
 		do
 		{
 			temp = possibleAttacks.back();
-			possibleAttacks.pop_back();			
-		} while (shadow_board[std::get<0>(temp)][std::get<1>(temp)] != Attack && !possibleAttacks.empty());
-		if (shadow_board[std::get<0>(temp)][std::get<1>(temp)] == Attack)
+			possibleAttacks.pop_back();
+		} while (markAt(temp.first) != Attack && !possibleAttacks.empty());
+
+		/* checking if the coord is a valid target - 
+		 * we may reach this part when possibleAttacks is empty 
+		 * AND "temp" isn't a valid target.
+		 */
+		if (markAt(temp.first) == Attack) 
 		{
-			lastFired = temp;
-			return make_pair(std::get<0>(temp) + 1, std::get<1>(temp) + 1);
-		} // otherwise continue looking for new attacks
-	}	
-	while(numberOfRuns < 2) // not suppose to happen
-	{
-		if (shadow_board[nextAttack.first][nextAttack.second] == Attack)
-		{
-			std::pair<int,int> res = nextAttack;	
-			res.first++;
-			res.second++;
-			addTwo();
-			lastFired = make_tuple(res.first, res.second, None);
+			res = temp.first;
+			lastAttack = res;
+			lastDirection = temp.second;
 			return res;
 		}
-		// If marked Don't Attack or Attacked, keep looking for a target
-		addTwo();
 	}
-	/*
-	 *  We get here only if there are no more targets (and the last target is 10,10)
-	 *  We should get here only once - and win in this turn 
-	 *  (otherwise we have passed all the possible tiles and we haven't sank all of the enemy ships)
-	*/
-	lastFired = make_tuple(nextAttack.first, nextAttack.second, None);
-	std::pair<int, int> res = nextAttack;
-	res.first++;
-	res.second++;
+	// otherwise randomly attack valid positions on the board.
+	lastDirection = None;
+	do
+	{
+		res = generateRandom();
+	}
+	while (markAt(res) != Attack); // Should stop if the game isn't over.
+	lastAttack = res;	
 	return res;
 }
 
-void IntelligentAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult result)
-{
-	row--;
-	col--;
-	if(result == AttackResult::Miss)
+void IntelligentAlgo::notifyOnAttackResult(int player, Coordinate move, AttackResult result)
+{	
+	if (player == player_number)
 	{
-		board[row][col] = static_cast<char>(Ship::Symbol::MISS);
-	}
-	else
-	{			
-		if(player == player_number)
+		if (result == AttackResult::Sink)
 		{
-			if (result == AttackResult::Sink)
+			if (memoryFlag)
 			{
-				markSink(row, col, std::get<2>(lastFired));
+				markSink(move, None);
 			}
 			else
 			{
-				markHit(row, col, std::get<2>(lastFired));
-				addAttacks(row, col, std::get<2>(lastFired), true);
+				markSink(move, lastDirection);
 			}
 		}
-		else if (board[row][col] == static_cast<char>(Ship::Symbol::Blank))
+		else
 		{
-			addAttacks(row, col, None, false);
+			// If we missed using our memory, change to a different list (this one is irrelevant)
+			if (result == AttackResult::Miss && memoryFlag == true)
+			{
+				memoryFlag = setNextAttackIterator();
+			}
+			else if (result == AttackResult::Hit && memoryFlag == false)
+			{
+				// adding targets
+				addAttacks(move, lastDirection, true);
+				markHit(move, lastDirection);
+			}
 		}
-		board[row][col] = static_cast<char>(Ship::Symbol::Hit);
 	}
-	shadow_board[row][col] = tileMarks::Attacked;
+	else if (markAt(move) == Attack && result == AttackResult::Hit) // The opponent hit himself.
+		addAttacks(move, None, false);
+	if (player_number == player && (result == AttackResult::Sink || result == AttackResult::Hit))
+		this->currentAttacks.push_front(move);
+	// finally mark this tile as attacked.
+	markPosition(move, Attacked);
 }
 
 IBattleshipGameAlgo* GetAlgorithm()
