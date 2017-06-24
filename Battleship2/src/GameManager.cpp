@@ -15,6 +15,8 @@ void GameManager::play()
 	while (gameInProgress)
 	{
 		bool noAttack = false;
+
+		// Ask a player for attack coordinate and check if there was no error
 		coord = board.attackPlayer(board.getTurn());
 		if (coord.col == -1 && coord.depth == -1 && coord.row == -1)
 		{
@@ -64,23 +66,8 @@ void GameManager::play()
 	pointsA = board.getScore(0);
 	pointsB = board.getScore(1);
 	
-	/*
-	winner = 0;
-	pointsA = 5;
-	pointsB = 10;
-	*/
-	
-	//std::unique_lock<std::mutex> lock(ScoresController::mutexScores, std::defer_lock);
-	//lock.lock();
 	std::unique_lock<std::mutex> lockScores(ScoresController::mutexScores, std::defer_lock);
 	lockScores.lock();
-	//ScoresController::cvScores.wait(lockScores);
-	
-	//while (lock.try_lock() == false) {}
-	//std::cout << "Board " << board<< " - Player " << playerAIndex << " vs. Player " << playerBIndex << std::endl;
 	ScoresController::updateScores(playerAIndex, playerBIndex, winner, pointsA, pointsB);
-	//std::cout << "Updating scores" << std::endl;
 	lockScores.unlock();
-	//lockScores.unlock();
-	//ScoresController::cvScores.notify_one();
 }

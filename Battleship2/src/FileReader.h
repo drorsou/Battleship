@@ -9,6 +9,7 @@
 #include <tuple>
 #include <windows.h>
 #include <algorithm>
+#include "TournamentManager.h"
 
 class FileReader
 {
@@ -61,6 +62,11 @@ public:
 
 	// New functions
 
+	/* Pre: Get number 'argc' of the program arguments and their pointers 'argv'
+	* Post: Set the TournamentManager variables according to the arguments,
+	* returns false if there was an error and true otherwise
+	*/
+	static bool checkArgs(int argc, char** argv);
 
 	/* Pre: Empty vectors for boards and player algorithms, path to files
 	 * Post: Read all the files from 'path', add legal boards to 'boardsVector' and legel players to 'playersVector'

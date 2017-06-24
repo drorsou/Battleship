@@ -3,7 +3,6 @@
 #include "ScoresController.h"
 #include <memory>
 #include "Board.h"
-#include <iostream>
 #include <mutex>
 
 
@@ -14,7 +13,6 @@ class GameManager
 	IBattleshipGameAlgo* playerB;
 	int playerAIndex;
 	int playerBIndex;
-	bool finished;
 	int winner;
 	int pointsA;
 	int pointsB;
