@@ -587,9 +587,9 @@ std::tuple<int, int, int> Board::ParseBoardShape(const std::string& line)
 
 Board::ShipDirection Board::getShipDirectionAt(const Coordinate c) const
 {
-	if (c.row < board.rows() - 1 && this->board.charAt(Coordinate(c.row + 1, c.col, c.depth)) != static_cast<char>(Ship::Symbol::Blank))
+	if (c.row < board.rows() && this->board.charAt(Coordinate(c.row + 1, c.col, c.depth)) != static_cast<char>(Ship::Symbol::Blank))
 		return Down;
-	if (c.col < board.cols() - 1 && this->board.charAt(Coordinate(c.row, c.col + 1, c.depth)) != static_cast<char>(Ship::Symbol::Blank))
+	if (c.col < board.cols() && this->board.charAt(Coordinate(c.row, c.col + 1, c.depth)) != static_cast<char>(Ship::Symbol::Blank))
 		return Right;
 	return Forward;
 }

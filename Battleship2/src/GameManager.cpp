@@ -3,6 +3,9 @@
 
 void GameManager::play()
 {
+	bool toPrint = false;
+	if (board.board.rows() == 10 && board.board.cols() == 10 && board.board.depth() == 1)
+		toPrint = true;
 	// Initialize
 	board.setPlayer(0, playerA);
 	board.setPlayer(1, playerB);
@@ -10,14 +13,19 @@ void GameManager::play()
 	bool gameInProgress = true;
 	AttackResult result;
 	Coordinate coord(0, 0, 0);
-
+	int i = 0;
 	// Run the game
+
+//	board.printBoard();
 	while (gameInProgress)
 	{
 		bool noAttack = false;
 
 		// Ask a player for attack coordinate and check if there was no error
 		coord = board.attackPlayer(board.getTurn());
+
+//		std::cout << "Player " << (board.getTurn() == 0 ? "A" : "B") << " moved (" << coord.row << ", " << coord.col << ", " << coord.depth << ")" << std::endl;
+		
 		if (coord.col == -1 && coord.depth == -1 && coord.row == -1)
 		{
 			if (noAttack == true)

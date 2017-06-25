@@ -26,7 +26,9 @@
 
 class Board {
 	static const int SHIPS_PER_PLAYER = 5;
+public:
 	boardArray board;
+private:
 	int current_player_turn;
 	IBattleshipGameAlgo * playerA;
 	IBattleshipGameAlgo * playerB;
@@ -109,7 +111,7 @@ class Board {
 	ShipDirection getShipDirectionAt(const Coordinate c) const;
 	static std::pair<int, int> makePairByLength(const Type t, int pos);
 	void fillDimensionsOfShip(Coordinate c, Type t, std::pair<int,int> & vert, std::pair<int, int> & horz, std::pair<int, int> & depth) const;
-public:
+public:	
 //	void printBoard() { this->board.printBoard(); }
 
 	Board()
@@ -169,4 +171,6 @@ public:
 	bool parseBoard(std::string& path);
 
 	static bool checkChar(char c);
+
+	
 };
