@@ -567,8 +567,8 @@ std::tuple<int, int, int> Board::ParseBoardShape(const std::string& line)
 	}
 	try
 	{
-		row = stoi(tokens[0]);
-		col = stoi(tokens[1]);
+		row = stoi(tokens[1]);
+		col = stoi(tokens[0]);
 		depth = stoi(tokens[2]);
 	}
 	catch (const std::exception&)
