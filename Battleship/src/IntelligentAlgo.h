@@ -1,9 +1,6 @@
 #pragma once
 #include "Ship.h"
-#include <stack>
-#include <array>
 #include <list>
-#include <tuple>
 #include "TestingBoard.h"
 #include "BoardDataAccess.h"
 
@@ -26,22 +23,13 @@ class IntelligentAlgo : public IBattleshipGameAlgo
 	int player_number;
 	const BoardData * board = nullptr;
 	unique_ptr<tileMarks> shadow_board = nullptr;
-	int position(Coordinate c) const {
-		if (c.row > board->rows() || c.row < 1 || c.col > board->cols() || c.col < 1 || c.depth > board->depth() || c.depth < 1)
-			printf("bad coordinate\n");
+	int position(Coordinate c) const {		
 		return (c.col - 1) + (c.row - 1) * board->cols() + (c.depth - 1) * board->rows() * board->cols();
 	}
-	void markPosition(Coordinate c, tileMarks mark)	{
-		if (c.row > board->rows() || c.row < 1 || c.col > board->cols() || c.col < 1 || c.depth > board->depth() || c.depth < 1)
-			printf("bad coordinate\n");
+	void markPosition(Coordinate c, tileMarks mark)	{		
 		(shadow_board.get())[position(c)] = mark;
 	}
-	tileMarks markAt(Coordinate c) const {
-		if (c.row > board->rows() || c.row < 1 || c.col > board->cols() || c.col < 1 || c.depth > board->depth() || c.depth < 1)
-		{
-			printf("bad coordinate\n");
-			return DontAttack;
-		}
+	tileMarks markAt(Coordinate c) const {		
 		return (shadow_board.get())[position(c)];
 	}
 

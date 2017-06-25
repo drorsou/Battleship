@@ -7,7 +7,6 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-#include <windows.h>
 #include "BoardDataAccess.h"
 
 #define BOARD_SIZE 10
@@ -54,32 +53,37 @@ private:
 	int coordColor(Coordinate c) const	{
 		return Ship::checkColor(this->board.charAt(c));
 	}
-
-	static bool printSizeOrShapeError(int player, bool * arr);
-
-	static bool printNumOfShipsError(int player, int count);
-
+	
+	/*
+	 * Generates a coordinate out of given coordinate - utility function.
+	 */
 	static Coordinate generateCoord(const Coordinate c, ShipDirection dir, int val);
 
+	/*
+	 * Utility function for checkCoord - splits the work of checkCoord by the directions.
+	 */
 	bool checkDirection(int * len, bool * sizeOShape, bool * adjacent, TestingBoard<TileStatus>& temp, Coordinate c, char t, ShipDirection dir) const;
 
 	/*
-	Pre: gets a pointer to the size or shape flag,
-	to the adjacent flag,
-	The shadow board (which it changes),
-	a non-empty valid coordinate and the char in it.
-	Post: returns true if this coord makes a valid ship,
-	if the size or shape aren't okay, update the flag,
-	and if there is an adajacent ship, update the flag.
+	* Pre: gets a pointer to the size or shape flag,
+	*		to the adjacent flag,
+	*		The shadow board (which it changes),
+	*		a non-empty valid coordinate and the char in it.
+	* Post: returns true if this coord makes a valid ship,
+	*		if the size or shape aren't okay, update the flag,
+	*		and if there is an adajacent ship, update the flag.
 	*/
 	bool checkCoord(bool*, bool*, TestingBoard<TileStatus>&, Coordinate c, char) const;
 
 	/*
-		Pre: None
-		Post: returns true iff the board is legal.
+	* Pre: The board is initilized and parseBoard was called before.
+	* Post: Returns true iff the board meets all of the requirements.
 	*/
 	bool checkBoard();
 
+	/*
+	 * Checks if there are ships in a direction.
+	 */
 	bool checkRowForAShip(Coordinate c, char type) const
 	{
 		return (c.col > 1 && this->board.charAt(Coordinate(c.row, c.col - 1, c.depth)) == type) || (c.col < this->board.cols() && this->board.charAt(Coordinate(c.row, c.col + 1, c.depth)) == type);
@@ -112,7 +116,6 @@ private:
 	static std::pair<int, int> makePairByLength(const Type t, int pos);
 	void fillDimensionsOfShip(Coordinate c, Type t, std::pair<int,int> & vert, std::pair<int, int> & horz, std::pair<int, int> & depth) const;
 public:	
-//	void printBoard() { this->board.printBoard(); }
 
 	Board()
 		: playerA(nullptr),
@@ -168,6 +171,10 @@ public:
 	*/
 	bool checkTarget(char target) const;
 
+	/*
+	 * Pre: gets the path to the board.
+	 * Post: parses the board.
+	 */
 	bool parseBoard(std::string& path);
 
 	static bool checkChar(char c);

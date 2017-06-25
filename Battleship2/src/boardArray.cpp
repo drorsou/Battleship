@@ -1,5 +1,4 @@
 #include "boardArray.h"
-#include <iostream>
 
 void boardArray::copyArr(const std::unique_ptr<Ship::Symbol>& otherArr)
 {
@@ -24,21 +23,6 @@ boardArray::boardArray(int rows, int cols, int depth)
 	}
 }
 
-//void boardArray::printBoard()
-//{
-//	Ship::Symbol * b = arr.get();
-//	for(int d = 1; d <= this->depth(); d++)
-//	{
-//		for (int row = 1; row <= this->rows(); row++)
-//		{
-//			for (int col = 1; col <= this->cols(); col++)
-//				std::cout << static_cast<char>(b[position(row, col, d)]);
-//			std::cout << endl;
-//		}
-//		std::cout << "------------------" << std::endl;
-//	}
-//}
-
 char boardArray::charAt(Coordinate c) const
 {
 	return static_cast<char>((arr.get())[position(c.row, c.col, c.depth)]);
@@ -47,4 +31,48 @@ char boardArray::charAt(Coordinate c) const
 void boardArray::setCharAt(Coordinate c, Ship::Symbol s)
 {
 	(arr.get())[position(c.row, c.col, c.depth)] = s;	
+}
+
+boardArray::boardArray(const boardArray& other)
+{
+	_rows = other.rows();
+	_cols = other.cols();
+	_depth = other.depth();
+	arr = unique_ptr<Ship::Symbol>(new Ship::Symbol[_rows * _cols * _depth]);
+	copyArr(other.arr);
+}
+
+boardArray::boardArray(boardArray&& other) noexcept
+{
+	_rows = other.rows();
+	_cols = other.cols();
+	_depth = other.depth();
+	auto temp = arr.release();
+	arr.reset(other.arr.release());
+	other.arr.reset(temp);
+}
+
+boardArray& boardArray::operator=(const boardArray& other)
+{
+	if (this == &other)
+		return *this;
+	_rows = other.rows();
+	_cols = other.cols();
+	_depth = other.depth();
+	arr = unique_ptr<Ship::Symbol>(new Ship::Symbol[_rows * _cols * _depth]);
+	copyArr(other.arr);
+	return *this;
+}
+
+boardArray& boardArray::operator=(boardArray&& other) noexcept
+{
+	if (this == &other)
+		return *this;
+	_rows = other.rows();
+	_cols = other.cols();
+	_depth = other.depth();
+	auto temp = arr.release();
+	arr.reset(other.arr.release());
+	other.arr.reset(temp);
+	return *this;
 }
