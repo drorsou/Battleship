@@ -41,8 +41,8 @@ bool TournamentManager::init(int argc, char* argv[])
 	FileReader::writeToVectorTheFilesInDir(TournamentManager::getPath());
 
 
-	std::cout << "Number of threads: " << threads << std::endl; // Debug line
-	std::cout << "Path is: " << TournamentManager::getPath() << std::endl; // Debug line
+	//std::cout << "Number of threads: " << threads << std::endl; // Debug line
+	//std::cout << "Path is: " << TournamentManager::getPath() << std::endl; // Debug line
 
 
 	// Read dlls and board files
