@@ -63,7 +63,7 @@ void ScoresController::checkForResults()
 
 			playerScores[i].pop();
 
-			winPercents.push_back(ScoresController::winPercent(i, (winsVector[i] / (static_cast<float>(winsVector[i]) + lossesVector[i])) * 100));
+			winPercents.push_back(ScoresController::winPercent(i, (static_cast<float>(winsVector[i]) / (winsVector[i] + lossesVector[i])) * 100));
 		}
 
 		std::sort(winPercents.begin(), winPercents.end());
@@ -79,7 +79,7 @@ void ScoresController::printResults(std::vector<ScoresController::winPercent>& w
 		if (playerNamesVector[i].length() > maxNameLength)
 			maxNameLength = static_cast<int>(playerNamesVector[i].length());
 
-	/*std::cout << "#\t" << "Team Name";
+	std::cout << "#\t" << "Team Name";
 	ScoresController::gotoXY(0, maxNameLength);
 	std::cout << "Wins";
 	ScoresController::gotoXY(0, 5);
@@ -99,42 +99,33 @@ void ScoresController::printResults(std::vector<ScoresController::winPercent>& w
 		ScoresController::gotoXY(0, static_cast<int>(maxNameLength + 9 - playerNamesVector[index].length()));
 
 		std::cout << winsVector[index];
-		int m = 10;
+		ScoresController::space(winsVector[index], 9);
+		/*int m = 10;
 		int k = 1;
 		while (winsVector[index] / m > 0)
 		{
 			m = m * 10;
 			k++;
 		}
-		ScoresController::gotoXY(0, 9 - k);
+		ScoresController::gotoXY(0, 9 - k);*/
 
 		std::cout << lossesVector[index];
+		ScoresController::space(lossesVector[index], 9);
 
-
+		std::cout << std::setprecision(2);
+		std::cout << std::fixed;
 		std::cout << winPercents[i].percent;
-
-
-		std::cout << pointsForVector[index];
+		if (winPercents[i].percent == 100)
+			ScoresController::gotoXY(0, 2);
+		else if (winPercents[i].percent == 0)
+			ScoresController::gotoXY(0, 4);
+		else
+			ScoresController::gotoXY(0, 3);
 		
+		std::cout << pointsForVector[index];
+		ScoresController::space(pointsForVector[index], 10);
 
 		std::cout << pointsAgainstVector[index] << std::endl;
-
-	}*/
-
-	std::cout << "#" << round << "\tTeam Name";
-	ScoresController::gotoXY(0, maxNameLength);
-	std::cout << "Wins\t" << "Losses\t" << "%\t" << "Pts For\t" << "Pts Against" << std::endl;
-
-	// Print all the players results
-	for (int i = 0; i < playerScores.size(); i++)
-	{
-		int index = winPercents[i].index;
-		std::cout << i + 1 << ".\t" << playerNamesVector[index];
-
-		ScoresController::gotoXY(0, static_cast<int>(maxNameLength + 9 - playerNamesVector[index].length()));
-
-		std::cout << winsVector[index] << "\t" << lossesVector[index] << "\t" << winPercents[i].percent
-			<< "\t" << pointsForVector[index] << "\t" << pointsAgainstVector[index] << std::endl;
 	}
 
 	round++;
@@ -159,4 +150,17 @@ void ScoresController::gotoXY(int row, int col)
 	coord.X = col + origin.X;
 	coord.Y = row + origin.Y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+
+
+void ScoresController::space(int var, int width)
+{
+	int m = 10;
+	int k = 1;
+	while (var / m > 0)
+	{
+		m = m * 10;
+		k++;
+	}
+	ScoresController::gotoXY(0, width - k);
 }

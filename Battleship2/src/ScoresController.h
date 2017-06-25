@@ -33,7 +33,7 @@ public:
 		int index;
 		float percent;
 
-		winPercent(int index_, int percent_) : index(index_), percent(percent_) {};
+		winPercent(int index_, float percent_) : index(index_), percent(percent_) {};
 
 		bool operator < (const winPercent& wp) const { return percent > wp.percent; }
 	};
@@ -63,6 +63,9 @@ public:
 	 * Post: Moves the console cursor from current position to the position plus the given 'row' and 'col'
 	 */
 	static void gotoXY(int row, int col);
+
+
+	static void space(int var, int width);
 
 	
 	static int totalRounds;
