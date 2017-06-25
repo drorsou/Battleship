@@ -6,7 +6,7 @@ int IntelligentAlgo::randomInt(int range)
 	 * This code was taken from https://ericlippert.com/2013/12/16/how-much-bias-is-introduced-by-the-remainder-technique/
 	 * which lowers the bias of the reminder random techniuqe.
 	 * A limit of 10 random attempts was chosen so it always stops (this is a Las-Vegas Algorithm which might never stop).
-	 */
+	 */	
 	for (int i = 0; i < 10; i++)
 	{
 		int value = rand();
@@ -78,10 +78,13 @@ void IntelligentAlgo::addAttackAtDirection(Coordinate c, direction dir, bool AtS
 			return;
 			break;
 	}
-	if (AtStart && target.row != -1 && target.col != -1 && target.depth != -1)
-		possibleAttacks.emplace_back(target, dir);
-	else
-		possibleAttacks.emplace_front(target, dir);
+	if (target.row != -1 && target.col != -1 && target.depth != -1)
+	{
+		if(AtStart)
+			possibleAttacks.emplace_back(target, dir);
+		else
+			possibleAttacks.emplace_front(target, dir);
+	}		
 }
 
 void IntelligentAlgo::addMarkAtDirection(Coordinate c, direction dir)
@@ -327,13 +330,18 @@ void IntelligentAlgo::markBoard()
 
 
 void IntelligentAlgo::setPlayer(int player)
-{
+{	
 	if (!currentAttacks.empty())
 	{
 		this->formerGamesAttacks.push_front(make_pair(currentAttacks, player_number));
 		this->currentAttacks.clear();
+		this->possibleAttacks.clear();
 	}
-	this->player_number = player;
+	if (!this->possibleAttacks.empty())
+	{
+		this->possibleAttacks.clear();
+	}
+	this->player_number = player;	
 }
 
 void IntelligentAlgo::setBoard(const BoardData& board)
@@ -351,14 +359,19 @@ void IntelligentAlgo::setBoard(const BoardData& board)
 	if (!currentAttacks.empty())
 	{
 		this->formerGamesAttacks.push_front(make_pair(currentAttacks, player_number));
-		this->currentAttacks.clear();
+		this->currentAttacks.clear();		
+	}
+	if(!this->possibleAttacks.empty())
+	{
+		this->possibleAttacks.clear();
 	}
 	gameAttacks = formerGamesAttacks.cbegin();
 	memoryFlag = setNextAttackIterator();	
 }
 
 Coordinate IntelligentAlgo::attack()
-{	
+{
+	
 	std::pair<Coordinate,direction> temp = make_pair(Coordinate(-1,-1,-1), None);
 	Coordinate res{-1,-1,-1};
 	while (memoryFlag)
@@ -367,8 +380,13 @@ Coordinate IntelligentAlgo::attack()
 		{
 			res = *nextAttack;
 			++nextAttack;
-			if(markAt(res) == Attack) // checks if the target is valid - marked as attackable.
+			if (res.row > board->rows() || res.col > board->cols() || res.depth > board->depth())
+				memoryFlag = setNextAttackIterator();
+			else if (markAt(res) == Attack) // checks if the target is valid - marked as attackable.
+			{
+				
 				return res;
+			}
 			else if(markAt(res) == DontAttack) // Wrong list - shouldn't attack this tile.
 				memoryFlag = setNextAttackIterator();
 		}
@@ -392,15 +410,27 @@ Coordinate IntelligentAlgo::attack()
 		{
 			res = temp.first;
 			lastAttack = res;
-			lastDirection = temp.second;
+			lastDirection = temp.second;			
 			return res;
 		}
 	}
 	// otherwise randomly attack valid positions on the board.
 	lastDirection = None;
+	int count = 0;
 	do
 	{
+		count++;
 		res = generateRandom();
+		if(count >= board->rows()*board->cols()*board->depth())
+		{
+			for (int d = 1; d < board->depth(); d++)
+				for (int row = 1; row < board->rows(); row++)
+					for (int col = 1; col < board->cols(); col++)
+						if (markAt(res) == Attack)
+							return res;
+			if (count > 0)
+				printf("");
+		}
 	}
 	while (markAt(res) != Attack); // Should stop if the game isn't over.
 	lastAttack = res;	

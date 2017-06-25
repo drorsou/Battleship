@@ -27,12 +27,21 @@ class IntelligentAlgo : public IBattleshipGameAlgo
 	const BoardData * board = nullptr;
 	unique_ptr<tileMarks> shadow_board = nullptr;
 	int position(Coordinate c) const {
+		if (c.row > board->rows() || c.row < 1 || c.col > board->cols() || c.col < 1 || c.depth > board->depth() || c.depth < 1)
+			printf("bad coordinate\n");
 		return (c.col - 1) + (c.row - 1) * board->cols() + (c.depth - 1) * board->rows() * board->cols();
 	}
 	void markPosition(Coordinate c, tileMarks mark)	{
+		if (c.row > board->rows() || c.row < 1 || c.col > board->cols() || c.col < 1 || c.depth > board->depth() || c.depth < 1)
+			printf("bad coordinate\n");
 		(shadow_board.get())[position(c)] = mark;
 	}
 	tileMarks markAt(Coordinate c) const {
+		if (c.row > board->rows() || c.row < 1 || c.col > board->cols() || c.col < 1 || c.depth > board->depth() || c.depth < 1)
+		{
+			printf("bad coordinate\n");
+			return DontAttack;
+		}
 		return (shadow_board.get())[position(c)];
 	}
 
@@ -51,15 +60,7 @@ class IntelligentAlgo : public IBattleshipGameAlgo
 	void addAttacks(Coordinate c, direction dir, bool atStart);
 	
 	void markBoard();
-
-	/*direction adjacentShot(int row, int col) const
-	{
-		if (std::get<0>(lastFired) - row >= -1 && std::get<0>(lastFired) - row <= 1 && std::get<1>(lastFired) == col)
-			return Vertical;
-		if (std::get<0>(lastFired) == row && std::get<1>(lastFired) - col >= -1 && std::get<1>(lastFired) - col <= 1)
-			return Horizontal;
-		return None;
-	}*/
+	
 public:
 
 	IntelligentAlgo()

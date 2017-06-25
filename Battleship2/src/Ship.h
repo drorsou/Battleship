@@ -32,6 +32,14 @@ public:
 	Ship(std::pair<int, int> v, std::pair<int, int> h, std::pair<int,int> d, Type t);
 
 	Ship(const Ship& ship);
+	
+
+	//Ship(Ship&& other) = delete;
+
+	Ship& operator=(const Ship& other);
+
+	//Ship& operator=(Ship&& other) = delete;
+
 
 	enum ShipLen { BoatLen = 1, CruiserLen = 2, SubmarineLen = 3, DestroyerLen = 4};
 	enum Score { BoatScore = 2, CruiserScore = 3, SubmarineScore = 7, DestroyerScore = 8};
