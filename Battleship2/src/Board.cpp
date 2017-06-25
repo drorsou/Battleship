@@ -10,13 +10,13 @@ Board::Board(Board&& other) noexcept: board(std::move(other.board)),
                                       totalShipsBScore(other.totalShipsBScore),
                                       scoreA(other.scoreA),
                                       scoreB(other.scoreB)
-{
+{	
 	shipsA = std::move(other.shipsA);
 	shipsB = std::move(other.shipsB);
 }
 
 Board& Board::operator=(const Board& other)
-{
+{	
 	if (this == &other)
 		return *this;
 	board = other.board;
@@ -33,7 +33,7 @@ Board& Board::operator=(const Board& other)
 }
 
 Board& Board::operator=(Board&& other) noexcept
-{
+{	
 	if (this == &other)
 		return *this;
 	board = std::move(other.board);
@@ -90,11 +90,13 @@ Board::Board(const Board& other): board(other.board),
                                   current_player_turn(other.current_player_turn),
                                   playerA(nullptr),
                                   playerB(nullptr),
+								  shipsA(other.shipsA),
+								  shipsB(other.shipsB),
                                   totalShipsAScore(other.totalShipsAScore),
                                   totalShipsBScore(other.totalShipsBScore),
                                   scoreA(other.scoreA),
                                   scoreB(other.scoreB)
-{
+{	
 }
 
 

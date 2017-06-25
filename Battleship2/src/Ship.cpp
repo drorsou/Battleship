@@ -52,6 +52,7 @@ Ship::Ship(std::pair<int, int> v, std::pair<int, int> h, std::pair<int,int> d, T
 	setScoreAndLength(t);
 }
 
+
 bool Ship::checkDimensions(int len, char t)
 {	
 	switch (t)
@@ -76,8 +77,21 @@ Ship::Ship(const Ship& other) :
 	type(other.type),
 	size(other.size),
 	score(other.score)
-{
+{	
 	vert = make_pair(other.vert.first, other.vert.second);
 	horz = make_pair(other.horz.first, other.horz.second);
 	depth = make_pair(other.depth.first, other.depth.second);
+}
+
+Ship& Ship::operator=(const Ship& other)
+{	
+	if (this == &other)
+		return *this;
+	type = other.type;
+	size = other.size;
+	score = other.score;
+	vert = make_pair(other.vert.first, other.vert.second);
+	horz = make_pair(other.horz.first, other.horz.second);
+	depth = make_pair(other.depth.first, other.depth.second);
+	return *this;
 }

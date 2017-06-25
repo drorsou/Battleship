@@ -6,7 +6,7 @@ int IntelligentAlgo::randomInt(int range)
 	 * This code was taken from https://ericlippert.com/2013/12/16/how-much-bias-is-introduced-by-the-remainder-technique/
 	 * which lowers the bias of the reminder random techniuqe.
 	 * A limit of 10 random attempts was chosen so it always stops (this is a Las-Vegas Algorithm which might never stop).
-	 */
+	 */	
 	for (int i = 0; i < 10; i++)
 	{
 		int value = rand();
@@ -327,13 +327,13 @@ void IntelligentAlgo::markBoard()
 
 
 void IntelligentAlgo::setPlayer(int player)
-{
+{	
 	if (!currentAttacks.empty())
 	{
 		this->formerGamesAttacks.push_front(make_pair(currentAttacks, player_number));
 		this->currentAttacks.clear();
 	}
-	this->player_number = player;
+	this->player_number = player;	
 }
 
 void IntelligentAlgo::setBoard(const BoardData& board)
@@ -358,7 +358,8 @@ void IntelligentAlgo::setBoard(const BoardData& board)
 }
 
 Coordinate IntelligentAlgo::attack()
-{	
+{
+	
 	std::pair<Coordinate,direction> temp = make_pair(Coordinate(-1,-1,-1), None);
 	Coordinate res{-1,-1,-1};
 	while (memoryFlag)
@@ -367,8 +368,11 @@ Coordinate IntelligentAlgo::attack()
 		{
 			res = *nextAttack;
 			++nextAttack;
-			if(markAt(res) == Attack) // checks if the target is valid - marked as attackable.
+			if (markAt(res) == Attack) // checks if the target is valid - marked as attackable.
+			{
+				
 				return res;
+			}
 			else if(markAt(res) == DontAttack) // Wrong list - shouldn't attack this tile.
 				memoryFlag = setNextAttackIterator();
 		}
@@ -392,7 +396,7 @@ Coordinate IntelligentAlgo::attack()
 		{
 			res = temp.first;
 			lastAttack = res;
-			lastDirection = temp.second;
+			lastDirection = temp.second;			
 			return res;
 		}
 	}
