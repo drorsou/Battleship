@@ -157,7 +157,7 @@ void TournamentManager::waitForGames()
 void TournamentManager::addGamesToQueue()
 {
 	int lastPlayerIndex;
-
+	
 	// Chooses the index being based if the number of players is even or unven
 	if (playersVector.size() % 2 == 1)
 		lastPlayerIndex = static_cast<int>(playersVector.size());
@@ -167,6 +167,9 @@ void TournamentManager::addGamesToQueue()
 	int playerAIndex = 0;
 	int playerBIndex = lastPlayerIndex - roundRobinIndex;
 	
+	std::unique_lock<std::mutex> lockGames(TournamentManager::mutexGames, std::defer_lock);
+	lockGames.lock();
+
 	// Add the first pair of games in the rounds
 	if (playerBIndex != playersVector.size())
 	{
@@ -185,6 +188,8 @@ void TournamentManager::addGamesToQueue()
 			gamesQueue.push(GameManager(boardsVector[boardRound], playersVector[playerBIndex].get(), playersVector[playerAIndex].get(), playerBIndex, playerAIndex));
 		}
 	}
+
+	lockGames.unlock();
 
 	roundRobinIndex++;
 	if (roundRobinIndex == lastPlayerIndex)

@@ -12,7 +12,7 @@ class ScoresController
 {
 	struct Scores
 	{
-		int result; // 1 = win, 0 = loss
+		int result; // 0 = win, 1 = loss
 		int pointsFor;
 		int pointsAgainst;
 
@@ -31,7 +31,7 @@ public:
 	struct winPercent
 	{
 		int index;
-		int percent;
+		float percent;
 
 		winPercent(int index_, int percent_) : index(index_), percent(percent_) {};
 
