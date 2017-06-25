@@ -64,7 +64,9 @@ public:
 	 */
 	static void gotoXY(int row, int col);
 
-
+	/* Pre: Ints 'var' and 'width'
+	 * Post: Jump a space in the console as much as 'width', minus the width of the value of 'var'
+	 */
 	static void space(int var, int width);
 
 	

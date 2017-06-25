@@ -100,14 +100,6 @@ void ScoresController::printResults(std::vector<ScoresController::winPercent>& w
 
 		std::cout << winsVector[index];
 		ScoresController::space(winsVector[index], 9);
-		/*int m = 10;
-		int k = 1;
-		while (winsVector[index] / m > 0)
-		{
-			m = m * 10;
-			k++;
-		}
-		ScoresController::gotoXY(0, 9 - k);*/
 
 		std::cout << lossesVector[index];
 		ScoresController::space(lossesVector[index], 9);
@@ -117,7 +109,7 @@ void ScoresController::printResults(std::vector<ScoresController::winPercent>& w
 		std::cout << winPercents[i].percent;
 		if (winPercents[i].percent == 100)
 			ScoresController::gotoXY(0, 2);
-		else if (winPercents[i].percent == 0)
+		else if (winPercents[i].percent < 10)
 			ScoresController::gotoXY(0, 4);
 		else
 			ScoresController::gotoXY(0, 3);
