@@ -80,8 +80,7 @@ Board::Board(string path) : current_player_turn(0),
 		{
 			// Marking for main that the board is faulty.
 			scoreA = -1;
-			scoreB = -1;
-			std::cout << "Error: The board is incorrect" << endl;
+			scoreB = -1;			
 		}		
 	}
 }
@@ -264,68 +263,11 @@ bool Board::hitShip(Coordinate c, char type) {
 	return false;
 }
 
-/*
- *
- */
+
 bool Board::hasPlayerWon(int player) const {
 	return (player == 0 && scoreA == totalShipsBScore) || (player == 1 && scoreB == totalShipsAScore);
 }
 
-
-bool Board::printSizeOrShapeError(int player, bool * arr)
-{
-	bool res = true;
-	char sh;
-	int dif;
-	char pl = player == 0 ? 'A' : 'B';
-	for(int i = 0; i < 4; i++)
-		if(arr[i])
-		{
-			switch(i)
-			{
-			case 0:
-				dif = static_cast<int>(Ship::Symbol::ABoat);
-				break;
-			case 1:
-				dif = static_cast<int>(Ship::Symbol::ACruiser);
-				break;
-			case 2:
-				dif = static_cast<int>(Ship::Symbol::ASubmarine);
-				break;
-			case 3:
-				dif = static_cast<int>(Ship::Symbol::ADestroyer);
-				break;
-			}
-			dif -= static_cast<int>(Ship::Symbol::ABoat);
-			res = false;
-			if(player == 0)
-			{
-				sh = static_cast<char>(static_cast<int>(Ship::Symbol::ABoat) + dif);				
-			}
-			else
-			{
-				sh = static_cast<char>(static_cast<int>(Ship::Symbol::BBoat) + dif);
-			}
-			std::cout << "Wrong size or shape for ship " << sh << " for player " << pl << std::endl;
-		}
-	return res;
-}
-
-bool Board::printNumOfShipsError(int player, int count)
-{
-	char pl = player == 0 ? 'A' : 'B';
-	if (count > SHIPS_PER_PLAYER)
-	{
-		std::cout << "Too many ships for player " << pl << std::endl;
-		return false;
-	}
-	if (count < SHIPS_PER_PLAYER)
-	{
-		std::cout << "Too few ships for player " << pl << std::endl;
-		return false;
-	}
-	return true;
-}
 
 Coordinate Board::generateCoord(const Coordinate c, ShipDirection dir, int val)
 {
@@ -415,6 +357,8 @@ bool Board::checkDirection(int* len, bool* sizeOShape, bool* adjacent, TestingBo
 	return res;
 }
 
+
+
 bool Board::checkBoard() {
 	// creates a shadow board initialized to false.
 	TestingBoard<TileStatus> temp = TestingBoard<TileStatus>(board.rows(), board.cols(), board.depth());
@@ -474,23 +418,16 @@ bool Board::checkBoard() {
 	}
 
 	/*
-		Printing the error messages according to the following order - first player A then B:
-		Wrong size/shape.
-		Too many
-		Too few
-		Adjacent (not player oriented!)
-	*/	
-	result = result & Board::printSizeOrShapeError(0, AsizeOShape);
-	result = result & Board::printSizeOrShapeError(1, BsizeOShape);
-	result = result & Board::printNumOfShipsError(0, currA);
-	result = result & Board::printNumOfShipsError(1, currB);
+	 * Checking that the board meets all of the requirements.
+	 */
+	for (int i = 0; i < 3; i++)
+		if (AsizeOShape[i] == true || BsizeOShape[i] == true)
+			result = false;
+	if (currA != SHIPS_PER_PLAYER || currB != SHIPS_PER_PLAYER)
+		result = false;	
 	if (Adjacent)
-	{
-		std::cout << "Adjacent Ships on Board" << std::endl;
 		result = false;
-	}
 	return result;
-
 }
 
 
@@ -519,9 +456,12 @@ bool Board::is_number(const std::string &s) {
 	return !s.empty() && std::all_of(s.begin(), s.end(), ::isdigit);
 }
 
+/*
+ * Pre: gets a valid coordinate c, the ship type at this coordinate,
+ */
 void Board::fillDimensionsOfShip(Coordinate c, Type t, std::pair<int, int>& vert, std::pair<int, int>& horz, std::pair<int, int>& depth) const
 {
-	if (this->board.charAt(c) == static_cast<char>(Ship::Symbol::ABoat) || this->board.charAt(c) == static_cast<char>(Ship::Symbol::BBoat))
+	if (t == Boat)
 	{
 		horz = make_pair(c.col, c.col);
 		vert = make_pair(c.row, c.row);
@@ -567,6 +507,7 @@ std::tuple<int, int, int> Board::ParseBoardShape(const std::string& line)
 	}
 	try
 	{
+		// Getting the shape according to the original specification.
 		row = stoi(tokens[1]);
 		col = stoi(tokens[0]);
 		depth = stoi(tokens[2]);

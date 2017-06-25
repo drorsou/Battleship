@@ -33,12 +33,8 @@ public:
 
 	Ship(const Ship& ship);
 	
-
-	//Ship(Ship&& other) = delete;
-
 	Ship& operator=(const Ship& other);
-
-	//Ship& operator=(Ship&& other) = delete;
+	
 
 
 	enum ShipLen { BoatLen = 1, CruiserLen = 2, SubmarineLen = 3, DestroyerLen = 4};
