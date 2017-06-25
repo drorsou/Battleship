@@ -157,6 +157,50 @@ IBattleshipGameAlgo* FileReader::loadDLL(const std::string& path)
 }
 
 
+bool FileReader::checkArgs(int argc, char** argv)
+{
+	if (argc < 2) // No arguments
+		TournamentManager::emptyPath();
+	else
+	{
+		if (std::string{ "-threads" }.compare(argv[1]) == 0)
+		{
+			if (argc < 3)
+			{
+				std::cout << "Error: missing threads parameter" << std::endl;
+				return false;
+			}
+			TournamentManager::setThreads(std::stoi(argv[2]));
+			TournamentManager::emptyPath();
+		}
+		else
+		{
+			TournamentManager::setPath(argv[1]);
+			if (argc > 2)
+			{
+				if (std::string{ "-threads" }.compare(argv[2]) == 0)
+				{
+					if (argc > 3)
+						TournamentManager::setThreads(std::stoi(argv[3]));
+					else
+					{
+						std::cout << "Error: missing threads parameter" << std::endl;
+						return false;
+					}
+				}
+				else
+				{
+					std::cout << "Error: illegal parameter" << std::endl;
+					return false;
+				}
+
+			}
+		}
+	}
+	return true;
+}
+
+
 void FileReader::importFromFilesToVectors(std::vector<Board>& boardsVector, std::vector<std::unique_ptr<IBattleshipGameAlgo>>& playersVector, const std::string& path)
 {
 	for (std::vector<std::string>::const_iterator itr = FileReader::getFilesVectorBegin(); itr != FileReader::getFilesVectorEnd(); itr++) {
@@ -178,11 +222,9 @@ void FileReader::importFromFilesToVectors(std::vector<Board>& boardsVector, std:
 			if (currSuffixOfFile.compare("dll") == 0)
 			{
 				IBattleshipGameAlgo* dll = FileReader::loadDLL(path + "\\" + name);
-				//FileReader::GetAlgorithmFuncType dll = FileReader::loadDLL(path + "\\" + name);
 				if (dll != nullptr)
 				{
 					playersVector.push_back(std::unique_ptr<IBattleshipGameAlgo>(dll));
-					//playersVector.push_back(std::unique_ptr<FileReader::GetAlgorithmFuncType>(dll));
 					
 					// Save the player's name for scores
 					ScoresController::addPlayerName(name.substr(0, indexOfSuffix)); // Change return value to vector!! And then remove ScoresController from include of FileReader

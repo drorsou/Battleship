@@ -12,13 +12,21 @@ class ScoresController
 {
 	struct Scores
 	{
-		int result; // True = win, false = loss
+		int result; // 1 = win, 0 = loss
 		int pointsFor;
 		int pointsAgainst;
 
 		Scores(int result_, int pointsFor_, int pointsAgainst_) : result(result_), pointsFor(pointsFor_), pointsAgainst(pointsAgainst_) {};
 	};
 
+	static std::vector<std::string> playerNamesVector;
+	static std::vector<std::queue<ScoresController::Scores>> playerScores;
+	static std::vector<int> winsVector;
+	static std::vector<int> lossesVector;
+	static std::vector<int> pointsForVector;
+	static std::vector<int> pointsAgainstVector;
+
+public:
 
 	struct winPercent
 	{
@@ -29,25 +37,6 @@ class ScoresController
 
 		bool operator < (const winPercent& wp) const { return percent > wp.percent; }
 	};
-
-
-	static std::vector<std::string> playerNamesVector;
-	static std::vector<std::queue<ScoresController::Scores>> playerScores;
-
-
-
-	//static std::vector<int> gamesPlayedVector;
-	static std::vector<int> winsVector;
-	static std::vector<int> lossesVector;
-	static std::vector<int> pointsForVector;
-	static std::vector<int> pointsAgainstVector;
-
-
-
-
-
-
-public:
 
 	static void addPlayerName(std::string name) { playerNamesVector.push_back(name); };
 
@@ -61,22 +50,24 @@ public:
 	 */
 	static void updateScores(int playerAIndex, int playerBIndex, int winner, int pointsA, int pointsB);
 
-
+	/* Post: Check if a round is over, if true then print the results so far
+	 */
 	static void checkForResults();
 
+	/* Pre: A vector of sorted percent values 'winPercents'
+	 * Post: Print the sorted results table
+	 */
+	static void printResults(std::vector<ScoresController::winPercent>& winPercents);
 
-	static std::mutex mutexScores;
-	//static std::condition_variable cvScores;
+	/* Pre: Values of 'row', 'col'
+	 * Post: Moves the console cursor from current position to the position plus the given 'row' and 'col'
+	 */
+	static void gotoXY(int row, int col);
 
-
+	
 	static int totalRounds;
 	static int round;
-
 	static int activeThreads;
 
-
-
-
-	static void gotoxy(int row, int col);
-	static void getCursorXY(bool toOrigin);
+	static std::mutex mutexScores;
 };
