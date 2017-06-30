@@ -3,10 +3,28 @@
 #include <vector>
 #include <string>
 
+#define MAX(x,y) (((x)>(y))?(x):(y))
+
+/*
+template<class T, size_t DIMENSIONS>
+class Matrix
+{
+
+};
+
+template<class T>
+using Matrix2d = Matrix<T, 2>;
+template<class T>
+using Matrix3d = Matrix<T, 3>;
+*/
+
+
 template<typename T>
 class Matrix2d
 {
-	T matrix[10*10] = {};
+	T* matrix;
+	int numOfRows;
+	int numOfCols = 0;
 
 	class Coord
 	{
@@ -18,6 +36,16 @@ public:
 
 	Matrix2d(std::initializer_list<std::initializer_list<T>> list)
 	{
+		// Find the matrix' size
+		numOfRows = list.size();
+		for (auto& row : list)
+			numOfCols = MAX(row.size(), numOfCols);
+
+		// Initialize the matrix
+		matrix = new T[numOfRows*numOfCols];
+
+		// Fill the matrix with values
+		// Not done
 		int i = 0;
 		for (auto& row : list) {
 			for (auto& val : row) {
