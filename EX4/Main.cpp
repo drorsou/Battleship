@@ -1,4 +1,8 @@
-#include "Main.h"
+#include "Matrix2d.h"
+#include <ctype.h>
+#include <iostream>
+
+using namespace std;
 
 
 template<typename Groups>
