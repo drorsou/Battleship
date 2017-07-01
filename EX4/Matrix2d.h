@@ -24,6 +24,7 @@ class Coord
 {
 	std::array<size_t, SIZE> arr;
 	public:
+	Coord(){}
 	Coord(std::initializer_list<size_t> list)
 	{
 		if (list.size() == SIZE)
@@ -78,7 +79,7 @@ public:
 		T * temp = new T[numOfRows*numOfCols]; 
 
 		// Fill the matrix with values
-		for (int i = 0; i < numOfRows*numOfCols; i++)
+		for (size_t i = 0; i < numOfRows*numOfCols; i++)
 		{
 			// Default set the matrix values to 0/nullptr/false
 			//matrix[i] = 
@@ -94,7 +95,7 @@ public:
 			}
 			valuesIndex += numOfCols - countCols;
 		}
-		matrix = temp;
+		matrix = std::unique_ptr<T>(temp);
 	}
 	Matrix2d(size_t rows, size_t cols, T val)
 		: numOfRows(rows),
@@ -103,109 +104,98 @@ public:
 		T * temp = new T[numOfRows*numOfCols];
 		for (size_t i = 0; i < numOfRows*numOfCols; i++)
 			temp[i] = val;
-		matrix = temp;
+		matrix = std::unique_ptr<T>(temp);
 	}
 
 
-	T getValAt(int index) const { return (matrix.get())[index]; }
+	T getValAt(size_t index) const { return (matrix.get())[index]; }
 	T getValAt(const Coord<2>& coord) const { return (matrix.get())[position(coord)]; }
+	void setValAt(const Coord<2>& coord, T val) { (matrix.get())[position(coord)] = val; }
+	void setValAt(size_t index, T val) { (matrix.get())[index] = val; }
 	size_t position(const Coord<2> coord) const { return coord[0] * numOfCols + coord[1]; }
 
-
-	template<typename S> // Switch std::string with template S ?
-	auto groupValues(const std::function<std::string(T)>& f)
+	std::string getGroupFromCoord(const std::function<std::string(T)>& f, Coord<2> coord) const
 	{
-		//
-		// Nested class to hold utility functions
-		//
-		struct MatrixGroup
+		return f(getValAt(coord));
+	}
+
+	void createGroupFromQueue(const std::function<std::string(T)>& f, std::queue<Coord<2>>& coordsToGroup, std::string& groupType, std::vector<Coord<2>>& groupCoords, Matrix2d<bool>& isValGrouped)
+	{
+		// Add current coordinate from queue to the group
+		Coord<2> coord = coordsToGroup.front();
+		coordsToGroup.pop();
+		isValGrouped.setValAt(this->position(coord), true);
+
+		// Add all adjacent coordinates from the matrix of the same group to the queue
+		Coord<2> checkCoord;
+		if (coord[1] + 1 < this->numOfRows)
 		{
-			std::string getGroupFromCoord(Coord<2> coord) const
+			checkCoord = { coord[0], coord[1] + 1 };
+			if (getGroupFromCoord(f, checkCoord) == groupType)
 			{
-				return f(getValAt(coord));
+				coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
 			}
-			
-
-			void createGroupFromQueue(Matrix2d * mat, std::queue<Coord<2>>& coordsToGroup, std::string& groupType, std::vector<Coord<2>>& groupCoords, Matrix2d<bool> isValGrouped)
+		}
+		if (coord[1] > 0)
+		{
+			checkCoord = { coord[0], coord[1] - 1 };
+			if (getGroupFromCoord(f, checkCoord) == groupType)
 			{
-				// Add current coordinate from queue to the group
-				Coord<2> coord = coordsToGroup.front();
-				coordsToGroup.pop();
-				isValGrouped.getValAt(mat->position(coord)) = true;
-
-				// Add all adjacent coordinates from the matrix of the same group to the queue
-				Coord<2> checkCoord;
-				if (coord[1] + 1 < numOfRows)
+				coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
+			}
+		}
+		if (coord[0] + 1 < this->numOfCols)
+		{
+			checkCoord = { coord[0] + 1, coord[1] };
+			if (getGroupFromCoord(f, checkCoord) == groupType)
+			{
+				coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
+			}
+			if (coord[1] + 1 < this->numOfRows)
+			{
+				checkCoord = { coord[0] + 1, coord[1] + 1 };
+				if (getGroupFromCoord(f, checkCoord) == groupType)
 				{
-					checkCoord = { coord[0], coord[1] + 1 };
-					if (getGroupFromCoord(checkCoord) == groupType)
-					{
-						coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
-					}
-				}
-				if (coord[1] > 0)
-				{
-					checkCoord = { coord[0], coord[1] - 1 };
-					if (getGroupFromCoord(checkCoord) == groupType)
-					{
-						coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
-					}
-				}
-				if (coord[0] + 1 < numOfCols)
-				{
-					checkCoord = { coord[0] + 1, coord[1] };
-					if (getGroupFromCoord(checkCoord) == groupType)
-					{
-						coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
-					}
-					if (coord[1] + 1 < numOfRows)
-					{
-						checkCoord = { coord[0] + 1, coord[1] + 1 };
-						if (getGroupFromCoord(checkCoord) == groupType)
-						{
-							coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
-						}
-					}
-					if (coord[1] > 0)
-					{
-						checkCoord = { coord[0] + 1, coord[1] - 1 };
-						if (getGroupFromCoord(checkCoord) == groupType)
-						{
-							coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
-						}
-					}
-				}
-				if (coord[0] > 0)
-				{
-					checkCoord = { coord[0] - 1, coord[1] };
-					if (getGroupFromCoord(checkCoord) == groupType)
-					{
-						coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
-					}
-					if (coord[1] + 1 < numOfRows)
-					{
-						checkCoord = { coord[0] - 1, coord[1] + 1 };
-						if (getGroupFromCoord(checkCoord) == groupType)
-						{
-							coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
-						}
-					}
-					if (coord[1] > 0)
-					{
-						checkCoord = { coord[0] - 1, coord[1] - 1 };
-						if (getGroupFromCoord(checkCoord) == groupType)
-						{
-							coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
-						}
-					}
+					coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
 				}
 			}
-		};
-
-		//
-		// Beginning of function:
-		//
-
+			if (coord[1] > 0)
+			{
+				checkCoord = { coord[0] + 1, coord[1] - 1 };
+				if (getGroupFromCoord(f, checkCoord) == groupType)
+				{
+					coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
+				}
+			}
+		}
+		if (coord[0] > 0)
+		{
+			checkCoord = { coord[0] - 1, coord[1] };
+			if (getGroupFromCoord(f, checkCoord) == groupType)
+			{
+				coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
+			}
+			if (coord[1] + 1 < this->numOfRows)
+			{
+				checkCoord = { coord[0] - 1, coord[1] + 1 };
+				if (getGroupFromCoord(f, checkCoord) == groupType)
+				{
+					coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
+				}
+			}
+			if (coord[1] > 0)
+			{
+				checkCoord = { coord[0] - 1, coord[1] - 1 };
+				if (getGroupFromCoord(f, checkCoord) == groupType)
+				{
+					coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
+				}
+			}
+		}
+	}
+	//template<typename S> // Switch std::string with template S ?
+	auto groupValues(const std::function<std::string(T)>& f)
+	{		
 		// Set the mirror matrix of which values are grouped
 		Matrix2d<bool> isValGrouped = { numOfRows, numOfCols, false };
 
@@ -213,7 +203,7 @@ public:
 		std::queue<Coord<2>> coordsToGroup;
 
 		// Pass through the matrix and group all its values
-		for (int i = 0; i < numOfRows*numOfCols; i++)
+		for (size_t i = 0; i < numOfRows*numOfCols; i++)
 			if (isValGrouped.getValAt(i) == false)
 			{
 				coordsToGroup.push(Coord<2>{i % numOfCols, i / numOfRows});
@@ -222,7 +212,7 @@ public:
 
 				// Pass through the current coordinate and add the other coordinates from its group
 				while (coordsToGroup.empty() == false)
-					MatrixGroup::createGroupFromQueue(coordsToGroup, type, groupCoords);
+					createGroupFromQueue(f, coordsToGroup, type, groupCoords, isValGrouped);
 
 				// Add the type if it doesn't exist
 				// Add the group of the current coordinate to the 'allGroups' vector
