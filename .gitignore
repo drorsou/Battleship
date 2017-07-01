@@ -53,3 +53,5 @@
 *.exp
 *.ipdb
 *.txt
+/MatrixProj/MatrixProj/Debug
+/MatrixProj
