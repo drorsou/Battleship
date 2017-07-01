@@ -61,7 +61,11 @@ class Matrix2d
 	size_t numOfRows;
 	size_t numOfCols = 0;
 
-	
+	class Coord
+	{
+		int x = 0, y = 0;
+		// needs iterator
+	};
 
 public:
 
@@ -69,6 +73,7 @@ public:
 	{
 		// Find the matrix' size
 		numOfRows = list.size();
+		numOfCols = 0;
 		for (auto& row : list)
 			numOfCols = MAX(row.size(), numOfCols);
 
@@ -76,21 +81,100 @@ public:
 		matrix = new T[numOfRows*numOfCols];
 
 		// Fill the matrix with values
-		// Not done
-		int i = 0;
+		for (int i = 0; i < numOfRows*numOfCols; i++)
+		{
+			// Default set the matrix values to 0/nullptr/false
+			//matrix[i] = 
+		}
+
+		int valuesIndex = 0;
 		for (auto& row : list) {
+			int countCols = 0;
 			for (auto& val : row) {
-				matrix[i++] = val;
+				countCols++;
+				matrix[valuesIndex] = val;
+				valuesIndex++;
 			}
+			valuesIndex += numOfCols - countRows;
 		}
 	}
 
+
+	T getValFromMatrix(int index) const { return matrix[y * numOfCols + x]; }
+	T getValFromMatrix(const Matrix2d::Coord& coord) const { return matrix[getMatrixIndexFromCoord(coord)] }
+	int getMatrixIndexFromCoord(const Matrix2d::Coord& coord) const { return coord.y * numOfCols + coord.x; }
+
+
+	template<typename S> // Switch std::string with template S ?
 	auto groupValues(const std::function<std::string(T)>& f)
 	{
-		std::vector<std::pair<std::string, std::vector<std::vector<Coord<2>>>>> all_groups;
-		Coord<2> c = { 1, 2 };
+		//
+		// Nested class to hold utility functions
+		//
+		struct MatrixGroup
+		{
+			std::string getGroupFromCoord(Matrix2d::Coord coord)
+			{
+				return f(getValFromMatrix(coord));
+			}
+			// Maybe use lambda ? [](Matrix2d::Coord coord) { return f(matrix[coord.y * numOfCols + coord.x]); }
+
+			void addFromQueue(std::queue<Matrix2d::Coord>& coordsToGroup, std::string& groupType, std::vector<Matrix2d::Coord>& groupCoords, bool* isValGrouped)
+			{
+				Matrix2d::Coord coord = coordsToGroup.front();
+				coordsToGroup.pop();
+				isValGrouped[getMatrixIndexFromCoord(coord)] = true;
+
+				Matrix2d::Coord checkCoord;
+				checkCoord = Matrix2d::Coord(coord.x + 1, coord.y);
+				if (getGroupFromCoord(checkCoord) == groupType)
+				{
+					coordsToGroup.push(Matrix2d::Coord(checkCoord.x, checkCoord.y));
+				}
+				// Copy all other options
+			}
+		};
+
+		//
+		// Beginning of function:
+		//
+
+		// Set the mirror matrix of which values are grouped
+		bool isValGrouped[numOfRows*numOfCols];
+		for (int i = 0; i < numOfRows*numOfCols; i++)
+		{
+			isValGrouped[i] = false;
+		}
 
 
-		return all_groups;
+		std::vector<std::pair<std::string, std::vector<std::vector<Matrix2d::Coord>>>> allGroups;
+		std::queue<Matrix2d::Coord> coordsToGroup;
+
+		// Pass through the matrix and group all its values
+		for (int i = 0; i < numOfRows*numOfCols; i++)
+			if (isValGrouped[i] == false)
+			{
+				//coordsToGroup.push(Matrix2d:Coord(i % numOfCols , i / numOfRows));
+				std::string type = f(matrix[i]);
+				std::vector<Matrix2d::Coord> groupCoords;
+
+				// Pass through the current coordinate and add the other coordinates from its group
+				while (coordsToGroup.empty() == false)
+					MatrixGroup::addFromQueue(coordsToGroup, groupType, groupCoords);
+
+				// Add the type if it doesn't exist
+				// Add the group of the current coordinate to the 'allGroups' vector
+				bool typeExists = false;
+				for (std::pair<std::string, std::vector<std::vector<Matrix2d::Coord>>>& groupType : allGroups)
+					if (groupType.first == type)
+					{
+						typeExists = true;
+						groupType.second.push_back(groupCoords);
+					}
+				if (typeExists == false)
+					allGroups.push_back(std::pair<std::string, std::vector<std::vector<Matrix2d::Coord>>>(type, std::vector<std::vector<Matrix2d::Coord>>(1, groupCoords)));
+			}
+
+		return allGroups;
 	}
 };
