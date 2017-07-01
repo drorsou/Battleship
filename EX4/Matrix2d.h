@@ -85,9 +85,9 @@ public:
 			//matrix[i] = 
 		}
 
-		int valuesIndex = 0;
+		size_t valuesIndex = 0;
 		for (auto& row : list) {
-			int countCols = 0;
+			size_t countCols = 0;
 			for (auto& val : row) {
 				countCols++;
 				temp[valuesIndex] = val;
@@ -114,85 +114,44 @@ public:
 	void setValAt(size_t index, T val) { (matrix.get())[index] = val; }
 	size_t position(const Coord<2> coord) const { return coord[0] * numOfCols + coord[1]; }
 
+
 	std::string getGroupFromCoord(const std::function<std::string(T)>& f, Coord<2> coord) const
 	{
 		return f(getValAt(coord));
 	}
 
-	void createGroupFromQueue(const std::function<std::string(T)>& f, std::queue<Coord<2>>& coordsToGroup, std::string& groupType, std::vector<Coord<2>>& groupCoords, Matrix2d<bool>& isValGrouped)
+
+	void checkCoordinate(Coord<2> coord, const std::function<std::string(T)>& f, std::queue<Coord<2>>& coordsToGroup, std::string& type, std::vector<Coord<2>>& groupCoords, Matrix2d<bool>& isValGrouped)
+	{
+		if (getGroupFromCoord(f, coord) == type && isValGrouped.getValAt(coord) == false)
+			coordsToGroup.push(Coord < 2 > {coord[0], coord[1]});
+	}
+
+
+	void createGroupFromQueue(const std::function<std::string(T)>& f, std::queue<Coord<2>>& coordsToGroup, std::string& type, std::vector<Coord<2>>& groupCoords, Matrix2d<bool>& isValGrouped)
 	{
 		// Add current coordinate from queue to the group
 		Coord<2> coord = coordsToGroup.front();
+		//std::cout << "Adding to type " << type << " : {" << coord[0] << "," << coord[1] << "} - " << getValAt(coord) << std::endl;
 		coordsToGroup.pop();
+		groupCoords.push_back(coord);
 		isValGrouped.setValAt(this->position(coord), true);
 
 		// Add all adjacent coordinates from the matrix of the same group to the queue
-		Coord<2> checkCoord;
 		if (coord[1] + 1 < this->numOfRows)
-		{
-			checkCoord = { coord[0], coord[1] + 1 };
-			if (getGroupFromCoord(f, checkCoord) == groupType)
-			{
-				coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
-			}
-		}
+			checkCoordinate({ coord[0], coord[1] + 1 }, f, coordsToGroup, type, groupCoords, isValGrouped);
+
 		if (coord[1] > 0)
-		{
-			checkCoord = { coord[0], coord[1] - 1 };
-			if (getGroupFromCoord(f, checkCoord) == groupType)
-			{
-				coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
-			}
-		}
+			checkCoordinate({ coord[0], coord[1] - 1 }, f, coordsToGroup, type, groupCoords, isValGrouped);
+
 		if (coord[0] + 1 < this->numOfCols)
-		{
-			checkCoord = { coord[0] + 1, coord[1] };
-			if (getGroupFromCoord(f, checkCoord) == groupType)
-			{
-				coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
-			}
-			if (coord[1] + 1 < this->numOfRows)
-			{
-				checkCoord = { coord[0] + 1, coord[1] + 1 };
-				if (getGroupFromCoord(f, checkCoord) == groupType)
-				{
-					coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
-				}
-			}
-			if (coord[1] > 0)
-			{
-				checkCoord = { coord[0] + 1, coord[1] - 1 };
-				if (getGroupFromCoord(f, checkCoord) == groupType)
-				{
-					coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
-				}
-			}
-		}
+			checkCoordinate({ coord[0] + 1, coord[1] }, f, coordsToGroup, type, groupCoords, isValGrouped);
+
 		if (coord[0] > 0)
-		{
-			checkCoord = { coord[0] - 1, coord[1] };
-			if (getGroupFromCoord(f, checkCoord) == groupType)
-			{
-				coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
-			}
-			if (coord[1] + 1 < this->numOfRows)
-			{
-				checkCoord = { coord[0] - 1, coord[1] + 1 };
-				if (getGroupFromCoord(f, checkCoord) == groupType)
-				{
-					coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
-				}
-			}
-			if (coord[1] > 0)
-			{
-				checkCoord = { coord[0] - 1, coord[1] - 1 };
-				if (getGroupFromCoord(f, checkCoord) == groupType)
-				{
-					coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
-				}
-			}
-		}
+			checkCoordinate({ coord[0] - 1, coord[1] }, f, coordsToGroup, type, groupCoords, isValGrouped);
 	}
+
+
 	//template<typename S> // Switch std::string with template S ?
 	auto groupValues(const std::function<std::string(T)>& f)
 	{		
@@ -206,7 +165,8 @@ public:
 		for (size_t i = 0; i < numOfRows*numOfCols; i++)
 			if (isValGrouped.getValAt(i) == false)
 			{
-				coordsToGroup.push(Coord<2>{i % numOfCols, i / numOfRows});
+				//coordsToGroup.push(Coord<2>{i % numOfCols, i / numOfRows});
+				coordsToGroup.push(Coord<2>{i / numOfRows , i % numOfCols});
 				std::string type = f(getValAt(i));
 				std::vector<Coord<2>> groupCoords;
 
