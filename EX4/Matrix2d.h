@@ -75,8 +75,7 @@ public:
 
 		
 		// Initialize the matrix
-		T * temp = new T[numOfRows*numOfCols];
-		//matrix = 
+		T * temp = new T[numOfRows*numOfCols]; 
 
 		// Fill the matrix with values
 		for (int i = 0; i < numOfRows*numOfCols; i++)
@@ -125,20 +124,81 @@ public:
 			{
 				return f(getValAt(coord));
 			}
-			// Maybe use lambda ? [](Matrix2d::Coord coord) { return f(matrix[coord.y * numOfCols + coord.x]); }
+			
 
 			void createGroupFromQueue(Matrix2d * mat, std::queue<Coord<2>>& coordsToGroup, std::string& groupType, std::vector<Coord<2>>& groupCoords, Matrix2d<bool> isValGrouped)
 			{
+				// Add current coordinate from queue to the group
 				Coord<2> coord = coordsToGroup.front();
 				coordsToGroup.pop();
 				isValGrouped.getValAt(mat->position(coord)) = true;
 
-				Coord<2> checkCoord = { coord[0] + 1, coord[1] };				
-				if (getGroupFromCoord(checkCoord) == groupType)
+				// Add all adjacent coordinates from the matrix of the same group to the queue
+				Coord<2> checkCoord;
+				if (coord[1] + 1 < numOfRows)
 				{
-					coordsToGroup.push(Coord<2>{checkCoord[0], checkCoord[1]});
+					checkCoord = { coord[0], coord[1] + 1 };
+					if (getGroupFromCoord(checkCoord) == groupType)
+					{
+						coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
+					}
 				}
-				// Copy all other options
+				if (coord[1] > 0)
+				{
+					checkCoord = { coord[0], coord[1] - 1 };
+					if (getGroupFromCoord(checkCoord) == groupType)
+					{
+						coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
+					}
+				}
+				if (coord[0] + 1 < numOfCols)
+				{
+					checkCoord = { coord[0] + 1, coord[1] };
+					if (getGroupFromCoord(checkCoord) == groupType)
+					{
+						coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
+					}
+					if (coord[1] + 1 < numOfRows)
+					{
+						checkCoord = { coord[0] + 1, coord[1] + 1 };
+						if (getGroupFromCoord(checkCoord) == groupType)
+						{
+							coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
+						}
+					}
+					if (coord[1] > 0)
+					{
+						checkCoord = { coord[0] + 1, coord[1] - 1 };
+						if (getGroupFromCoord(checkCoord) == groupType)
+						{
+							coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
+						}
+					}
+				}
+				if (coord[0] > 0)
+				{
+					checkCoord = { coord[0] - 1, coord[1] };
+					if (getGroupFromCoord(checkCoord) == groupType)
+					{
+						coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
+					}
+					if (coord[1] + 1 < numOfRows)
+					{
+						checkCoord = { coord[0] - 1, coord[1] + 1 };
+						if (getGroupFromCoord(checkCoord) == groupType)
+						{
+							coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
+						}
+					}
+					if (coord[1] > 0)
+					{
+						checkCoord = { coord[0] - 1, coord[1] - 1 };
+						if (getGroupFromCoord(checkCoord) == groupType)
+						{
+							coordsToGroup.push(Coord < 2 > {checkCoord[0], checkCoord[1]});
+						}
+					}
+				}
 			}
 		};
 
