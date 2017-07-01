@@ -110,7 +110,7 @@ public:
 
 	T getValAt(int index) const { return (matrix.get())[index]; }
 	T getValAt(const Coord<2>& coord) const { return (matrix.get())[position(coord)]; }
-	size_t position(const Coord<2> coord) const { return coord[1] * numOfCols + coord[0]; }
+	size_t position(const Coord<2> coord) const { return coord[0] * numOfCols + coord[1]; }
 
 
 	template<typename S> // Switch std::string with template S ?
