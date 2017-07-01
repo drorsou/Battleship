@@ -39,11 +39,11 @@ class Coord
 	{
 		return arr[pos];
 	}
-	auto& begin() const
+	auto begin() const
 	{
 		return arr.begin();
 	}
-	auto& end() const
+	auto end() const
 	{
 		return arr.end();
 	}
