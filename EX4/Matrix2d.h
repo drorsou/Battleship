@@ -21,6 +21,7 @@ template <size_t SIZE>
 class Coord
 {
 	std::array<size_t, SIZE> arr;
+	public:
 	Coord(std::initializer_list<size_t> list)
 	{
 		if (list.size() == SIZE)
@@ -31,7 +32,6 @@ class Coord
 				arr[i] = *itr;
 		}
 	}
-public:
 	size_t& operator[](size_t pos)
 	{
 		return arr[pos];
@@ -88,7 +88,7 @@ public:
 	auto groupValues(const std::function<std::string(T)>& f)
 	{
 		std::vector<std::pair<std::string, std::vector<std::vector<Coord<2>>>>> all_groups;
-
+		Coord<2> c = { 1, 2 };
 
 
 		return all_groups;
