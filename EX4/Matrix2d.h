@@ -93,7 +93,7 @@ public:
 				temp[valuesIndex] = val;
 				valuesIndex++;
 			}
-			valuesIndex += numOfCols - countRows;
+			valuesIndex += numOfCols - countCols;
 		}
 		matrix = temp;
 	}
@@ -127,11 +127,11 @@ public:
 			}
 			// Maybe use lambda ? [](Matrix2d::Coord coord) { return f(matrix[coord.y * numOfCols + coord.x]); }
 
-			void addFromQueue(Matrix2d * mat, std::queue<Coord<2>>& coordsToGroup, std::string& groupType, std::vector<Coord<2>>& groupCoords, bool* isValGrouped)
+			void createGroupFromQueue(Matrix2d * mat, std::queue<Coord<2>>& coordsToGroup, std::string& groupType, std::vector<Coord<2>>& groupCoords, Matrix2d<bool> isValGrouped)
 			{
 				Coord<2> coord = coordsToGroup.front();
 				coordsToGroup.pop();
-				isValGrouped[mat->position(coord)] = true;
+				isValGrouped.getValAt(mat->position(coord)) = true;
 
 				Coord<2> checkCoord = { coord[0] + 1, coord[1] };				
 				if (getGroupFromCoord(checkCoord) == groupType)
@@ -154,15 +154,15 @@ public:
 
 		// Pass through the matrix and group all its values
 		for (int i = 0; i < numOfRows*numOfCols; i++)
-			if (isValGrouped[i] == false)
+			if (isValGrouped.getValAt(i) == false)
 			{
-				//coordsToGroup.push(Matrix2d:Coord(i % numOfCols , i / numOfRows));
+				coordsToGroup.push(Coord<2>{i % numOfCols, i / numOfRows});
 				std::string type = f(getValAt(i));
 				std::vector<Coord<2>> groupCoords;
 
 				// Pass through the current coordinate and add the other coordinates from its group
 				while (coordsToGroup.empty() == false)
-					MatrixGroup::addFromQueue(coordsToGroup, groupType, groupCoords);
+					MatrixGroup::createGroupFromQueue(coordsToGroup, type, groupCoords);
 
 				// Add the type if it doesn't exist
 				// Add the group of the current coordinate to the 'allGroups' vector
