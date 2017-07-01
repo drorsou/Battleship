@@ -1,7 +1,9 @@
+#include "Matrix2d.h"
 #include <ctype.h>
 #include <iostream>
-#include "Matrix2d.h"
+
 using namespace std;
+
 
 template<typename Groups>
 void print(const Groups& all_groups) {
