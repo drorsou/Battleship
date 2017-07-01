@@ -4,6 +4,7 @@
 #include <string>
 #include <array>
 #include <queue>
+#include <mutex>
 #define MAX(x,y) (((x)>(y))?(x):(y))
 
 /*
@@ -58,7 +59,7 @@ class Coord
 template<typename T>
 class Matrix2d
 {
-	T* matrix;
+	std::unique_ptr<T> matrix;
 	size_t numOfRows;
 	size_t numOfCols = 0;
 	
@@ -72,8 +73,10 @@ public:
 		for (auto& row : list)
 			numOfCols = MAX(row.size(), numOfCols);
 
+		
 		// Initialize the matrix
-		matrix = new T[numOfRows*numOfCols];
+		T * temp = new T[numOfRows*numOfCols];
+		//matrix = 
 
 		// Fill the matrix with values
 		for (int i = 0; i < numOfRows*numOfCols; i++)
@@ -87,17 +90,27 @@ public:
 			int countCols = 0;
 			for (auto& val : row) {
 				countCols++;
-				matrix[valuesIndex] = val;
+				temp[valuesIndex] = val;
 				valuesIndex++;
 			}
 			valuesIndex += numOfCols - countRows;
 		}
+		matrix = temp;
+	}
+	Matrix2d(size_t rows, size_t cols, T val)
+		: numOfRows(rows),
+		  numOfCols(cols)
+	{
+		T * temp = new T[numOfRows*numOfCols];
+		for (size_t i = 0; i < numOfRows*numOfCols; i++)
+			temp[i] = val;
+		matrix = temp;
 	}
 
 
-	T getValFromMatrix(int index) const { return matrix[index]; }
-	T getValFromMatrix(const Coord<2>& coord) const { return matrix[getMatrixIndexFromCoord(coord)]; }
-	size_t getMatrixIndexFromCoord(const Coord<2> coord) const { return coord[1] * numOfCols + coord[0]; }
+	T getValAt(int index) const { return (matrix.get())[index]; }
+	T getValAt(const Coord<2>& coord) const { return (matrix.get())[position(coord)]; }
+	size_t position(const Coord<2> coord) const { return coord[1] * numOfCols + coord[0]; }
 
 
 	template<typename S> // Switch std::string with template S ?
@@ -110,7 +123,7 @@ public:
 		{
 			std::string getGroupFromCoord(Coord<2> coord) const
 			{
-				return f(getValFromMatrix(coord));
+				return f(getValAt(coord));
 			}
 			// Maybe use lambda ? [](Matrix2d::Coord coord) { return f(matrix[coord.y * numOfCols + coord.x]); }
 
@@ -118,7 +131,7 @@ public:
 			{
 				Coord<2> coord = coordsToGroup.front();
 				coordsToGroup.pop();
-				isValGrouped[mat->getMatrixIndexFromCoord(coord)] = true;
+				isValGrouped[mat->position(coord)] = true;
 
 				Coord<2> checkCoord = { coord[0] + 1, coord[1] };				
 				if (getGroupFromCoord(checkCoord) == groupType)
@@ -134,12 +147,7 @@ public:
 		//
 
 		// Set the mirror matrix of which values are grouped
-		bool isValGrouped[numOfRows*numOfCols] = { false };
-//		for (int i = 0; i < numOfRows*numOfCols; i++)
-//		{
-//			isValGrouped[i] = false;
-//		}
-
+		Matrix2d<bool> isValGrouped = { numOfRows, numOfCols, false };
 
 		std::vector<std::pair<std::string, std::vector<std::vector<Coord<2>>>>> allGroups;
 		std::queue<Coord<2>> coordsToGroup;
@@ -149,7 +157,7 @@ public:
 			if (isValGrouped[i] == false)
 			{
 				//coordsToGroup.push(Matrix2d:Coord(i % numOfCols , i / numOfRows));
-				std::string type = f(matrix[i]);
+				std::string type = f(getValAt(i));
 				std::vector<Coord<2>> groupCoords;
 
 				// Pass through the current coordinate and add the other coordinates from its group
