@@ -27,7 +27,8 @@ int main() {
 	//Matrix2d<char> m = { { 'a', 'A', 'a' },{ 'B', 'a', 'B' },{ 'B', 'a', 'B' } };
 	//Matrix2d<char> m = { { 'A', 'A', 'b', 'A' },{ 'b', 'b', 'b', 'A' },{ 'A', 'A', 'A', 'A' },{ 'b', 'b', 'b', 'b'} };
 	//Matrix3d<char> m = { { { 'a', 'A', 'a' },{ 'B', 'a', 'B' } } ,{ { 'a', 'A', 'a' },{ 'B', 'a', 'B' } },{ { 'a', 'A', 'a' },{ 'B', 'a', 'B' } } };
-	Matrix2d<char> m = { { 'a', 'a', 'a' },{ 'a', 'B', 'a' },{ 'a', 'a', 'a' } };
+	Matrix3d<char> m = { { { 'a', 'a', 'a' },{ 'B', 'a', 'B' } } ,{ { 'a', 'A', 'a' },{ 'B', 'a', 'B' } },{ { 'a', 'A', 'a' },{ 'B', 'a', 'B' } } };
+	//Matrix2d<char> m = { { 'a', 'a', 'a' },{ 'a', 'B', 'a' },{ 'a', 'a', 'a' } };
 	auto all_groups = m.groupValues([](auto i) {return islower(i) ? 'L' : 'U'; });
 	print(all_groups);
 

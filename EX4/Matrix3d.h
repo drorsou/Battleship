@@ -23,7 +23,7 @@ public:
 	T getValAt(const Coord<3>& coord) const { return (matrix.get())[position(coord)]; }
 	void setValAt(const Coord<3>& coord, T val) { (matrix.get())[position(coord)] = val; }
 	void setValAt(size_t index, T val) { (matrix.get())[index] = val; }
-	size_t position(const Coord<3> coord) const { return coord[2] * _rows * _cols + coord[0] * _cols + coord[1]; }
+	size_t position(const Coord<3> coord) const { return coord[0] * _rows * _cols + coord[1] * _cols + coord[2]; }
 
 	template<typename G = T, typename GroupingFunc, typename GroupingType = std::result_of_t<GroupingFunc(G)>>
 	GroupingType getGroupFromCoord(GroupingFunc f, Coord<3> coord) const
@@ -61,19 +61,19 @@ public:
 		//isValGrouped.setValAt(this->position(coord), true);
 
 		// Add all adjacent coordinates from the matrix of the same group to the queue
-		if (coord[1] < this->_cols - 1)
+		if (coord[1] < this->_rows - 1)
 			checkCoordinate({ coord[0], coord[1] + 1, coord[2] }, f, coordsToGroup, type, groupCoords, isValGrouped);
 
 		if (coord[1] > 0)
 			checkCoordinate({ coord[0], coord[1] - 1, coord[2] }, f, coordsToGroup, type, groupCoords, isValGrouped);
 
-		if (coord[0] < this->_rows - 1)
+		if (coord[0] < this->_depth - 1)
 			checkCoordinate({ coord[0] + 1, coord[1], coord[2] }, f, coordsToGroup, type, groupCoords, isValGrouped);
 
 		if (coord[0] > 0)
 			checkCoordinate({ coord[0] - 1, coord[1], coord[2] }, f, coordsToGroup, type, groupCoords, isValGrouped);
 
-		if (coord[2] < this->_depth - 1)
+		if (coord[2] < this->_cols - 1)
 			checkCoordinate({ coord[0], coord[1], coord[2] + 1 }, f, coordsToGroup, type, groupCoords, isValGrouped);
 
 		if (coord[2] > 0)
@@ -99,12 +99,12 @@ public:
 			{
 				for (size_t col = 0; col < _cols; col++)
 				{
-					if (isValGrouped.getValAt(Coord<3>{ row, col, depth }) == false)
+					if (isValGrouped.getValAt(Coord<3>{ depth, row, col }) == false)
 					{
 						//coordsToGroup.push(Coord<2>{i % _cols, i / _rows});
-						coordsToGroup.push(Coord<3>{row, col, depth});
+						coordsToGroup.push(Coord<3>{ depth, row, col });
 						isValGrouped.setValAt(this->position(coordsToGroup.front()), true);
-						GroupingType type = f(getValAt(Coord<3>{row, col, depth}));
+						GroupingType type = f(getValAt(Coord<3>{ depth, row, col }));
 						std::vector<Coord<3>> groupCoords;
 
 						// Pass through the current coordinate and add the other coordinates from its group
@@ -144,25 +144,8 @@ Matrix3d<T>::Matrix3d(std::initializer_list<std::initializer_list<std::initializ
 			_cols = MAX(col.size(), _cols);
 	}
 
-
 	// Initialize the matrix
-	T* temp = new T[_rows * _cols * _depth];	
-
-	//size_t valuesIndex = 0;
-//	size_t d = 0;
-//	size_t r = 0;	
-//	for(auto& depth = list.begin(); depth!=list.end(); ++depth, d++)
-//	{
-//		for(auto& row = (*depth).begin(); row != (*depth).end(); ++row, r++)
-//		{
-//			valuesIndex = d * _rows * _cols + r * _cols;
-//			for (auto& col = (*row).begin(); col != (*row).end(); ++col)
-//			{
-//				temp[valuesIndex++] = *col;
-//			}
-//		}
-//			
-//	}	
+	T* temp = new T[_rows * _cols * _depth];
 
 	size_t valuesIndex = 0;
 	for (auto& depth : list)
