@@ -1,6 +1,7 @@
 #include "Matrix2d.h"
 #include <ctype.h>
 #include <iostream>
+#include "Matrix3d.h"
 
 using namespace std;
 
@@ -24,7 +25,8 @@ void print(const Groups& all_groups) {
 
 int main() {
 	//Matrix2d<char> m = { { 'a', 'A', 'a' },{ 'B', 'a', 'B' },{ 'B', 'a', 'B' } };
-	Matrix2d<char> m = { { 'A', 'A', 'b', 'A' },{ 'b', 'b', 'b', 'A' },{ 'A', 'A', 'A', 'A' },{ 'b', 'b', 'b', 'b'} };
+//	Matrix2d<char> m = { { 'A', 'A', 'b', 'A' },{ 'b', 'b', 'b', 'A' },{ 'A', 'A', 'A', 'A' },{ 'b', 'b', 'b', 'b'} };
+	Matrix3d<char> m = { { { 'a', 'A', 'a' },{ 'B', 'a', 'B' } } ,{ { 'a', 'A', 'a' },{ 'B', 'a', 'B' } },{ { 'a', 'A', 'a' },{ 'B', 'a', 'B' } } };
 	auto all_groups = m.groupValues([](auto i) {return islower(i) ? 'L' : 'U'; });
 	print(all_groups);
 }

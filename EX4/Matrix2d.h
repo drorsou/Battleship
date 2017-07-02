@@ -1,11 +1,9 @@
 #pragma once
-#include <functional>
 #include <vector>
-#include <string>
-#include <array>
+#include "Coord.h"
 #include <queue>
 #include <mutex>
-#define MAX(x,y) (((x)>(y))?(x):(y))
+
 
 /*
 template<class T, size_t DIMENSIONS>
@@ -19,43 +17,7 @@ using Matrix2d = Matrix<T, 2>;
 template<class T>
 using Matrix3d = Matrix<T, 3>;
 */
-template <size_t SIZE>
-class Coord
-{
-	std::array<size_t, SIZE> arr;
-	public:
-	Coord(){}
-	Coord(std::initializer_list<size_t> list)
-	{
-		if (list.size() == SIZE)
-		{
-			auto itr = list.begin();
-			auto end = list.end();
-			for (size_t i = 0; i < SIZE; i++, ++itr)
-				arr[i] = *itr;
-		}
-	}
-	size_t operator[](size_t pos) const
-	{
-		return arr[pos];
-	}
-	auto begin() const
-	{
-		return arr.begin();
-	}
-	auto end() const
-	{
-		return arr.end();
-	}
-	const auto& cbegin() const
-	{
-		return arr.cbegin();
-	}
-	const auto& cend() const
-	{
-		return arr.cend();
-	}
-};
+
 
 template<typename T>
 class Matrix2d
@@ -177,13 +139,7 @@ Matrix2d<T>::Matrix2d(std::initializer_list<std::initializer_list<T>> list)
 
 	// Initialize the matrix
 	T* temp = new T[numOfRows * numOfCols];
-
-	// Fill the matrix with values
-	for (size_t i = 0; i < numOfRows * numOfCols; i++)
-	{
-		// Default set the matrix values to 0/nullptr/false
-		//matrix[i] = 
-	}
+	
 
 	size_t valuesIndex = 0;
 	for (auto& row : list)
