@@ -35,7 +35,10 @@ public:
 	void checkCoordinate(Coord<3> coord, GroupingFunc f, std::queue<Coord<3>>& coordsToGroup, GroupingType type, std::vector<Coord<3>>& groupCoords, Matrix3d<bool>& isValGrouped)
 	{
 		if (getGroupFromCoord(f, coord) == type && isValGrouped.getValAt(coord) == false)
+		{
+			isValGrouped.setValAt(this->position(coord), true);
 			coordsToGroup.push(Coord < 3 > {coord[0], coord[1], coord[2]});
+		}
 	}
 
 
@@ -53,31 +56,28 @@ public:
 		// Add current coordinate from queue to the group
 		Coord<3> coord = coordsToGroup.front();
 		coordsToGroup.pop();
-		if (isValGrouped.getValAt(coord) == false)
-		{
-			std::cout << "Adding to type " << type << " : {" << coord[0] << "," << coord[1] << "," << coord[2] << "} - " << getValAt(coord) << " with isValGrouped " << isValGrouped.getValAt(coord) << std::endl;			
-			groupCoords.push_back(coord);
-			isValGrouped.setValAt(this->position(coord), true);
+		//std::cout << "Adding to type " << type << " : {" << coord[0] << "," << coord[1] << "," << coord[2] << "} - " << getValAt(coord) << " with isValGrouped " << isValGrouped.getValAt(coord) << std::endl;			
+		groupCoords.push_back(coord);
+		//isValGrouped.setValAt(this->position(coord), true);
 
-			// Add all adjacent coordinates from the matrix of the same group to the queue
-			if (coord[1] < this->_rows - 1)
-				checkCoordinate({ coord[0], coord[1] + 1, coord[2] }, f, coordsToGroup, type, groupCoords, isValGrouped);
+		// Add all adjacent coordinates from the matrix of the same group to the queue
+		if (coord[1] < this->_cols - 1)
+			checkCoordinate({ coord[0], coord[1] + 1, coord[2] }, f, coordsToGroup, type, groupCoords, isValGrouped);
 
-			if (coord[1] > 0)
-				checkCoordinate({ coord[0], coord[1] - 1, coord[2] }, f, coordsToGroup, type, groupCoords, isValGrouped);
+		if (coord[1] > 0)
+			checkCoordinate({ coord[0], coord[1] - 1, coord[2] }, f, coordsToGroup, type, groupCoords, isValGrouped);
 
-			if (coord[0] < this->_cols - 1)
-				checkCoordinate({ coord[0] + 1, coord[1], coord[2] }, f, coordsToGroup, type, groupCoords, isValGrouped);
+		if (coord[0] < this->_rows - 1)
+			checkCoordinate({ coord[0] + 1, coord[1], coord[2] }, f, coordsToGroup, type, groupCoords, isValGrouped);
 
-			if (coord[0] > 0)
-				checkCoordinate({ coord[0] - 1, coord[1], coord[2] }, f, coordsToGroup, type, groupCoords, isValGrouped);
+		if (coord[0] > 0)
+			checkCoordinate({ coord[0] - 1, coord[1], coord[2] }, f, coordsToGroup, type, groupCoords, isValGrouped);
 
-			if (coord[2] < this->_depth - 1)
-				checkCoordinate({ coord[0], coord[1], coord[2] + 1 }, f, coordsToGroup, type, groupCoords, isValGrouped);
+		if (coord[2] < this->_depth - 1)
+			checkCoordinate({ coord[0], coord[1], coord[2] + 1 }, f, coordsToGroup, type, groupCoords, isValGrouped);
 
-			if (coord[2] > 0)
-				checkCoordinate({ coord[0], coord[1], coord[2] - 1 }, f, coordsToGroup, type, groupCoords, isValGrouped);
-		}
+		if (coord[2] > 0)
+			checkCoordinate({ coord[0], coord[1], coord[2] - 1 }, f, coordsToGroup, type, groupCoords, isValGrouped);
 	}
 
 
@@ -97,28 +97,32 @@ public:
 		{
 			for( size_t row = 0; row < _rows; row++)
 			{
-				for(size_t col = 0; col < _cols; col++)
+				for (size_t col = 0; col < _cols; col++)
 				{
-					//coordsToGroup.push(Coord<2>{i % _cols, i / _rows});
-					coordsToGroup.push(Coord<3>{row, col, depth});
-					GroupingType type = f(getValAt(Coord<3>{row, col, depth}));
-					std::vector<Coord<3>> groupCoords;
+					if (isValGrouped.getValAt(Coord<3>{ row, col, depth }) == false)
+					{
+						//coordsToGroup.push(Coord<2>{i % _cols, i / _rows});
+						coordsToGroup.push(Coord<3>{row, col, depth});
+						isValGrouped.setValAt(this->position(coordsToGroup.front()), true);
+						GroupingType type = f(getValAt(Coord<3>{row, col, depth}));
+						std::vector<Coord<3>> groupCoords;
 
-					// Pass through the current coordinate and add the other coordinates from its group
-					while (coordsToGroup.empty() == false)
-						createGroupFromQueue(f, coordsToGroup, type, groupCoords, isValGrouped);
+						// Pass through the current coordinate and add the other coordinates from its group
+						while (coordsToGroup.empty() == false)
+							createGroupFromQueue(f, coordsToGroup, type, groupCoords, isValGrouped);
 
-					// Add the type if it doesn't exist
-					// Add the group of the current coordinate to the 'allGroups' vector
-					bool typeExists = false;
-					for (std::pair<GroupingType, std::vector<std::vector<Coord<3>>>>& groupType : allGroups)
-						if (groupType.first == type)
-						{
-							typeExists = true;
-							groupType.second.push_back(groupCoords);
-						}
-					if (typeExists == false)
-						allGroups.push_back(std::pair<GroupingType, std::vector<std::vector<Coord<3>>>>(type, std::vector<std::vector<Coord<3>>>(1, groupCoords)));
+						// Add the type if it doesn't exist
+						// Add the group of the current coordinate to the 'allGroups' vector
+						bool typeExists = false;
+						for (std::pair<GroupingType, std::vector<std::vector<Coord<3>>>>& groupType : allGroups)
+							if (groupType.first == type)
+							{
+								typeExists = true;
+								groupType.second.push_back(groupCoords);
+							}
+						if (typeExists == false)
+							allGroups.push_back(std::pair<GroupingType, std::vector<std::vector<Coord<3>>>>(type, std::vector<std::vector<Coord<3>>>(1, groupCoords)));
+					}
 				}
 			}
 		}			

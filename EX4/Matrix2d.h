@@ -49,7 +49,10 @@ public:
 	void checkCoordinate(Coord<2> coord, GroupingFunc f, std::queue<Coord<2>>& coordsToGroup, GroupingType type, std::vector<Coord<2>>& groupCoords, Matrix2d<bool>& isValGrouped)
 	{
 		if (getGroupFromCoord(f, coord) == type && isValGrouped.getValAt(coord) == false)
+		{
+			isValGrouped.setValAt(this->position(coord), true);
 			coordsToGroup.push(Coord < 2 > {coord[0], coord[1]});
+		}
 	}
 
 
@@ -69,7 +72,7 @@ public:
 		//std::cout << "Adding to type " << type << " : {" << coord[0] << "," << coord[1] << "} - " << getValAt(coord) << std::endl;
 		coordsToGroup.pop();
 		groupCoords.push_back(coord);
-		isValGrouped.setValAt(this->position(coord), true);
+		//isValGrouped.setValAt(this->position(coord), true);
 
 		// Add all adjacent coordinates from the matrix of the same group to the queue
 		if (coord[1] + 1 < this->numOfRows)
@@ -103,6 +106,7 @@ public:
 			{
 				//coordsToGroup.push(Coord<2>{i % numOfCols, i / numOfRows});
 				coordsToGroup.push(Coord<2>{i / numOfRows , i % numOfCols});
+				isValGrouped.setValAt(this->position(coordsToGroup.front()), true);
 				GroupingType type = f(getValAt(i));
 				std::vector<Coord<2>> groupCoords;
 
